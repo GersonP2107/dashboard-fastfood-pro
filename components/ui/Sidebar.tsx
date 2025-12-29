@@ -18,7 +18,15 @@ function classNames(...classes: string[]) {
     return classes.filter(Boolean).join(' ')
 }
 
-export default function Sidebar() {
+interface SidebarProps {
+    business?: {
+        id: string;
+        business_name: string;
+        logo_url?: string;
+    } | null;
+}
+
+export default function Sidebar({ business }: SidebarProps) {
     const pathname = usePathname()
     const router = useRouter()
     const supabase = createClient()
@@ -31,7 +39,12 @@ export default function Sidebar() {
     return (
         <div className="flex h-full w-64 flex-col gap-y-5 overflow-y-auto bg-white dark:bg-zinc-900 border-r border-gray-200 dark:border-zinc-800 px-6 pb-4">
             <div className="flex h-16 shrink-0 items-center">
-                <span className="text-xl font-bold text-indigo-600 dark:text-indigo-400">DigitalMenu</span>
+                {business?.logo_url ? (
+                    <img src={business.logo_url} alt={business.business_name} className="h-8 w-auto mr-2" />
+                ) : null}
+                <span className="text-xl font-bold text-indigo-600 dark:text-indigo-400">
+                    {business?.business_name || 'DigitalMenu'}
+                </span>
             </div>
             <nav className="flex flex-1 flex-col">
                 <ul role="list" className="flex flex-1 flex-col gap-y-7">

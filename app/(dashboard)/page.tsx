@@ -7,6 +7,8 @@ import { DollarSign, ShoppingCart, TrendingUp, CheckCircle, Clock, Package } fro
 import { formatDistanceToNow } from 'date-fns'
 import { es } from 'date-fns/locale'
 import Link from 'next/link'
+import { getCurrentBusinessman } from '@/lib/actions/users'
+import { motion } from 'framer-motion'
 
 export default function DashboardHome() {
   const [stats, setStats] = useState<DashboardStats>({
@@ -27,6 +29,9 @@ export default function DashboardHome() {
 
   const fetchDashboardData = async () => {
     try {
+      const business = await getCurrentBusinessman();
+      if (!business) return;
+
       // Get current month start
       const now = new Date()
       const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString()
@@ -36,6 +41,7 @@ export default function DashboardHome() {
       const { data: monthOrders, error: monthError } = await supabase
         .from('orders')
         .select('total, status, created_at')
+        .eq('businessman_id', business.id)
         .gte('created_at', monthStart)
 
       if (monthError) throw monthError
@@ -44,6 +50,7 @@ export default function DashboardHome() {
       const { data: todayOrders, error: todayError } = await supabase
         .from('orders')
         .select('total')
+        .eq('businessman_id', business.id)
         .gte('created_at', todayStart)
         .neq('status', 'cancelado')
 
@@ -53,6 +60,7 @@ export default function DashboardHome() {
       const { data: recent, error: recentError } = await supabase
         .from('orders')
         .select('*')
+        .eq('businessman_id', business.id)
         .order('created_at', { ascending: false })
         .limit(5)
 
@@ -138,21 +146,45 @@ export default function DashboardHome() {
     )
   }
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1
+    }
+  };
+
   return (
-    <div className="space-y-6">
-      <div>
+    <motion.div
+      className="space-y-6"
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+    >
+      <motion.div variants={itemVariants}>
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Dashboard Overview</h1>
         <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
           Resumen de tu negocio en tiempo real
         </p>
-      </div>
+      </motion.div>
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {statCards.map((stat) => (
-          <div
+          <motion.div
             key={stat.name}
-            className="overflow-hidden rounded-lg bg-white dark:bg-zinc-900 shadow"
+            variants={itemVariants}
+            className="overflow-hidden rounded-lg bg-white dark:bg-zinc-900 shadow hover:shadow-md transition-shadow"
           >
             <div className="p-6">
               <div className="flex items-center">
@@ -171,12 +203,15 @@ export default function DashboardHome() {
                 </div>
               </div>
             </div>
-          </div>
+          </motion.div>
         ))}
       </div>
 
       {/* Recent Orders */}
-      <div className="bg-white dark:bg-zinc-900 shadow rounded-lg">
+      <motion.div
+        variants={itemVariants}
+        className="bg-white dark:bg-zinc-900 shadow rounded-lg"
+      >
         <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
           <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Pedidos Recientes</h2>
           <Link
@@ -206,10 +241,10 @@ export default function DashboardHome() {
                       </span>
                       <span
                         className={`px-2 py-1 rounded-full text-xs font-medium ${order.status === 'pendiente'
-                            ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
-                            : order.status === 'entregado'
-                              ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-                              : 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
+                          ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
+                          : order.status === 'entregado'
+                            ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+                            : 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
                           }`}
                       >
                         {order.status}
@@ -229,7 +264,7 @@ export default function DashboardHome() {
             ))
           )}
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   )
 }

@@ -17,7 +17,7 @@ export default async function DashboardLayout({
             </div>
 
             <div className="lg:pl-64 flex flex-col flex-1">
-                <Header />
+                <Header business={business} />
                 <main className="flex-1 py-10 px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-black">
                     {children}
                 </main>

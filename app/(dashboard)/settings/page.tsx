@@ -20,7 +20,9 @@ export default function SettingsPage() {
                 const businessData = await getCurrentBusinessman()
                 if (businessData) {
                     setBusiness(businessData)
+                    console.log("Business loaded:", businessData.id)
                     const zonesData = await getDeliveryZones(businessData.id)
+                    console.log("Zones loaded in page:", zonesData)
                     setZones(zonesData)
                 }
             } catch (error) {

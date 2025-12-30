@@ -18,8 +18,18 @@ export interface Businessman {
     accept_orders: boolean
     opening_hours?: string
     closing_hours?: string
+    delivery_surge_multiplier?: number;
+    operating_schedule?: OperatingScheduleItem[];
     created_at: string
     updated_at: string
+}
+
+export interface OperatingScheduleItem {
+    day: 'monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday' | 'saturday' | 'sunday';
+    label: string;
+    open: string;
+    close: string;
+    isActive: boolean;
 }
 
 export interface Category {

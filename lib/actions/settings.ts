@@ -31,6 +31,7 @@ export async function updateBusinessProfile(businessmanId: string, formData: Par
 
 export async function getDeliveryZones(businessmanId: string) {
     const supabase = await createClient();
+    console.log("Fetching zones for businessman:", businessmanId);
 
     const { data, error } = await supabase
         .from("delivery_zones")
@@ -43,6 +44,7 @@ export async function getDeliveryZones(businessmanId: string) {
         return [];
     }
 
+    console.log("Zones fetched:", data);
     return data as DeliveryZone[];
 }
 

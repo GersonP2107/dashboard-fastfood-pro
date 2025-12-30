@@ -1,15 +1,25 @@
 "use client";
 
 import { useState } from "react";
-import { Businessman } from "@/lib/types";
+import { Businessman, OperatingScheduleItem } from "@/lib/types";
 import { createClient } from "@/lib/supabase/client";
 import { updateBusinessProfile } from "@/lib/actions/settings";
-import { Camera, Loader2, Save } from "lucide-react";
+import { Camera, Loader2, Save, Clock, Check, X } from "lucide-react";
 import Image from "next/image";
 
 interface BusinessProfileFormProps {
     businessman: Businessman;
 }
+
+const DEFAULT_SCHEDULE: OperatingScheduleItem[] = [
+    { day: 'monday', label: 'Lunes', open: '08:00', close: '20:00', isActive: true },
+    { day: 'tuesday', label: 'Martes', open: '08:00', close: '20:00', isActive: true },
+    { day: 'wednesday', label: 'Miércoles', open: '08:00', close: '20:00', isActive: true },
+    { day: 'thursday', label: 'Jueves', open: '08:00', close: '20:00', isActive: true },
+    { day: 'friday', label: 'Viernes', open: '08:00', close: '20:00', isActive: true },
+    { day: 'saturday', label: 'Sábado', open: '09:00', close: '22:00', isActive: true },
+    { day: 'sunday', label: 'Domingo', open: '09:00', close: '21:00', isActive: true },
+];
 
 export default function BusinessProfileForm({ businessman }: BusinessProfileFormProps) {
     const [formData, setFormData] = useState<Partial<Businessman>>({
@@ -18,9 +28,17 @@ export default function BusinessProfileForm({ businessman }: BusinessProfileForm
         phone: businessman.phone || "",
         whatsapp_number: businessman.whatsapp_number,
         address: businessman.address || "",
-        opening_hours: businessman.opening_hours || "",
-        closing_hours: businessman.closing_hours || "",
+        operating_schedule: businessman.operating_schedule?.length ? businessman.operating_schedule : DEFAULT_SCHEDULE
     });
+
+    // Helper to update a specific day in the schedule
+    const updateScheduleDay = (index: number, field: keyof OperatingScheduleItem, value: any) => {
+        const currentSchedule = formData.operating_schedule || DEFAULT_SCHEDULE;
+        const newSchedule = [...currentSchedule];
+        newSchedule[index] = { ...newSchedule[index], [field]: value };
+        setFormData({ ...formData, operating_schedule: newSchedule });
+    };
+
     const [logoUrl, setLogoUrl] = useState<string | null>(businessman.logo_url || null);
     const [uploading, setUploading] = useState(false);
     const [saving, setSaving] = useState(false);
@@ -43,12 +61,11 @@ export default function BusinessProfileForm({ businessman }: BusinessProfileForm
             const filePath = `business-logos/${fileName}`;
 
             const { error: uploadError } = await supabase.storage
-                .from('products') // Storing in 'products' bucket for now as it's public. Ideally 'public-assets'.
+                .from('products')
                 .upload(filePath, file);
 
             if (uploadError) throw uploadError;
 
-            // Get public URL
             const { data: { publicUrl } } = supabase.storage
                 .from('products')
                 .getPublicUrl(filePath);
@@ -113,7 +130,7 @@ export default function BusinessProfileForm({ businessman }: BusinessProfileForm
                 <div className="text-center sm:text-left flex-1">
                     <h2 className="text-xl font-bold text-gray-900 dark:text-white">Información del Negocio</h2>
                     <p className="text-sm text-gray-500 dark:text-gray-400">
-                        Actualiza la identidad y datos de contacto de tu negocio.
+                        Actualiza la identidad, datos de contacto y horarios de tu negocio.
                     </p>
                 </div>
             </div>
@@ -163,27 +180,67 @@ export default function BusinessProfileForm({ businessman }: BusinessProfileForm
                     />
                 </div>
 
+                {/* Operating Schedule Section */}
                 <div className="col-span-2 border-t border-gray-200 dark:border-gray-700 pt-6 mt-2">
-                    <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Horarios de Atención</h3>
-                    <div className="grid grid-cols-2 gap-4">
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Apertura</label>
-                            <input
-                                type="time"
-                                value={formData.opening_hours || ""}
-                                onChange={(e) => setFormData({ ...formData, opening_hours: e.target.value })}
-                                className="block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm dark:bg-zinc-700 dark:text-white px-4 py-2.5 transition-shadow"
-                            />
-                        </div>
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Cierre</label>
-                            <input
-                                type="time"
-                                value={formData.closing_hours || ""}
-                                onChange={(e) => setFormData({ ...formData, closing_hours: e.target.value })}
-                                className="block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm dark:bg-zinc-700 dark:text-white px-4 py-2.5 transition-shadow"
-                            />
-                        </div>
+                    <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                        <Clock className="h-5 w-5 text-indigo-500" />
+                        Horarios de Atención Semanal
+                    </h3>
+
+                    <div className="bg-gray-50 dark:bg-zinc-800/50 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+                        {(formData.operating_schedule || DEFAULT_SCHEDULE).map((item, index) => (
+                            <div
+                                key={item.day}
+                                className={`flex flex-col sm:flex-row sm:items-center justify-between p-4 border-b border-gray-100 dark:border-gray-700 last:border-0 gap-4 transition-colors ${!item.isActive ? 'opacity-60 bg-gray-100/50 dark:bg-zinc-900/50' : 'bg-white dark:bg-zinc-800'
+                                    }`}
+                            >
+                                <div className="flex items-center gap-3 min-w-[140px]">
+                                    <button
+                                        type="button"
+                                        onClick={() => updateScheduleDay(index, 'isActive', !item.isActive)}
+                                        className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${item.isActive ? 'bg-indigo-600' : 'bg-gray-200 dark:bg-zinc-600'
+                                            }`}
+                                    >
+                                        <span className="sr-only">Use setting</span>
+                                        <span
+                                            aria-hidden="true"
+                                            className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${item.isActive ? 'translate-x-5' : 'translate-x-0'
+                                                }`}
+                                        />
+                                    </button>
+                                    <span className={`font-medium ${item.isActive ? 'text-gray-900 dark:text-white' : 'text-gray-500 dark:text-gray-400'}`}>
+                                        {item.label}
+                                    </span>
+                                </div>
+
+                                <div className="flex items-center gap-4 flex-1">
+                                    <div className="flex-1">
+                                        <label className="sr-only">Apertura</label>
+                                        <input
+                                            type="time"
+                                            value={item.open}
+                                            disabled={!item.isActive}
+                                            onChange={(e) => updateScheduleDay(index, 'open', e.target.value)}
+                                            className="block w-full rounded-md border-gray-300 dark:border-zinc-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm dark:bg-zinc-700 dark:text-white px-3 py-2 disabled:bg-gray-100 dark:disabled:bg-zinc-800 disabled:text-gray-400"
+                                        />
+                                    </div>
+                                    <span className="text-gray-400">-</span>
+                                    <div className="flex-1">
+                                        <label className="sr-only">Cierre</label>
+                                        <input
+                                            type="time"
+                                            value={item.close}
+                                            disabled={!item.isActive}
+                                            onChange={(e) => updateScheduleDay(index, 'close', e.target.value)}
+                                            className="block w-full rounded-md border-gray-300 dark:border-zinc-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm dark:bg-zinc-700 dark:text-white px-3 py-2 disabled:bg-gray-100 dark:disabled:bg-zinc-800 disabled:text-gray-400"
+                                        />
+                                    </div>
+                                </div>
+                                <div className="w-[80px] text-right text-xs font-medium text-gray-500 dark:text-gray-400 hidden sm:block">
+                                    {item.isActive ? <span className="text-green-600 dark:text-green-400">Abierto</span> : "Cerrado"}
+                                </div>
+                            </div>
+                        ))}
                     </div>
                 </div>
             </div>

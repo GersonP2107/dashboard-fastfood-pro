@@ -1,16 +1,9 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { Businessman } from "@/lib/types";
 
-// Define the return type for better type safety
-interface BusinessData {
-    id: string;
-    business_name: string;
-    logo_url?: string;
-    is_active: boolean;
-}
-
-export async function getCurrentBusinessman(): Promise<BusinessData | null> {
+export async function getCurrentBusinessman(): Promise<Businessman | null> {
     const supabase = await createClient();
     const {
         data: { user },
@@ -23,7 +16,7 @@ export async function getCurrentBusinessman(): Promise<BusinessData | null> {
 
     const { data, error } = await supabase
         .from("businessmans")
-        .select("id, business_name, logo_url, is_active")
+        .select("*")
         .eq("user_id", user.id)
         .single();
 
@@ -32,5 +25,5 @@ export async function getCurrentBusinessman(): Promise<BusinessData | null> {
         return null;
     }
 
-    return data;
+    return data as Businessman;
 }

@@ -36,9 +36,9 @@ export interface DashboardOrder {
     id: string
     businessman_id: string
     order_number: string
-    client_name: string
-    client_phone: string
-    client_email?: string
+    customer_name: string
+    customer_phone: string
+    customer_email?: string
     delivery_type: 'delivery' | 'pickup'
     delivery_address?: string
     delivery_notes?: string
@@ -85,7 +85,7 @@ export interface SalesTrendPoint {
 }
 
 // Order Filter Options
-export type OrderStatus = 'pendiente' | 'confirmado' | 'preparando' | 'en_camino' | 'entregado' | 'cancelado'
+export type OrderStatus = 'pendiente' | 'confirmado' | 'preparando' | 'listo' | 'en_camino' | 'entregado' | 'cancelado'
 export type PaymentMethod = 'efectivo' | 'transferencia' | 'tarjeta'
 
 export interface OrderFilters {

@@ -33,9 +33,23 @@ export async function getOrders(businessmanId: string) {
 export async function updateOrderStatus(orderId: string, status: OrderStatus) {
     const supabase = await createClient();
 
+    // Map UI status (Spanish) to DB status (English)
+    const statusMap: Record<OrderStatus, string> = {
+        'pendiente': 'pending',
+        'confirmado': 'confirmed',
+        'preparando': 'preparing',
+        'listo': 'ready',          // Packing/Ready phase
+        'en_camino': 'en_route',   // Out for delivery
+        'entregado': 'delivered',
+        'cancelado': 'cancelled'
+    }
+
+    // fallback to status if not in map (e.g. if DB uses Spanish or mixed)
+    const dbStatus = statusMap[status] || status
+
     const { error } = await supabase
         .from("orders")
-        .update({ status, updated_at: new Date().toISOString() })
+        .update({ status: dbStatus, updated_at: new Date().toISOString() })
         .eq("id", orderId);
 
     if (error) {
@@ -50,7 +64,7 @@ export async function updateOrderStatus(orderId: string, status: OrderStatus) {
             .from('order_status_history')
             .insert({
                 order_id: orderId,
-                status: status,
+                status: dbStatus, // Log the actual DB status
                 changed_by: user.id
             })
             .select()

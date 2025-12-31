@@ -251,7 +251,7 @@ export default function DashboardHome() {
                       </span>
                     </div>
                     <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                      {order.client_name} • {formatDistanceToNow(new Date(order.created_at), { addSuffix: true, locale: es })}
+                      {order.customer_name} • {formatDistanceToNow(new Date(order.created_at), { addSuffix: true, locale: es })}
                     </p>
                   </div>
                   <div className="ml-4 flex-shrink-0">

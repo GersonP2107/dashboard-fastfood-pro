@@ -7,10 +7,13 @@ import { formatDistanceToNow } from 'date-fns'
 import { es } from 'date-fns/locale'
 import { Bell, Clock, DollarSign, Package, CheckCircle, XCircle } from 'lucide-react'
 import OrderDetailModal from '@/components/orders/OrderDetailModal'
+import OrderKanbanCard from '@/components/orders/OrderKanbanCard'
 import { getCurrentBusinessman } from '@/lib/actions/users'
 import { getOrders, updateOrderStatus } from '@/lib/actions/orders'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useRouter } from 'next/navigation'
+import { toast } from 'sonner'
+import useSound from 'use-sound'
 
 const STATUS_TABS: { label: string; value: OrderStatus | 'all' }[] = [
     { label: 'Todos', value: 'all' },
@@ -25,6 +28,7 @@ const STATUS_COLORS: Record<OrderStatus, string> = {
     pendiente: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
     confirmado: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
     preparando: 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200',
+    listo: 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200',
     en_camino: 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200',
     entregado: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
     cancelado: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
@@ -33,9 +37,9 @@ const STATUS_COLORS: Record<OrderStatus, string> = {
 export default function OrdersPage() {
     const router = useRouter()
     const [orders, setOrders] = useState<DashboardOrder[]>([])
-    const [filteredOrders, setFilteredOrders] = useState<DashboardOrder[]>([])
-    const [selectedTab, setSelectedTab] = useState<OrderStatus | 'all'>('all')
+    // filteredOrders and selectedTab removed as Kanban uses columns directly derived from 'orders'
     const [selectedOrder, setSelectedOrder] = useState<DashboardOrder | null>(null)
+
     const [loading, setLoading] = useState(true)
     const [businessId, setBusinessId] = useState<string | null>(null)
     const supabase = createClient()
@@ -43,10 +47,6 @@ export default function OrdersPage() {
     useEffect(() => {
         initializePage()
     }, [])
-
-    useEffect(() => {
-        filterOrders()
-    }, [selectedTab, orders])
 
     const initializePage = async () => {
         try {
@@ -72,11 +72,7 @@ export default function OrdersPage() {
                     },
                     (payload) => {
                         const newOrder = payload.new as DashboardOrder
-                        // Refresh full list to get relations properly, or just append if structure matches
-                        // For simplicity/correctness with relations, we'll re-fetch or construct carefully.
-                        // Ideally we re-fetch to get order_items.
                         refreshOrders(business.id)
-                        playNotificationSound()
                         showNotification(newOrder)
                     }
                 )
@@ -107,29 +103,45 @@ export default function OrdersPage() {
     const refreshOrders = async (bId: string) => {
         const latestOrders = await getOrders(bId)
         setOrders(latestOrders)
-        router.refresh() // Sync server components if any
+        router.refresh()
     }
 
-    const playNotificationSound = () => {
-        const audio = new Audio('/notification.mp3')
-        audio.play().catch((e) => console.log('Audio play failed:', e))
-    }
+    const [playNotification] = useSound('/notification.mp3')
 
     const showNotification = (order: DashboardOrder) => {
-        if ('Notification' in window && Notification.permission === 'granted') {
-            new Notification('Nuevo Pedido', {
-                body: `Pedido #${order.order_number} de ${order.client_name}`,
-                icon: '/logo.png', // Ensure this exists or use a valid path
-            })
-        }
-    }
+        playNotification()
 
-    const filterOrders = () => {
-        if (selectedTab === 'all') {
-            setFilteredOrders(orders)
-        } else {
-            setFilteredOrders(orders.filter((order) => order.status === selectedTab))
-        }
+        toast.custom((t) => (
+            <div className="bg-white dark:bg-zinc-800 rounded-lg shadow-lg p-4 border-l-4 border-indigo-500 w-full max-w-sm cursor-pointer hover:bg-gray-50 dark:hover:bg-zinc-700 transition-colors" onClick={() => {
+                setSelectedOrder(order)
+                toast.dismiss(t)
+            }}>
+                <div className="flex items-start justify-between">
+                    <div>
+                        <h3 className="font-bold text-gray-900 dark:text-white">¡Nuevo Pedido!</h3>
+                        <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                            {order.customer_name}
+                        </p>
+                        <p className="text-sm font-semibold text-indigo-600 dark:text-indigo-400 mt-1">
+                            ${order.total.toLocaleString()}
+                        </p>
+                    </div>
+                    <div className="bg-indigo-100 dark:bg-indigo-900 p-2 rounded-full">
+                        <Bell className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
+                    </div>
+                </div>
+                <div className="mt-3 flex justify-end">
+                    <button
+                        className="text-xs font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-500"
+                    >
+                        Ver detalles &rarr;
+                    </button>
+                </div>
+            </div>
+        ), {
+            duration: 10000,
+            position: 'top-right',
+        })
     }
 
     const handleStatusUpdate = async (orderId: string, newStatus: OrderStatus, e?: React.MouseEvent) => {
@@ -170,151 +182,109 @@ export default function OrdersPage() {
         visible: { y: 0, opacity: 1 }
     }
 
+    const getDishCount = (orders: DashboardOrder[]) => {
+        return orders.reduce((acc, order) => {
+            return acc + (order.order_items?.reduce((itemAcc, item) => itemAcc + item.quantity, 0) || 0)
+        }, 0)
+    }
+
+    const columns = [
+        {
+            id: 'pendiente',
+            title: 'Nuevos',
+            orders: orders.filter(o => o.status === 'pendiente'),
+            color: 'bg-zinc-100 dark:bg-zinc-800/50 border-zinc-200 dark:border-zinc-700',
+            iconColor: 'text-zinc-600 dark:text-zinc-400',
+            borderColor: 'border-t-4 border-t-zinc-400'
+        },
+        {
+            id: 'preparacion',
+            title: 'Cocina',
+            orders: orders.filter(o => ['confirmado', 'confirmed', 'preparando', 'preparing'].includes(o.status)),
+            color: 'bg-purple-50 dark:bg-purple-900/10 border-purple-200 dark:border-purple-900/50',
+            iconColor: 'text-purple-600 dark:text-purple-400',
+            borderColor: 'border-t-4 border-t-purple-500'
+        },
+        {
+            id: 'listo',
+            title: 'Packing',
+            orders: orders.filter(o => ['listo', 'ready'].includes(o.status)),
+            color: 'bg-orange-50 dark:bg-orange-900/10 border-orange-200 dark:border-orange-900/50',
+            iconColor: 'text-orange-600 dark:text-orange-400',
+            borderColor: 'border-t-4 border-t-orange-500'
+        },
+        {
+            id: 'en_camino',
+            title: 'En Ruta',
+            orders: orders.filter(o => ['en_camino', 'en_route'].includes(o.status)),
+            color: 'bg-blue-50 dark:bg-blue-900/10 border-blue-200 dark:border-blue-900/50',
+            iconColor: 'text-blue-600 dark:text-blue-400',
+            borderColor: 'border-t-4 border-t-blue-500'
+        },
+        {
+            id: 'entregado',
+            title: 'Entregados',
+            orders: orders.filter(o => ['entregado', 'delivered'].includes(o.status)).slice(0, 5), // Keep history short
+            color: 'bg-green-50 dark:bg-green-900/10 border-green-200 dark:border-green-900/50',
+            iconColor: 'text-green-600 dark:text-green-400',
+            borderColor: 'border-t-4 border-t-green-500'
+        }
+    ]
+
     return (
-        <motion.div
-            className="space-y-6"
-            initial="hidden"
-            animate="visible"
-            variants={containerVariants}
-        >
-            <div className="flex items-center justify-between">
-                <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Pedidos</h1>
-                <div className="flex items-center gap-2">
-                    <Bell className="h-5 w-5 text-gray-400" />
-                    <span className="text-sm text-gray-600 dark:text-gray-400">
-                        {orders.filter((o) => o.status === 'pendiente').length} pendientes
-                    </span>
+        <div className="h-[calc(100vh-8rem)] flex flex-col">
+            <div className="flex items-center justify-between mb-4 px-1">
+                <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Tablero de Control</h1>
+                <div className="flex items-center gap-4">
+                    {/* Summary Stats could go here */}
                 </div>
             </div>
 
-            {/* Status Tabs */}
-            <div className="border-b border-gray-200 dark:border-gray-700">
-                <nav className="-mb-px flex space-x-8 overflow-x-auto">
-                    {STATUS_TABS.map((tab) => (
-                        <button
-                            key={tab.value}
-                            onClick={() => setSelectedTab(tab.value)}
-                            className={`
-                whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors
-                ${selectedTab === tab.value
-                                    ? 'border-indigo-500 text-indigo-600 dark:text-indigo-400'
-                                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'
-                                }
-              `}
-                        >
-                            {tab.label}
-                        </button>
-                    ))}
-                </nav>
-            </div>
+            <div className="flex-1 overflow-x-auto overflow-y-hidden pb-2">
+                <div className="h-full flex gap-3 min-w-[1200px] px-1">
+                    {columns.map((col) => {
+                        const dishCount = getDishCount(col.orders)
 
-            {/* Orders Grid */}
-            <motion.div
-                className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"
-                variants={containerVariants}
-            >
-                <AnimatePresence mode="popLayout">
-                    {filteredOrders.map((order) => (
-                        <motion.div
-                            layout
-                            key={order.id}
-                            variants={itemVariants}
-                            initial="hidden"
-                            animate="visible"
-                            exit={{ scale: 0.9, opacity: 0 }}
-                            onClick={() => setSelectedOrder(order)}
-                            className="bg-white dark:bg-zinc-900 rounded-lg shadow p-6 cursor-pointer hover:shadow-lg transition-all"
-                        >
-                            <div className="flex items-center justify-between mb-4">
-                                <span className="text-lg font-bold text-gray-900 dark:text-white">
-                                    #{order.order_number}
-                                </span>
-                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${STATUS_COLORS[order.status]}`}>
-                                    {order.status}
-                                </span>
-                            </div>
+                        return (
+                            <div key={col.id} className={`flex-1 min-w-[260px] flex flex-col bg-white dark:bg-zinc-900 rounded-lg shadow-sm border border-gray-200 dark:border-zinc-800 ${col.borderColor}`}>
+                                {/* Column Header */}
+                                <div className={`p-3 border-b border-gray-100 dark:border-zinc-800 flex flex-col gap-1 bg-gray-50/50 dark:bg-zinc-800/30`}>
+                                    <div className="flex items-center justify-between">
+                                        <h2 className="font-bold text-gray-800 dark:text-gray-200 text-sm uppercase tracking-wide">{col.title}</h2>
+                                        <span className={`text-xs px-2 py-0.5 rounded-full font-bold ${col.color} ${col.iconColor}`}>
+                                            {col.orders.length}
+                                        </span>
+                                    </div>
+                                    <div className="text-xs text-gray-500 dark:text-gray-500 font-medium">
+                                        {dishCount} Pedidos
+                                    </div>
+                                </div>
 
-                            <div className="space-y-2 text-sm">
-                                <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
-                                    <Package className="h-4 w-4" />
-                                    <span>{order.client_name}</span>
-                                </div>
-                                <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
-                                    <DollarSign className="h-4 w-4" />
-                                    <span className="font-semibold">${order.total.toLocaleString()}</span>
-                                </div>
-                                <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
-                                    <Clock className="h-4 w-4" />
-                                    <span>{getElapsedTime(order.created_at)}</span>
+                                {/* Column Content */}
+                                <div className="flex-1 overflow-y-auto p-2 space-y-2 custom-scrollbar bg-gray-50/30 dark:bg-zinc-900/50">
+                                    <AnimatePresence mode="popLayout">
+                                        {col.orders.length === 0 ? (
+                                            <div className="text-center py-10 opacity-40">
+                                                <Package className="mx-auto h-8 w-8 mb-2" />
+                                                <span className="text-xs">Sin pedidos</span>
+                                            </div>
+                                        ) : (
+                                            col.orders.map((order) => (
+                                                <OrderKanbanCard
+                                                    key={order.id}
+                                                    order={order}
+                                                    onStatusUpdate={handleStatusUpdate}
+                                                    onClick={setSelectedOrder}
+                                                />
+                                            ))
+                                        )}
+                                    </AnimatePresence>
                                 </div>
                             </div>
-
-                            {order.status === 'pendiente' && (
-                                <div className="mt-4 flex gap-2">
-                                    <button
-                                        onClick={(e) => handleStatusUpdate(order.id, 'confirmado', e)}
-                                        className="flex-1 bg-green-600 text-white px-3 py-2 rounded text-sm font-medium hover:bg-green-700 shadow-sm transition-colors"
-                                    >
-                                        <CheckCircle className="h-4 w-4 inline mr-1" />
-                                        Aceptar
-                                    </button>
-                                    <button
-                                        onClick={(e) => handleStatusUpdate(order.id, 'cancelado', e)}
-                                        className="flex-1 bg-red-600 text-white px-3 py-2 rounded text-sm font-medium hover:bg-red-700 shadow-sm transition-colors"
-                                    >
-                                        <XCircle className="h-4 w-4 inline mr-1" />
-                                        Rechazar
-                                    </button>
-                                </div>
-                            )}
-
-                            {/* Example of moving flow: Confirmed -> Preparing */}
-                            {order.status === 'confirmado' && (
-                                <div className="mt-4">
-                                    <button
-                                        onClick={(e) => handleStatusUpdate(order.id, 'preparando', e)}
-                                        className="w-full bg-purple-600 text-white px-3 py-2 rounded text-sm font-medium hover:bg-purple-700 shadow-sm transition-colors"
-                                    >
-                                        Empezar a Preparar
-                                    </button>
-                                </div>
-                            )}
-
-                            {order.status === 'preparando' && (
-                                <div className="mt-4">
-                                    <button
-                                        onClick={(e) => handleStatusUpdate(order.id, 'en_camino', e)}
-                                        className="w-full bg-indigo-600 text-white px-3 py-2 rounded text-sm font-medium hover:bg-indigo-700 shadow-sm transition-colors"
-                                    >
-                                        Marcar Listo/En Camino
-                                    </button>
-                                </div>
-                            )}
-
-                            {order.status === 'en_camino' && (
-                                <div className="mt-4">
-                                    <button
-                                        onClick={(e) => handleStatusUpdate(order.id, 'entregado', e)}
-                                        className="w-full bg-blue-600 text-white px-3 py-2 rounded text-sm font-medium hover:bg-blue-700 shadow-sm transition-colors"
-                                    >
-                                        Finalizar Entrega
-                                    </button>
-                                </div>
-                            )}
-                        </motion.div>
-                    ))}
-                </AnimatePresence>
-            </motion.div>
-
-            {filteredOrders.length === 0 && (
-                <div className="text-center py-12">
-                    <Package className="mx-auto h-12 w-12 text-gray-400" />
-                    <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-white">No hay pedidos</h3>
-                    <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                        No se encontraron pedidos para este filtro.
-                    </p>
+                        )
+                    })}
                 </div>
-            )}
+            </div>
 
             {selectedOrder && (
                 <OrderDetailModal
@@ -323,6 +293,6 @@ export default function OrdersPage() {
                     onUpdate={() => businessId && refreshOrders(businessId)}
                 />
             )}
-        </motion.div>
+        </div>
     )
 }

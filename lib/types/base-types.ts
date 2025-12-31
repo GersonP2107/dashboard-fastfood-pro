@@ -87,9 +87,9 @@ export interface Order {
     id: string
     businessman_id: string
     order_number: string
-    client_name: string
-    client_phone: string
-    client_email?: string
+    customer_name: string
+    customer_phone: string
+    customer_email?: string
     delivery_type: 'delivery' | 'pickup'
     delivery_address?: string
     delivery_notes?: string
@@ -98,7 +98,7 @@ export interface Order {
     shipping_cost: number
     discount: number
     total: number
-    status: 'pendiente' | 'confirmado' | 'preparando' | 'en_camino' | 'entregado' | 'cancelado'
+    status: 'pendiente' | 'confirmado' | 'preparando' | 'listo' | 'en_camino' | 'entregado' | 'cancelado'
     notification_sent: boolean
     notification_error?: string
     created_at: string

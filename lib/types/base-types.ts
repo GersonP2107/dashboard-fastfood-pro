@@ -98,7 +98,7 @@ export interface Order {
     shipping_cost: number
     discount: number
     total: number
-    status: 'pendiente' | 'confirmado' | 'preparando' | 'listo' | 'en_camino' | 'entregado' | 'cancelado'
+    status: 'pendiente' | 'confirmado' | 'preparando' | 'listo' | 'en_camino' | 'entregado' | 'cancelado' | 'pending' | 'confirmed' | 'preparing' | 'ready' | 'en_route' | 'delivered' | 'cancelled'
     notification_sent: boolean
     notification_error?: string
     created_at: string

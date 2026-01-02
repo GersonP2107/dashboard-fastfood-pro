@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import { updateOrderStatus } from '@/lib/actions/orders'
 import { DashboardOrder, OrderStatus } from '@/lib/types'
 import { X, MapPin, Phone, CreditCard, Clock, Package, CheckCircle, AlertTriangle, DollarSign } from 'lucide-react'
 import { format } from 'date-fns'
@@ -21,6 +22,14 @@ const STATUS_FLOW: Record<OrderStatus, OrderStatus | null> = {
     en_camino: 'entregado',
     entregado: null,
     cancelado: null,
+    // English Keys
+    pending: 'confirmed',
+    confirmed: 'preparing',
+    preparing: 'ready',
+    ready: 'en_route',
+    en_route: 'delivered',
+    delivered: null,
+    cancelled: null,
 }
 
 const STATUS_LABELS: Record<OrderStatus, string> = {
@@ -31,6 +40,14 @@ const STATUS_LABELS: Record<OrderStatus, string> = {
     en_camino: 'En Ruta',
     entregado: 'Entregado',
     cancelado: 'Cancelado',
+    // English Keys
+    pending: 'Pendiente',
+    confirmed: 'Confirmado',
+    preparing: 'En Preparación',
+    ready: 'Listo / Packing',
+    en_route: 'En Ruta',
+    delivered: 'Entregado',
+    cancelled: 'Cancelado',
 }
 
 const NEXT_STATUS_LABELS: Record<OrderStatus, string> = {
@@ -41,6 +58,14 @@ const NEXT_STATUS_LABELS: Record<OrderStatus, string> = {
     en_camino: 'Marcar Entregado',
     entregado: '',
     cancelado: '',
+    // English Keys
+    pending: 'Aceptar Pedido',
+    confirmed: 'Iniciar Preparación',
+    preparing: 'Marcar Listo / Packing',
+    ready: 'Enviar Pedido',
+    en_route: 'Marcar Entregado',
+    delivered: '',
+    cancelled: '',
 }
 
 export default function OrderDetailModal({ order, onClose, onUpdate }: OrderDetailModalProps) {
@@ -48,39 +73,16 @@ export default function OrderDetailModal({ order, onClose, onUpdate }: OrderDeta
     const [paymentConfirmed, setPaymentConfirmed] = useState(false)
     const supabase = createClient()
 
-    const updateOrderStatus = async (newStatus: OrderStatus) => {
+    const handleStatusUpdate = async (newStatus: OrderStatus) => {
         setUpdating(true)
         try {
-            // Mapping for compatibility if needed, but handled in actions usually. 
-            // Here we interact directly with DB? No, let's keep direct DB update for consistency with existing file
-            // But we should really use the action we created earlier to ensure consistency.
-            // For now, I'll update the logic to match the action logic manually here or just rely on the DB accepting the value.
-            // Since we updated 'en_camino' -> 'ready' mapping in server action, frontend usually sends 'en_camino' in UI state 
-            // but for direct DB calls we need the mapped value.
-            // However, the existing code uses direct supabase client.
+            const result = await updateOrderStatus(order.id, newStatus)
 
-            // Map status for DB
-            const dbStatusMap: Partial<Record<OrderStatus, string>> = {
-                'listo': 'ready',
-                'en_camino': 'en_route',
-                // other statuses usually match or handled by logic
+            if (!result.success) {
+                throw new Error(result.error || 'Error updating order')
             }
-            const dbStatus = dbStatusMap[newStatus] || newStatus
 
-            const { error } = await supabase
-                .from('orders')
-                .update({ status: dbStatus, updated_at: new Date().toISOString() })
-                .eq('id', order.id)
-
-            if (error) throw error
-
-            // Log status change
-            await supabase.from('order_status_history').insert({
-                order_id: order.id,
-                status: dbStatus,
-                notes: `Estado cambiado de ${order.status} a ${newStatus}`,
-            })
-
+            // Status history is now handled by the server action
             onUpdate()
             onClose()
         } catch (error) {
@@ -91,16 +93,25 @@ export default function OrderDetailModal({ order, onClose, onUpdate }: OrderDeta
         }
     }
 
+
+
+
     const handleNextStatus = () => {
         const nextStatus = STATUS_FLOW[order.status]
         if (nextStatus) {
-            updateOrderStatus(nextStatus)
+            handleStatusUpdate(nextStatus)
+        }
+    }
+
+    const handleCancel = () => {
+        if (confirm('¿Estás seguro de cancelar este pedido? Esta acción no se puede deshacer.')) {
+            handleStatusUpdate('cancelado')
         }
     }
 
     const handleReject = () => {
         if (confirm('¿Estás seguro de rechazar este pedido?')) {
-            updateOrderStatus('cancelado')
+            handleStatusUpdate('cancelado')
         }
     }
 
@@ -274,12 +285,13 @@ export default function OrderDetailModal({ order, onClose, onUpdate }: OrderDeta
                                     <div className="flex-1">
                                         <h4 className="font-medium text-gray-900 dark:text-white">{item.product_name}</h4>
                                         {item.modifiers && item.modifiers.length > 0 && (
-                                            <div className="mt-1 space-y-1">
+                                            <div className="mt-2 space-y-1 bg-gray-50 dark:bg-zinc-800 p-2 rounded-md border border-gray-100 dark:border-zinc-700">
+                                                <p className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-1">Extras / Modificadores:</p>
                                                 {item.modifiers.map((mod: { id: string; modifier_name: string; additional_price: number }) => (
-                                                    <div key={mod.id} className="text-xs text-gray-500 flex items-center gap-1">
-                                                        <span className="w-1.5 h-1.5 rounded-full bg-gray-300"></span>
-                                                        {mod.modifier_name}
-                                                        {mod.additional_price > 0 && <span className="font-semibold text-gray-700 dark:text-gray-300">(+${mod.additional_price.toLocaleString()})</span>}
+                                                    <div key={mod.id} className="text-sm text-gray-700 dark:text-gray-300 flex items-center gap-1.5">
+                                                        <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 shrink-0"></span>
+                                                        <span className="font-medium">{mod.modifier_name}</span>
+                                                        {mod.additional_price > 0 && <span className="text-indigo-600 dark:text-indigo-400 font-bold">(+${mod.additional_price.toLocaleString()})</span>}
                                                     </div>
                                                 ))}
                                             </div>
@@ -337,13 +349,22 @@ export default function OrderDetailModal({ order, onClose, onUpdate }: OrderDeta
                         </>
                     ) : (
                         nextStatus && (
-                            <button
-                                onClick={handleNextStatus}
-                                disabled={updating}
-                                className="flex-1 px-4 py-3 bg-slate-900 dark:bg-indigo-600 hover:bg-slate-800 dark:hover:bg-indigo-700 text-white font-bold rounded-xl shadow-lg transition-all disabled:opacity-50 flex items-center justify-center gap-2"
-                            >
-                                {updating ? 'Actualizando...' : NEXT_STATUS_LABELS[order.status]}
-                            </button>
+                            <>
+                                <button
+                                    onClick={handleCancel}
+                                    disabled={updating}
+                                    className="flex-1 px-4 py-3 bg-red-100 hover:bg-red-200 text-red-700 dark:bg-red-900/30 dark:hover:bg-red-900/50 dark:text-red-300 font-bold rounded-xl transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                                >
+                                    Cancelar
+                                </button>
+                                <button
+                                    onClick={handleNextStatus}
+                                    disabled={updating}
+                                    className="flex-[2] px-4 py-3 bg-slate-900 dark:bg-indigo-600 hover:bg-slate-800 dark:hover:bg-indigo-700 text-white font-bold rounded-xl shadow-lg transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                                >
+                                    {updating ? 'Actualizando...' : NEXT_STATUS_LABELS[order.status]}
+                                </button>
+                            </>
                         )
                     )}
                 </div>

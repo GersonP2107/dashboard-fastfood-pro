@@ -2,9 +2,10 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { DashboardOrder, OrderStatus } from "@/lib/types";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, unstable_noStore as noStore } from "next/cache";
 
 export async function getOrders(businessmanId: string) {
+    noStore();
     const supabase = await createClient();
 
     // We select *, and join related tables if needed
@@ -15,7 +16,7 @@ export async function getOrders(businessmanId: string) {
             *,
             order_items (
                 *,
-                order_item_modifiers (*)
+                modifiers:order_item_modifiers (*)
             )
         `)
         .eq("businessman_id", businessmanId)
@@ -34,7 +35,7 @@ export async function updateOrderStatus(orderId: string, status: OrderStatus) {
     const supabase = await createClient();
 
     // Map UI status (Spanish) to DB status (English)
-    const statusMap: Record<OrderStatus, string> = {
+    const statusMap: Partial<Record<OrderStatus, string>> = {
         'pendiente': 'pending',
         'confirmado': 'confirmed',
         'preparando': 'preparing',

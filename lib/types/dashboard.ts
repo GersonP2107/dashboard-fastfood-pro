@@ -85,7 +85,7 @@ export interface SalesTrendPoint {
 }
 
 // Order Filter Options
-export type OrderStatus = 'pendiente' | 'confirmado' | 'preparando' | 'listo' | 'en_camino' | 'entregado' | 'cancelado'
+export type OrderStatus = 'pendiente' | 'confirmado' | 'preparando' | 'listo' | 'en_camino' | 'entregado' | 'cancelado' | 'pending' | 'confirmed' | 'preparing' | 'ready' | 'en_route' | 'delivered' | 'cancelled'
 export type PaymentMethod = 'efectivo' | 'transferencia' | 'tarjeta'
 
 export interface OrderFilters {

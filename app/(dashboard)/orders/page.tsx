@@ -5,7 +5,7 @@ import { createClient } from '@/lib/supabase/client'
 import { DashboardOrder, OrderStatus } from '@/lib/types'
 import { formatDistanceToNow } from 'date-fns'
 import { es } from 'date-fns/locale'
-import { Bell, Clock, DollarSign, Package, CheckCircle, XCircle } from 'lucide-react'
+import { Bell, Clock, DollarSign, Package, CheckCircle, XCircle, Wifi, WifiOff, RefreshCw } from 'lucide-react'
 import OrderDetailModal from '@/components/orders/OrderDetailModal'
 import OrderKanbanCard from '@/components/orders/OrderKanbanCard'
 import { getCurrentBusinessman } from '@/lib/actions/users'
@@ -26,12 +26,19 @@ const STATUS_TABS: { label: string; value: OrderStatus | 'all' }[] = [
 
 const STATUS_COLORS: Record<OrderStatus, string> = {
     pendiente: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
+    pending: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
     confirmado: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
+    confirmed: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
     preparando: 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200',
+    preparing: 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200',
     listo: 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200',
+    ready: 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200',
     en_camino: 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200',
+    en_route: 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200',
     entregado: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
+    delivered: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
     cancelado: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
+    cancelled: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
 }
 
 export default function OrdersPage() {
@@ -42,6 +49,8 @@ export default function OrdersPage() {
 
     const [loading, setLoading] = useState(true)
     const [businessId, setBusinessId] = useState<string | null>(null)
+    const [isConnected, setIsConnected] = useState(false)
+    const [lastUpdated, setLastUpdated] = useState<Date | null>(null)
     const supabase = createClient()
 
     useEffect(() => {
@@ -50,18 +59,23 @@ export default function OrdersPage() {
 
     const initializePage = async () => {
         try {
+            console.log('Initializing Orders Page...')
             const business = await getCurrentBusinessman()
-            if (!business) return
+            if (!business) {
+                console.error('No business found for current user.')
+                return
+            }
+            console.log('Business found:', business.id)
 
             setBusinessId(business.id)
 
             // Initial fetch using server action
-            const initialOrders = await getOrders(business.id)
-            setOrders(initialOrders)
+            await refreshOrders(business.id)
 
             // Subscribe to real-time updates
+            console.log('Subscribing to realtime channel for businessman:', business.id)
             const channel = supabase
-                .channel('orders-channel')
+                .channel(`orders-${business.id}`)
                 .on(
                     'postgres_changes',
                     {
@@ -71,6 +85,7 @@ export default function OrdersPage() {
                         filter: `businessman_id=eq.${business.id}`
                     },
                     (payload) => {
+                        console.log('Realtime INSERT received:', payload)
                         const newOrder = payload.new as DashboardOrder
                         refreshOrders(business.id)
                         showNotification(newOrder)
@@ -85,13 +100,24 @@ export default function OrdersPage() {
                         filter: `businessman_id=eq.${business.id}`
                     },
                     (payload) => {
+                        console.log('Realtime UPDATE received:', payload)
                         refreshOrders(business.id)
                     }
                 )
-                .subscribe()
+                .subscribe((status) => {
+                    console.log('Subscription status:', status)
+                    setIsConnected(status === 'SUBSCRIBED')
+                })
+
+            // Fallback polling every 45 seconds to ensure data consistency
+            const intervalId = setInterval(() => {
+                console.log('Polling for updates...')
+                refreshOrders(business.id)
+            }, 45000)
 
             return () => {
                 supabase.removeChannel(channel)
+                clearInterval(intervalId)
             }
         } catch (error) {
             console.error('Error initializing orders page:', error)
@@ -103,6 +129,7 @@ export default function OrdersPage() {
     const refreshOrders = async (bId: string) => {
         const latestOrders = await getOrders(bId)
         setOrders(latestOrders)
+        setLastUpdated(new Date())
         router.refresh()
     }
 
@@ -192,7 +219,7 @@ export default function OrdersPage() {
         {
             id: 'pendiente',
             title: 'Nuevos',
-            orders: orders.filter(o => o.status === 'pendiente'),
+            orders: orders.filter(o => o.status === 'pendiente' || o.status === 'pending'),
             color: 'bg-zinc-100 dark:bg-zinc-800/50 border-zinc-200 dark:border-zinc-700',
             iconColor: 'text-zinc-600 dark:text-zinc-400',
             borderColor: 'border-t-4 border-t-zinc-400'
@@ -234,9 +261,30 @@ export default function OrdersPage() {
     return (
         <div className="h-[calc(100vh-8rem)] flex flex-col">
             <div className="flex items-center justify-between mb-4 px-1">
-                <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Tablero de Control</h1>
                 <div className="flex items-center gap-4">
-                    {/* Summary Stats could go here */}
+                    <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Tablero de Control</h1>
+                    <div className={`flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium border ${isConnected
+                            ? 'bg-green-50 text-green-700 border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800'
+                            : 'bg-red-50 text-red-700 border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800'
+                        }`}>
+                        {isConnected ? <Wifi className="w-3 h-3" /> : <WifiOff className="w-3 h-3" />}
+                        {isConnected ? 'En vivo' : 'Desconectado'}
+                    </div>
+                </div>
+                <div className="flex items-center gap-4">
+                    {lastUpdated && (
+                        <div className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
+                            <Clock className="w-3 h-3" />
+                            Actualizado: {lastUpdated.toLocaleTimeString()}
+                        </div>
+                    )}
+                    <button
+                        onClick={() => businessId && refreshOrders(businessId)}
+                        className="p-2 text-gray-500 hover:text-indigo-600 hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-full transition-colors"
+                        title="Actualizar ahora"
+                    >
+                        <RefreshCw className="w-4 h-4" />
+                    </button>
                 </div>
             </div>
 

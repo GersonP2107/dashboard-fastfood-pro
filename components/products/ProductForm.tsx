@@ -6,6 +6,7 @@ import { createProduct, updateProduct } from "@/lib/actions/products";
 import { createClient } from "@/lib/supabase/client";
 import { Loader2, Upload, X } from "lucide-react";
 import Image from "next/image";
+import ProductModifiersManager from "./ProductModifiersManager";
 
 interface ProductFormProps {
     categories: Category[];
@@ -233,6 +234,14 @@ export default function ProductForm({ categories, product, onSuccess, onCancel, 
                     Available for order
                 </label>
             </div>
+
+            {product && (
+                <ProductModifiersManager
+                    productId={product.id}
+                    businessmanId={businessmanId}
+                    initialProductModifiers={product.product_modifiers || []}
+                />
+            )}
 
             <div className="flex justify-end gap-3 pt-4">
                 <button

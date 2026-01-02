@@ -1,7 +1,7 @@
 import { DashboardOrder, OrderStatus } from '@/lib/types'
 import { formatDistanceToNow } from 'date-fns'
 import { es } from 'date-fns/locale'
-import { Clock, DollarSign, Package, Phone, AlertTriangle, CreditCard, ChevronRight, X } from 'lucide-react'
+import { Clock, DollarSign, Package, Phone, AlertTriangle, CreditCard, ChevronRight, X, Bike, Store, MapPin } from 'lucide-react'
 import { motion } from 'framer-motion'
 
 interface OrderKanbanCardProps {
@@ -11,8 +11,8 @@ interface OrderKanbanCardProps {
 }
 
 export default function OrderKanbanCard({ order, onStatusUpdate, onClick }: OrderKanbanCardProps) {
-    const isTransfer = order.payment_method === 'transferencia' || order.payment_method === 'transfer'
-    const isCash = order.payment_method === 'efectivo' || order.payment_method === 'cash'
+    const isTransfer = order.payment_method === 'transferencia'
+    const isCash = order.payment_method === 'efectivo'
 
     const getProductSummary = () => {
         if (!order.order_items || order.order_items.length === 0) return 'Sin productos'
@@ -71,15 +71,34 @@ export default function OrderKanbanCard({ order, onStatusUpdate, onClick }: Orde
                 <span className="font-bold text-gray-900 dark:text-white">${order.total.toLocaleString()}</span>
             </div>
 
-            {/* Payment Badge (Only show if needing verify or strict cash) */}
-            <div className="mb-3">
-                {isTransfer ? (
-                    <div className="flex items-center gap-1 text-xs font-bold text-yellow-600 dark:text-yellow-500 bg-yellow-50 dark:bg-yellow-900/20 px-2 py-1 rounded">
-                        <AlertTriangle className="w-3 h-3" /> VERIFICAR PAGO
+            {/* Badges Container */}
+            <div className="mb-3 flex flex-wrap gap-2">
+                {/* Delivery Type Badge */}
+                {order.delivery_type === 'delivery' ? (
+                    <div className="flex items-center gap-1 text-xs font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 px-2 py-1 rounded border border-blue-100 dark:border-blue-900/30">
+                        <Bike className="w-3 h-3" /> DOMICILIO
                     </div>
                 ) : (
-                    <div className="flex items-center gap-1 text-xs text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/20 px-2 py-1 rounded">
+                    <div className="flex items-center gap-1 text-xs font-bold text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/20 px-2 py-1 rounded border border-orange-100 dark:border-orange-900/30">
+                        <Store className="w-3 h-3" /> RECOGER
+                    </div>
+                )}
+
+                {/* Payment Badge */}
+                {isTransfer ? (
+                    <div className="flex items-center gap-1 text-xs font-bold text-yellow-600 dark:text-yellow-500 bg-yellow-50 dark:bg-yellow-900/20 px-2 py-1 rounded border border-yellow-100 dark:border-yellow-900/30">
+                        <AlertTriangle className="w-3 h-3" /> VERIFICAR
+                    </div>
+                ) : (
+                    <div className="flex items-center gap-1 text-xs text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/20 px-2 py-1 rounded border border-green-100 dark:border-green-900/30">
                         <DollarSign className="w-3 h-3" /> Efectivo
+                    </div>
+                )}
+
+                {/* Modifiers Badge */}
+                {order.order_items?.some(item => item.modifiers && item.modifiers.length > 0) && (
+                    <div className="flex items-center gap-1 text-xs font-bold text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/20 px-2 py-1 rounded border border-purple-100 dark:border-purple-900/30">
+                        <AlertTriangle className="w-3 h-3" /> CON EXTRAS
                     </div>
                 )}
             </div>
@@ -136,6 +155,6 @@ export default function OrderKanbanCard({ order, onStatusUpdate, onClick }: Orde
                     </button>
                 )}
             </div>
-        </motion.div>
+        </motion.div >
     )
 }

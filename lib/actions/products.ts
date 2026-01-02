@@ -12,7 +12,7 @@ export async function getProducts(businessmanId: string) {
     const supabase = await createClient();
     const { data, error } = await supabase
         .from("products")
-        .select("*, category:categories(*)")
+        .select("*, category:categories(*), product_modifiers(*, modifier:modifiers(*))")
         .eq("businessman_id", businessmanId)
         .is("deleted_at", null)
         .order("created_at", { ascending: false });

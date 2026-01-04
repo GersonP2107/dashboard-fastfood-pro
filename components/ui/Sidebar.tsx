@@ -3,15 +3,16 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { LayoutDashboard, ShoppingBag, ListOrdered, Settings, LogOut } from 'lucide-react'
+import { LayoutDashboard, ShoppingBag, ListOrdered, Settings, LogOut, Package } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 
 const navigation = [
     { name: 'Dashboard', href: '/', icon: LayoutDashboard },
-    { name: 'Products', href: '/products', icon: ShoppingBag },
-    { name: 'Orders', href: '/orders', icon: ListOrdered },
-    { name: 'Settings', href: '/settings', icon: Settings },
+    { name: 'Productos', href: '/products', icon: ShoppingBag },
+    { name: 'Ordenes', href: '/orders', icon: ListOrdered },
+    { name: 'Configuración', href: '/settings', icon: Settings },
+    { name: 'Inventario', href: '/inventory', icon: Package },
 ]
 
 function classNames(...classes: string[]) {

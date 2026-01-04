@@ -157,3 +157,27 @@ export async function toggleProductStatus(id: string, currentStatus: boolean) {
     revalidatePath("/products");
     return { success: true };
 }
+
+export async function updateProductStock(id: string, quantity: number | null) {
+    const supabase = await createClient();
+
+    const updates = {
+        stock_quantity: quantity,
+        limited_stock: quantity !== null, // Automatically set limited_stock if quantity is provided
+        updated_at: new Date().toISOString(),
+    };
+
+    const { error } = await supabase
+        .from("products")
+        .update(updates)
+        .eq("id", id);
+
+    if (error) {
+        console.error("Error updating product stock:", error);
+        return { error: error.message };
+    }
+
+    revalidatePath("/inventory");
+    revalidatePath("/products");
+    return { success: true };
+}

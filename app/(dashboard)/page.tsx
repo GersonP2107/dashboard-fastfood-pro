@@ -2,13 +2,16 @@
 
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { DashboardStats, DashboardOrder } from '@/lib/types'
+import { DashboardStats, DashboardOrder, SalesTrendPoint, TopProduct } from '@/lib/types'
 import { DollarSign, ShoppingCart, TrendingUp, CheckCircle, Clock, Package } from 'lucide-react'
 import { formatDistanceToNow } from 'date-fns'
 import { es } from 'date-fns/locale'
 import Link from 'next/link'
 import { getCurrentBusinessman } from '@/lib/actions/users'
+import { getDashboardStats, getSalesTrend, getTopProducts } from '@/lib/actions/analytics'
 import { motion } from 'framer-motion'
+import SalesTrendChart from '@/components/dashboard/SalesTrendChart'
+import TopProductsList from '@/components/dashboard/TopProductsList'
 
 export default function DashboardHome() {
   const [stats, setStats] = useState<DashboardStats>({
@@ -20,6 +23,8 @@ export default function DashboardHome() {
     today_sales: 0,
   })
   const [recentOrders, setRecentOrders] = useState<DashboardOrder[]>([])
+  const [salesTrend, setSalesTrend] = useState<SalesTrendPoint[]>([])
+  const [topProducts, setTopProducts] = useState<TopProduct[]>([])
   const [loading, setLoading] = useState(true)
   const supabase = createClient()
 
@@ -32,66 +37,32 @@ export default function DashboardHome() {
       const business = await getCurrentBusinessman();
       if (!business) return;
 
-      // Get current month start
-      const now = new Date()
-      const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString()
-      const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString()
+      // Parallel data fetching using Server Actions
+      const [
+        dashboardStats,
+        trendData,
+        topProductsData,
+        { data: recent }
+      ] = await Promise.all([
+        getDashboardStats(business.id),
+        getSalesTrend(business.id),
+        getTopProducts(business.id),
+        // Keep simple query for recent orders or move to action if needed. 
+        // For consistency/speed let's use the local query for now as it wasn't the main focus, 
+        // but ideally should be an action. Use DB query for simplicity here.
+        supabase
+          .from('orders')
+          .select('*')
+          .eq('businessman_id', business.id)
+          .order('created_at', { ascending: false })
+          .limit(5)
+      ]);
 
-      // Fetch orders for the month
-      const { data: monthOrders, error: monthError } = await supabase
-        .from('orders')
-        .select('total, status, created_at')
-        .eq('businessman_id', business.id)
-        .gte('created_at', monthStart)
+      setStats(dashboardStats);
+      setSalesTrend(trendData);
+      setTopProducts(topProductsData);
+      setRecentOrders((recent as DashboardOrder[]) || []);
 
-      if (monthError) throw monthError
-
-      // Fetch today's orders
-      const { data: todayOrders, error: todayError } = await supabase
-        .from('orders')
-        .select('total')
-        .eq('businessman_id', business.id)
-        .gte('created_at', todayStart)
-        .neq('status', 'cancelado')
-
-      if (todayError) throw todayError
-
-      // Fetch recent orders
-      const { data: recent, error: recentError } = await supabase
-        .from('orders')
-        .select('*')
-        .eq('businessman_id', business.id)
-        .order('created_at', { ascending: false })
-        .limit(5)
-
-      if (recentError) throw recentError
-
-      // Calculate stats
-      const deliveredOrders = monthOrders?.filter((o) => o.status === 'entregado') || []
-      const totalSales = deliveredOrders.reduce((sum, o) => sum + o.total, 0)
-      const totalOrders = deliveredOrders.length
-      const avgOrderValue = totalOrders > 0 ? totalSales / totalOrders : 0
-
-      const totalOrdersIncludingCancelled = monthOrders?.length || 0
-      const cancelledOrders = monthOrders?.filter((o) => o.status === 'cancelado').length || 0
-      const acceptanceRate =
-        totalOrdersIncludingCancelled > 0
-          ? ((totalOrdersIncludingCancelled - cancelledOrders) / totalOrdersIncludingCancelled) * 100
-          : 100
-
-      const pendingCount = monthOrders?.filter((o) => o.status === 'pendiente').length || 0
-      const todaySales = todayOrders?.reduce((sum, o) => sum + o.total, 0) || 0
-
-      setStats({
-        total_sales_month: totalSales,
-        total_orders_month: totalOrders,
-        average_order_value: avgOrderValue,
-        acceptance_rate: acceptanceRate,
-        pending_orders: pendingCount,
-        today_sales: todaySales,
-      })
-
-      setRecentOrders(recent || [])
     } catch (error) {
       console.error('Error fetching dashboard data:', error)
     } finally {
@@ -205,6 +176,21 @@ export default function DashboardHome() {
             </div>
           </motion.div>
         ))}
+      </div>
+
+      {/* Charts Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Sales Chart (2/3 width) */}
+        <motion.div variants={itemVariants} className="lg:col-span-2 bg-white dark:bg-zinc-900 shadow rounded-lg p-6">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Ventas: Últimos 7 días</h2>
+          <SalesTrendChart data={salesTrend} />
+        </motion.div>
+
+        {/* Top Products (1/3 width) */}
+        <motion.div variants={itemVariants} className="bg-white dark:bg-zinc-900 shadow rounded-lg p-6">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Top Productos (Mes)</h2>
+          <TopProductsList products={topProducts} />
+        </motion.div>
       </div>
 
       {/* Recent Orders */}

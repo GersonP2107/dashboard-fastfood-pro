@@ -3,15 +3,18 @@
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { getCurrentBusinessman } from '@/lib/actions/users'
+import { getZones } from '@/lib/actions/tables'
 import { getDeliveryZones } from '@/lib/actions/settings'
-import { Businessman, DeliveryZone } from '@/lib/types'
+import { Zone, Businessman, DeliveryZone } from '@/lib/types'
+import TableManager from '@/components/settings/TableManager'
 import BusinessProfileForm from '@/components/settings/BusinessProfileForm'
 import DeliveryZonesManager from '@/components/settings/DeliveryZonesManager'
-import { Store, Truck } from 'lucide-react'
+import { Store, Truck, Layout } from 'lucide-react'
 
 export default function SettingsPage() {
     const [business, setBusiness] = useState<Businessman | null>(null)
     const [zones, setZones] = useState<DeliveryZone[]>([])
+    const [tableZones, setTableZones] = useState<Zone[]>([])
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
@@ -21,9 +24,12 @@ export default function SettingsPage() {
                 if (businessData) {
                     setBusiness(businessData)
                     console.log("Business loaded:", businessData.id)
-                    const zonesData = await getDeliveryZones(businessData.id)
-                    console.log("Zones loaded in page:", zonesData)
+                    const [zonesData, tableZonesData] = await Promise.all([
+                        getDeliveryZones(businessData.id),
+                        getZones(businessData.id)
+                    ]);
                     setZones(zonesData)
+                    setTableZones(tableZonesData)
                 }
             } catch (error) {
                 console.error('Error loading settings:', error)
@@ -53,19 +59,31 @@ export default function SettingsPage() {
             <div className="mb-8">
                 <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Configuración</h1>
                 <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-                    Administra la información de tu negocio y opciones de entrega.
+                    Administra la información de tu negocio, mesas y opciones de entrega.
                 </p>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Profile Section */}
-                <div className="lg:col-span-2">
+                <div className="lg:col-span-2 space-y-6">
                     <div className="bg-white dark:bg-zinc-900 shadow rounded-lg p-6">
                         <div className="flex items-center gap-2 mb-6 text-indigo-600 dark:text-indigo-400 border-b border-gray-100 dark:border-gray-800 pb-4">
                             <Store className="h-5 w-5" />
                             <h2 className="text-lg font-semibold">Perfil del Negocio</h2>
                         </div>
                         <BusinessProfileForm businessman={business} />
+                    </div>
+
+                    {/* Table Manager Section */}
+                    <div className="bg-white dark:bg-zinc-900 shadow rounded-lg p-6">
+                        <div className="flex items-center gap-2 mb-6 text-indigo-600 dark:text-indigo-400 border-b border-gray-100 dark:border-gray-800 pb-4">
+                            <Layout className="h-5 w-5" />
+                            <h2 className="text-lg font-semibold">Mesas y Zonas</h2>
+                        </div>
+                        <TableManager
+                            businessmanId={business.id}
+                            initialZones={tableZones}
+                        />
                     </div>
                 </div>
 

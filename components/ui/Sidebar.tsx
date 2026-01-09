@@ -3,7 +3,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { LayoutDashboard, ShoppingBag, ListOrdered, Settings, LogOut, Package } from 'lucide-react'
+import { LayoutDashboard, ShoppingBag, ListOrdered, Settings, LogOut, Package, DollarSign } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 
@@ -13,6 +13,7 @@ const navigation = [
     { name: 'Ordenes', href: '/orders', icon: ListOrdered },
     { name: 'Configuración', href: '/settings', icon: Settings },
     { name: 'Inventario', href: '/inventory', icon: Package },
+    { name: 'Finanzas', href: '/finance', icon: DollarSign },
 ]
 
 function classNames(...classes: string[]) {

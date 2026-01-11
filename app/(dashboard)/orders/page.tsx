@@ -5,53 +5,118 @@ import { createClient } from '@/lib/supabase/client'
 import { DashboardOrder, OrderStatus } from '@/lib/types'
 import { formatDistanceToNow } from 'date-fns'
 import { es } from 'date-fns/locale'
-import { Bell, Clock, DollarSign, Package, CheckCircle, XCircle, Wifi, WifiOff, RefreshCw } from 'lucide-react'
+import { Bell, Clock, Package, Wifi, WifiOff, RefreshCw, Volume2, Eraser, Filter } from 'lucide-react'
 import OrderDetailModal from '@/components/orders/OrderDetailModal'
 import OrderKanbanCard from '@/components/orders/OrderKanbanCard'
 import { getCurrentBusinessman } from '@/lib/actions/users'
 import { getOrders, updateOrderStatus } from '@/lib/actions/orders'
-import { motion, AnimatePresence } from 'framer-motion'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
-import useSound from 'use-sound'
+import {
+    DndContext,
+    DragOverlay,
+    useSensor,
+    useSensors,
+    MouseSensor,
+    TouchSensor,
+    DragStartEvent,
+    DragEndEvent,
+    defaultDropAnimationSideEffects,
+    DropAnimation,
+} from '@dnd-kit/core';
+import { useDraggable, useDroppable } from '@dnd-kit/core';
+import { CSS } from '@dnd-kit/utilities';
 
-const STATUS_TABS: { label: string; value: OrderStatus | 'all' }[] = [
-    { label: 'Todos', value: 'all' },
-    { label: 'Pendientes', value: 'pendiente' },
-    { label: 'Preparando', value: 'preparando' },
-    { label: 'Listos', value: 'en_camino' },
-    { label: 'Entregados', value: 'entregado' },
-    { label: 'Cancelados', value: 'cancelado' },
-]
+// --- Draggable Card Wrapper ---
+function DraggableOrderCard({ order, onStatusUpdate, onClick }: {
+    order: DashboardOrder,
+    onStatusUpdate: (id: string, status: OrderStatus, e?: React.MouseEvent) => void,
+    onClick: (order: DashboardOrder) => void
+}) {
+    const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
+        id: order.id,
+        data: { order }
+    });
 
-const STATUS_COLORS: Record<OrderStatus, string> = {
-    pendiente: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
-    pending: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
-    confirmado: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
-    confirmed: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
-    preparando: 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200',
-    preparing: 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200',
-    listo: 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200',
-    ready: 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200',
-    en_camino: 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200',
-    en_route: 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200',
-    entregado: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
-    delivered: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
-    cancelado: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
-    cancelled: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
+    const style = {
+        transform: CSS.Translate.toString(transform),
+        opacity: isDragging ? 0.5 : 1,
+        touchAction: 'none', // Important for touch devices
+    };
+
+    return (
+        <div ref={setNodeRef} style={style} {...listeners} {...attributes} className="touch-none">
+            <OrderKanbanCard
+                order={order}
+                onStatusUpdate={onStatusUpdate}
+                onClick={onClick}
+            />
+        </div>
+    );
+}
+
+// --- Droppable Column Wrapper ---
+function KanbanColumn({ col, dishCount, children }: { col: any, dishCount: number, children: React.ReactNode }) {
+    const { setNodeRef } = useDroppable({
+        id: col.id,
+    });
+
+    return (
+        <div ref={setNodeRef} className={`flex-1 min-w-[260px] flex flex-col bg-white dark:bg-zinc-900 rounded-lg shadow-sm border border-gray-200 dark:border-zinc-800 ${col.borderColor}`}>
+            {/* Column Header */}
+            <div className={`p-3 border-b border-gray-100 dark:border-zinc-800 flex flex-col gap-1 bg-gray-50/50 dark:bg-zinc-800/30`}>
+                <div className="flex items-center justify-between">
+                    <h2 className="font-bold text-gray-800 dark:text-gray-200 text-sm uppercase tracking-wide">{col.title}</h2>
+                    <span className={`text-xs px-2 py-0.5 rounded-full font-bold ${col.color} ${col.iconColor}`}>
+                        {col.orders.length}
+                    </span>
+                </div>
+                <div className="text-xs text-gray-500 dark:text-gray-500 font-medium">
+                    {dishCount} Platos
+                </div>
+            </div>
+
+            {/* Column Content */}
+            <div className="flex-1 overflow-y-auto p-2 space-y-2 custom-scrollbar bg-gray-50/30 dark:bg-zinc-900/50">
+                {col.orders.length === 0 ? (
+                    <div className="text-center py-10 opacity-40">
+                        <Package className="mx-auto h-8 w-8 mb-2" />
+                        <span className="text-xs">Sin pedidos</span>
+                    </div>
+                ) : (
+                    children
+                )}
+            </div>
+        </div>
+    )
 }
 
 export default function OrdersPage() {
     const router = useRouter()
     const [orders, setOrders] = useState<DashboardOrder[]>([])
-    // filteredOrders and selectedTab removed as Kanban uses columns directly derived from 'orders'
     const [selectedOrder, setSelectedOrder] = useState<DashboardOrder | null>(null)
+    const [activeId, setActiveId] = useState<string | null>(null);
+    const [activeOrder, setActiveOrder] = useState<DashboardOrder | null>(null);
 
     const [loading, setLoading] = useState(true)
     const [businessId, setBusinessId] = useState<string | null>(null)
     const [isConnected, setIsConnected] = useState(false)
     const [lastUpdated, setLastUpdated] = useState<Date | null>(null)
     const supabase = createClient()
+
+    const sensors = useSensors(
+        useSensor(MouseSensor, {
+            activationConstraint: {
+                distance: 10, // Enable click on buttons without dragging immediately
+            },
+        }),
+        useSensor(TouchSensor, {
+            activationConstraint: {
+                delay: 250, // Press and hold for 250ms to drag on touch
+                tolerance: 5,
+            },
+        })
+    );
 
     useEffect(() => {
         initializePage()
@@ -65,15 +130,14 @@ export default function OrdersPage() {
                 console.error('No business found for current user.')
                 return
             }
-            console.log('Business found:', business.id)
+            // console.log('Business found:', business.id)
 
             setBusinessId(business.id)
 
-            // Initial fetch using server action
+            // Initial fetch
             await refreshOrders(business.id)
 
             // Subscribe to real-time updates
-            console.log('Subscribing to realtime channel for businessman:', business.id)
             const channel = supabase
                 .channel(`orders-${business.id}`)
                 .on(
@@ -85,7 +149,6 @@ export default function OrdersPage() {
                         filter: `businessman_id=eq.${business.id}`
                     },
                     (payload) => {
-                        console.log('Realtime INSERT received:', payload)
                         const newOrder = payload.new as DashboardOrder
                         refreshOrders(business.id)
                         showNotification(newOrder)
@@ -99,19 +162,15 @@ export default function OrdersPage() {
                         table: 'orders',
                         filter: `businessman_id=eq.${business.id}`
                     },
-                    (payload) => {
-                        console.log('Realtime UPDATE received:', payload)
+                    () => {
                         refreshOrders(business.id)
                     }
                 )
                 .subscribe((status) => {
-                    console.log('Subscription status:', status)
                     setIsConnected(status === 'SUBSCRIBED')
                 })
 
-            // Fallback polling every 45 seconds to ensure data consistency
             const intervalId = setInterval(() => {
-                console.log('Polling for updates...')
                 refreshOrders(business.id)
             }, 45000)
 
@@ -133,10 +192,18 @@ export default function OrdersPage() {
         router.refresh()
     }
 
-    const [playNotification] = useSound('/notification.mp3')
+    const [audio] = useState<HTMLAudioElement | null>(typeof window !== 'undefined' ? new Audio('/notification.mp3') : null)
+
+    const playNotificationSound = () => {
+        if (audio) {
+            audio.currentTime = 0
+            audio.play().catch(e => console.error("Error playing sound:", e))
+        }
+    }
 
     const showNotification = (order: DashboardOrder) => {
-        playNotification()
+        console.log("Showing notification for order:", order.id)
+        playNotificationSound()
 
         toast.custom((t) => (
             <div className="bg-white dark:bg-zinc-800 rounded-lg shadow-lg p-4 border-l-4 border-indigo-500 w-full max-w-sm cursor-pointer hover:bg-gray-50 dark:hover:bg-zinc-700 transition-colors" onClick={() => {
@@ -174,19 +241,73 @@ export default function OrdersPage() {
     const handleStatusUpdate = async (orderId: string, newStatus: OrderStatus, e?: React.MouseEvent) => {
         e?.stopPropagation()
 
-        // Optimistic update locally could be done here if needed
+        // Optimistic update
+        setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status: newStatus } : o))
+
         const result = await updateOrderStatus(orderId, newStatus)
 
         if (result.success && businessId) {
-            refreshOrders(businessId)
+            // refreshOrders(businessId) // Not strictly needed if optimistic update works, but good for consistency
         } else {
-            alert('Error updating order status')
+            alert(`Error updating order status: ${result.error || 'Unknown error'}`)
+            if (businessId) refreshOrders(businessId) // Revert on error
         }
     }
 
-    const getElapsedTime = (createdAt: string) => {
-        return formatDistanceToNow(new Date(createdAt), { addSuffix: true, locale: es })
-    }
+    // --- DnD Handlers ---
+    const handleDragStart = (event: DragStartEvent) => {
+        const { active } = event;
+        setActiveId(active.id as string);
+        setActiveOrder(active.data.current?.order || orders.find(o => o.id === active.id) || null);
+    };
+
+    const handleDragEnd = async (event: DragEndEvent) => {
+        const { active, over } = event;
+
+        if (over && active.id !== over.id) {
+            const orderId = active.id as string;
+            // The droppable id is the column id (e.g., 'pendiente', 'preparacion')
+            // Map column IDs to OrderStatus. 
+            // Note: 'preparacion' in columns maps to 'preparando' status?
+            // Let's check the columns map below.
+
+            // Map the internal column ID to actual OrderStatus
+            const columnIdToStatus: Record<string, OrderStatus> = {
+                'pendiente': 'pendiente',
+                'preparacion': 'preparando',
+                'listo': 'listo',
+                'en_camino': 'en_camino',
+                'entregado': 'entregado'
+            };
+
+            const newStatus = columnIdToStatus[over.id as string];
+
+            if (newStatus) {
+                // Check if status actually changed (ignoring same column drop)
+                const currentOrder = orders.find(o => o.id === orderId);
+                // Also check english mappings if needed, but we standardized on Spanish/mixed in types
+                // Ideally verify if the status is valid for the order.
+
+                if (currentOrder) {
+                    // Simple optimistic update happens in handleStatusUpdate
+                    await handleStatusUpdate(orderId, newStatus);
+                }
+            }
+        }
+
+        setActiveId(null);
+        setActiveOrder(null);
+    };
+
+    const dropAnimation: DropAnimation = {
+        sideEffects: defaultDropAnimationSideEffects({
+            styles: {
+                active: {
+                    opacity: '0.5',
+                },
+            },
+        }),
+    };
 
     if (loading) {
         return (
@@ -194,19 +315,6 @@ export default function OrdersPage() {
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
             </div>
         )
-    }
-
-    const containerVariants = {
-        hidden: { opacity: 0 },
-        visible: {
-            opacity: 1,
-            transition: { staggerChildren: 0.05 }
-        }
-    }
-
-    const itemVariants = {
-        hidden: { y: 20, opacity: 0 },
-        visible: { y: 0, opacity: 1 }
     }
 
     const getDishCount = (orders: DashboardOrder[]) => {
@@ -234,7 +342,7 @@ export default function OrdersPage() {
         },
         {
             id: 'listo',
-            title: 'Packing',
+            title: 'Listo',
             orders: orders.filter(o => ['listo', 'ready'].includes(o.status)),
             color: 'bg-orange-50 dark:bg-orange-900/10 border-orange-200 dark:border-orange-900/50',
             iconColor: 'text-orange-600 dark:text-orange-400',
@@ -243,7 +351,7 @@ export default function OrdersPage() {
         {
             id: 'en_camino',
             title: 'En Ruta',
-            orders: orders.filter(o => ['en_camino', 'en_route'].includes(o.status)),
+            orders: orders.filter(o => ['en_camino', 'en_route', 'on_way'].includes(o.status)),
             color: 'bg-blue-50 dark:bg-blue-900/10 border-blue-200 dark:border-blue-900/50',
             iconColor: 'text-blue-600 dark:text-blue-400',
             borderColor: 'border-t-4 border-t-blue-500'
@@ -251,7 +359,7 @@ export default function OrdersPage() {
         {
             id: 'entregado',
             title: 'Entregados',
-            orders: orders.filter(o => ['entregado', 'delivered'].includes(o.status)).slice(0, 5), // Keep history short
+            orders: orders.filter(o => ['entregado', 'delivered'].includes(o.status)).slice(0, 5),
             color: 'bg-green-50 dark:bg-green-900/10 border-green-200 dark:border-green-900/50',
             iconColor: 'text-green-600 dark:text-green-400',
             borderColor: 'border-t-4 border-t-green-500'
@@ -259,88 +367,81 @@ export default function OrdersPage() {
     ]
 
     return (
-        <div className="h-[calc(100vh-8rem)] flex flex-col">
-            <div className="flex items-center justify-between mb-4 px-1">
-                <div className="flex items-center gap-4">
-                    <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Tablero de Control</h1>
-                    <div className={`flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium border ${isConnected
+        <DndContext
+            sensors={sensors}
+            onDragStart={handleDragStart}
+            onDragEnd={handleDragEnd}
+        >
+            <div className="h-[calc(100vh-8rem)] flex flex-col">
+                <div className="flex items-center justify-between mb-4 px-1">
+                    <div className="flex items-center gap-4">
+                        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Tablero de Control</h1>
+                        <div className={`flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium border ${isConnected
                             ? 'bg-green-50 text-green-700 border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800'
                             : 'bg-red-50 text-red-700 border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800'
-                        }`}>
-                        {isConnected ? <Wifi className="w-3 h-3" /> : <WifiOff className="w-3 h-3" />}
-                        {isConnected ? 'En vivo' : 'Desconectado'}
+                            }`}>
+                            {isConnected ? <Wifi className="w-3 h-3" /> : <WifiOff className="w-3 h-3" />}
+                            {isConnected ? 'En vivo' : 'Desconectado'}
+                        </div>
+                    </div>
+                    <div className="flex items-center gap-4">
+                        {lastUpdated && (
+                            <div className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
+                                <Clock className="w-3 h-3" />
+                                Actualizado: {lastUpdated.toLocaleTimeString()}
+                            </div>
+                        )}
+                        <button
+                            onClick={() => businessId && refreshOrders(businessId)}
+                            className="p-2 text-gray-500 hover:text-indigo-600 hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-full transition-colors"
+                            title="Actualizar ahora"
+                        >
+                            <RefreshCw className="w-4 h-4" />
+                        </button>
                     </div>
                 </div>
-                <div className="flex items-center gap-4">
-                    {lastUpdated && (
-                        <div className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
-                            <Clock className="w-3 h-3" />
-                            Actualizado: {lastUpdated.toLocaleTimeString()}
+
+                <div className="flex-1 overflow-x-auto overflow-y-hidden pb-2">
+                    <div className="h-full flex gap-3 min-w-[1200px] px-1">
+                        {columns.map((col) => {
+                            const dishCount = getDishCount(col.orders)
+
+                            return (
+                                <KanbanColumn key={col.id} col={col} dishCount={dishCount}>
+                                    {col.orders.map((order) => (
+                                        <DraggableOrderCard
+                                            key={order.id}
+                                            order={order}
+                                            onStatusUpdate={handleStatusUpdate}
+                                            onClick={setSelectedOrder}
+                                        />
+                                    ))}
+                                </KanbanColumn>
+                            )
+                        })}
+                    </div>
+                </div>
+
+                <DragOverlay dropAnimation={dropAnimation}>
+                    {activeOrder ? (
+                        <div className="opacity-90 rotate-2 scale-105 cursor-grabbing">
+                            <OrderKanbanCard
+                                order={activeOrder}
+                                onStatusUpdate={() => { }} // No-op during drag
+                                onClick={() => { }}
+                            />
                         </div>
-                    )}
-                    <button
-                        onClick={() => businessId && refreshOrders(businessId)}
-                        className="p-2 text-gray-500 hover:text-indigo-600 hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-full transition-colors"
-                        title="Actualizar ahora"
-                    >
-                        <RefreshCw className="w-4 h-4" />
-                    </button>
-                </div>
+                    ) : null}
+                </DragOverlay>
+
+                {selectedOrder && (
+                    <OrderDetailModal
+                        order={selectedOrder}
+                        onClose={() => setSelectedOrder(null)}
+                        onUpdate={() => businessId && refreshOrders(businessId)}
+                    />
+                )}
             </div>
-
-            <div className="flex-1 overflow-x-auto overflow-y-hidden pb-2">
-                <div className="h-full flex gap-3 min-w-[1200px] px-1">
-                    {columns.map((col) => {
-                        const dishCount = getDishCount(col.orders)
-
-                        return (
-                            <div key={col.id} className={`flex-1 min-w-[260px] flex flex-col bg-white dark:bg-zinc-900 rounded-lg shadow-sm border border-gray-200 dark:border-zinc-800 ${col.borderColor}`}>
-                                {/* Column Header */}
-                                <div className={`p-3 border-b border-gray-100 dark:border-zinc-800 flex flex-col gap-1 bg-gray-50/50 dark:bg-zinc-800/30`}>
-                                    <div className="flex items-center justify-between">
-                                        <h2 className="font-bold text-gray-800 dark:text-gray-200 text-sm uppercase tracking-wide">{col.title}</h2>
-                                        <span className={`text-xs px-2 py-0.5 rounded-full font-bold ${col.color} ${col.iconColor}`}>
-                                            {col.orders.length}
-                                        </span>
-                                    </div>
-                                    <div className="text-xs text-gray-500 dark:text-gray-500 font-medium">
-                                        {dishCount} Pedidos
-                                    </div>
-                                </div>
-
-                                {/* Column Content */}
-                                <div className="flex-1 overflow-y-auto p-2 space-y-2 custom-scrollbar bg-gray-50/30 dark:bg-zinc-900/50">
-                                    <AnimatePresence mode="popLayout">
-                                        {col.orders.length === 0 ? (
-                                            <div className="text-center py-10 opacity-40">
-                                                <Package className="mx-auto h-8 w-8 mb-2" />
-                                                <span className="text-xs">Sin pedidos</span>
-                                            </div>
-                                        ) : (
-                                            col.orders.map((order) => (
-                                                <OrderKanbanCard
-                                                    key={order.id}
-                                                    order={order}
-                                                    onStatusUpdate={handleStatusUpdate}
-                                                    onClick={setSelectedOrder}
-                                                />
-                                            ))
-                                        )}
-                                    </AnimatePresence>
-                                </div>
-                            </div>
-                        )
-                    })}
-                </div>
-            </div>
-
-            {selectedOrder && (
-                <OrderDetailModal
-                    order={selectedOrder}
-                    onClose={() => setSelectedOrder(null)}
-                    onUpdate={() => businessId && refreshOrders(businessId)}
-                />
-            )}
-        </div>
+        </DndContext>
     )
 }

@@ -34,7 +34,7 @@ export default function TopProductsList({ products = [] }: TopProductsListProps)
                         </div>
                         <div className="text-right">
                             <span className="block font-bold text-gray-900 dark:text-white">
-                                {product.total_quantity} sold
+                                {product.total_quantity} vendidos
                             </span>
                             <span className="text-xs text-gray-500">
                                 ${product.total_revenue.toLocaleString()}

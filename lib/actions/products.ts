@@ -73,7 +73,11 @@ export async function createProduct(formData: FormData) {
         order: 0,
     };
 
-    const { error } = await supabase.from("products").insert(productData);
+    const { data, error } = await supabase
+        .from("products")
+        .insert(productData)
+        .select()
+        .single();
 
     if (error) {
         console.error("Error creating product:", error);
@@ -81,7 +85,7 @@ export async function createProduct(formData: FormData) {
     }
 
     revalidatePath("/products");
-    return { success: true };
+    return { success: true, product: data as Product };
 }
 
 export async function updateProduct(id: string, formData: FormData) {

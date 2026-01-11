@@ -152,6 +152,9 @@ export default function OrderDetailModal({ order, onClose, onUpdate }: OrderDeta
 
     const paymentStyle = getPaymentStyles(order.payment_method)
 
+    // Check if it's a POS/Dine-in order
+    const isDineIn = order.delivery_type === 'dine_in' || !!order.restaurant_tables
+
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 text-left">
             {/* Backdrop Blur */}
@@ -176,9 +179,11 @@ export default function OrderDetailModal({ order, onClose, onUpdate }: OrderDeta
                                         'bg-indigo-50 text-indigo-700 border-indigo-200'}`}>
                                 {STATUS_LABELS[order.status]}
                             </span>
-                            <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wide border ${paymentStyle.bg} ${paymentStyle.text} ${paymentStyle.border}`}>
-                                {order.payment_method}
-                            </span>
+                            {!isDineIn && (
+                                <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wide border ${paymentStyle.bg} ${paymentStyle.text} ${paymentStyle.border}`}>
+                                    {order.payment_method}
+                                </span>
+                            )}
                         </div>
                         <div className="flex items-center gap-1 text-sm text-gray-500 mt-1">
                             <Clock className="h-3.5 w-3.5" />
@@ -196,8 +201,8 @@ export default function OrderDetailModal({ order, onClose, onUpdate }: OrderDeta
                 {/* Scrollable Body */}
                 <div className="flex-1 overflow-y-auto p-6 space-y-8 custom-scrollbar">
 
-                    {/* Payment Warning Banner (If Pending) */}
-                    {!paymentConfirmed && (order.status === 'pendiente' || order.status === 'confirmado') && (
+                    {/* Payment Warning Banner (If Pending) - HIDE FOR DINE IN */}
+                    {!paymentConfirmed && !isDineIn && (order.status === 'pendiente' || order.status === 'confirmado') && (
                         <div className={`p-4 rounded-xl border flex items-center gap-4 ${paymentStyle.bg} ${paymentStyle.border}`}>
                             <div className={`p-2 rounded-full bg-white dark:bg-black/10 ${paymentStyle.text}`}>
                                 {paymentStyle.icon}
@@ -223,7 +228,7 @@ export default function OrderDetailModal({ order, onClose, onUpdate }: OrderDeta
                         </div>
                     )}
 
-                    {/* Customer & Delivery Grid */}
+                    {/* Customer & Delivery Grid - SIMPLIFIED FOR DINE IN */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {/* Customer Info */}
                         <div className="space-y-3">
@@ -237,35 +242,64 @@ export default function OrderDetailModal({ order, onClose, onUpdate }: OrderDeta
                                     </div>
                                     <div>
                                         <p className="font-medium text-gray-900 dark:text-white">{order.customer_name}</p>
-                                        <div className="flex items-center gap-2 text-sm text-gray-500">
-                                            <Phone className="h-3 w-3" />
-                                            {order.customer_phone}
-                                        </div>
+                                        {!isDineIn && (
+                                            <div className="flex items-center gap-2 text-sm text-gray-500">
+                                                <Phone className="h-3 w-3" />
+                                                {order.customer_phone}
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        {/* Delivery Info */}
+                        {/* Delivery Info OR Table Info */}
                         <div className="space-y-3">
                             <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 uppercase tracking-wider flex items-center gap-2">
-                                <MapPin className="h-4 w-4" /> Entrega
+                                <MapPin className="h-4 w-4" /> {isDineIn ? 'Ubicación' : 'Entrega'}
                             </h3>
                             <div className="bg-gray-50 dark:bg-zinc-800/50 p-4 rounded-xl border border-gray-100 dark:border-zinc-800 space-y-3 h-full text-sm">
-                                <div className="flex justify-between">
-                                    <span className="text-gray-500">Tipo:</span>
-                                    <span className="font-medium capitalize text-gray-900 dark:text-white">{order.delivery_type === 'pickup' ? 'Recoger en Tienda' : 'Domicilio'}</span>
-                                </div>
-                                {order.delivery_type === 'delivery' && (
-                                    <div className="flex justify-between items-start">
-                                        <span className="text-gray-500">Dirección:</span>
-                                        <span className="font-medium text-right text-gray-900 dark:text-white max-w-[60%]">{order.delivery_address || 'N/A'}</span>
+                                {isDineIn ? (
+                                    // Dine In / POS View
+                                    <div className="flex flex-col gap-2">
+                                        <div className="flex justify-between items-center">
+                                            <span className="text-gray-500">Tipo:</span>
+                                            <span className="font-bold text-indigo-600 dark:text-indigo-400">Consumo en Local</span>
+                                        </div>
+                                        {order.restaurant_tables ? (
+                                            <div className="mt-1 p-3 bg-indigo-50 dark:bg-indigo-900/20 rounded-lg border border-indigo-100 dark:border-indigo-900/30 text-center">
+                                                <p className="text-xs text-indigo-500 dark:text-indigo-400 uppercase font-bold tracking-wider mb-1">
+                                                    {order.restaurant_tables.restaurant_zones?.name || 'Zona'}
+                                                </p>
+                                                <p className="text-xl font-bold text-indigo-700 dark:text-indigo-300">
+                                                    {order.restaurant_tables.label}
+                                                </p>
+                                            </div>
+                                        ) : (
+                                            <div className="p-2 bg-yellow-50 text-yellow-800 rounded border border-yellow-200">
+                                                Sin mesa asignada
+                                            </div>
+                                        )}
                                     </div>
-                                )}
-                                {order.delivery_notes && (
-                                    <div className="mt-2 p-2 bg-yellow-50 dark:bg-yellow-900/10 text-yellow-800 dark:text-yellow-200 text-xs rounded border border-yellow-100 dark:border-yellow-900/20">
-                                        <strong>Nota:</strong> {order.delivery_notes}
-                                    </div>
+                                ) : (
+                                    // Delivery / Pickup View
+                                    <>
+                                        <div className="flex justify-between">
+                                            <span className="text-gray-500">Tipo:</span>
+                                            <span className="font-medium capitalize text-gray-900 dark:text-white">{order.delivery_type === 'pickup' ? 'Recoger en Tienda' : 'Domicilio'}</span>
+                                        </div>
+                                        {order.delivery_type === 'delivery' && (
+                                            <div className="flex justify-between items-start">
+                                                <span className="text-gray-500">Dirección:</span>
+                                                <span className="font-medium text-right text-gray-900 dark:text-white max-w-[60%]">{order.delivery_address || 'N/A'}</span>
+                                            </div>
+                                        )}
+                                        {order.delivery_notes && (
+                                            <div className="mt-2 p-2 bg-yellow-50 dark:bg-yellow-900/10 text-yellow-800 dark:text-yellow-200 text-xs rounded border border-yellow-100 dark:border-yellow-900/20">
+                                                <strong>Nota:</strong> {order.delivery_notes}
+                                            </div>
+                                        )}
+                                    </>
                                 )}
                             </div>
                         </div>
@@ -316,14 +350,23 @@ export default function OrderDetailModal({ order, onClose, onUpdate }: OrderDeta
                                 <span>Envío</span>
                                 <span>${order.shipping_cost.toLocaleString()}</span>
                             </div>
+                            {/* Tip Display */}
+                            <div className="flex justify-between text-sm text-gray-600 dark:text-gray-400">
+                                <span>Propina</span>
+                                <span className={order.tip ? "text-green-600 dark:text-green-400 font-medium" : ""}>
+                                    ${(order.tip || 0).toLocaleString()}
+                                </span>
+                            </div>
                             <div className="pt-3 border-t border-gray-200 dark:border-zinc-700 flex justify-between items-center">
                                 <span className="font-bold text-gray-900 dark:text-white text-lg">Total</span>
                                 <span className="font-bold text-indigo-600 dark:text-indigo-400 text-2xl">${order.total.toLocaleString()}</span>
                             </div>
-                            {/* Small Payment Method Reminder in Totals */}
-                            <div className={`mt-2 text-right text-xs font-bold uppercase tracking-wide ${paymentStyle.text}`}>
-                                Método de Pago: {order.payment_method}
-                            </div>
+                            {/* Small Payment Method Reminder in Totals - Hide explicitly if user wants all invisible, but usually total is relevant */}
+                            {!isDineIn && (
+                                <div className={`mt-2 text-right text-xs font-bold uppercase tracking-wide ${paymentStyle.text}`}>
+                                    Método de Pago: {order.payment_method}
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>

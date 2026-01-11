@@ -2,16 +2,17 @@
 
 import { useState, useEffect } from "react";
 import { DeliveryZone } from "@/lib/types";
-import { MoveRight, Plus, Trash2, Save, X } from "lucide-react";
+import { MoveRight, Plus, Trash2, Save, X, Zap } from "lucide-react";
 import { createDeliveryZone, updateDeliveryZone, deleteDeliveryZone } from "@/lib/actions/settings";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface DeliveryZonesManagerProps {
     businessmanId: string;
     initialZones: DeliveryZone[];
+    surgeMultiplier?: number;
 }
 
-export default function DeliveryZonesManager({ businessmanId, initialZones }: DeliveryZonesManagerProps) {
+export default function DeliveryZonesManager({ businessmanId, initialZones, surgeMultiplier = 1 }: DeliveryZonesManagerProps) {
     const [zones, setZones] = useState<DeliveryZone[]>(initialZones);
 
     // Sync state with props when parent fetches data
@@ -76,6 +77,25 @@ export default function DeliveryZonesManager({ businessmanId, initialZones }: De
             </div>
 
             <div className="space-y-3">
+                {surgeMultiplier > 1 && (
+                    <motion.div
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700/50 rounded-lg p-3 flex items-start gap-3"
+                    >
+                        <Zap className="h-5 w-5 text-yellow-600 dark:text-yellow-500 shrink-0 mt-0.5" />
+                        <div>
+                            <p className="text-sm font-medium text-yellow-800 dark:text-yellow-200">
+                                Tarifa Dinámica Activa (x{surgeMultiplier})
+                            </p>
+                            <p className="text-xs text-yellow-700 dark:text-yellow-300/80 mt-1">
+                                Los costos de domicilio se están multiplicando por {surgeMultiplier}.
+                                El cliente verá el precio final ajustado.
+                            </p>
+                        </div>
+                    </motion.div>
+                )}
+
                 <AnimatePresence>
                     {isAdding && (
                         <motion.div
@@ -145,8 +165,16 @@ export default function DeliveryZonesManager({ businessmanId, initialZones }: De
                             <div className="flex-1 flex items-center gap-4 w-full">
                                 <div className="flex-1">
                                     <h4 className="text-sm font-medium text-gray-900 dark:text-white">{zone.zone_name}</h4>
-                                    <p className="text-xs text-gray-500 dark:text-gray-400">
-                                        Costo: <span className="font-semibold text-gray-700 dark:text-gray-300">${zone.delivery_cost.toLocaleString()}</span>
+                                    <p className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1.5">
+                                        Costo base: <span className="font-medium">${zone.delivery_cost.toLocaleString()}</span>
+                                        {surgeMultiplier > 1 && (
+                                            <>
+                                                <span className="text-gray-300 dark:text-gray-600">→</span>
+                                                <span className="font-bold text-yellow-600 dark:text-yellow-400 bg-yellow-50 dark:bg-yellow-900/20 px-1.5 rounded">
+                                                    ${(zone.delivery_cost * surgeMultiplier).toLocaleString()}
+                                                </span>
+                                            </>
+                                        )}
                                     </p>
                                 </div>
                                 <div className="flex items-center gap-2">

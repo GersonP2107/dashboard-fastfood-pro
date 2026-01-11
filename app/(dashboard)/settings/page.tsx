@@ -5,16 +5,19 @@ import { motion } from 'framer-motion'
 import { getCurrentBusinessman } from '@/lib/actions/users'
 import { getZones } from '@/lib/actions/tables'
 import { getDeliveryZones } from '@/lib/actions/settings'
-import { Zone, Businessman, DeliveryZone } from '@/lib/types'
+import { getPaymentMethods } from '@/lib/actions/payment-methods'
+import { Zone, Businessman, DeliveryZone, PaymentMethod } from '@/lib/types'
 import TableManager from '@/components/settings/TableManager'
 import BusinessProfileForm from '@/components/settings/BusinessProfileForm'
 import DeliveryZonesManager from '@/components/settings/DeliveryZonesManager'
+import PaymentMethodsManager from '@/components/settings/PaymentMethodsManager'
 import { Store, Truck, Layout } from 'lucide-react'
 
 export default function SettingsPage() {
     const [business, setBusiness] = useState<Businessman | null>(null)
     const [zones, setZones] = useState<DeliveryZone[]>([])
     const [tableZones, setTableZones] = useState<Zone[]>([])
+    const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([])
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
@@ -24,12 +27,14 @@ export default function SettingsPage() {
                 if (businessData) {
                     setBusiness(businessData)
                     console.log("Business loaded:", businessData.id)
-                    const [zonesData, tableZonesData] = await Promise.all([
+                    const [zonesData, tableZonesData, paymentMethodsData] = await Promise.all([
                         getDeliveryZones(businessData.id),
-                        getZones(businessData.id)
+                        getZones(businessData.id),
+                        getPaymentMethods(businessData.id)
                     ]);
                     setZones(zonesData)
                     setTableZones(tableZonesData)
+                    setPaymentMethods(paymentMethodsData)
                 }
             } catch (error) {
                 console.error('Error loading settings:', error)
@@ -87,9 +92,10 @@ export default function SettingsPage() {
                     </div>
                 </div>
 
-                {/* Delivery Zones Section */}
-                <div className="lg:col-span-1">
-                    <div className="bg-white dark:bg-zinc-900 shadow rounded-lg p-6 h-full">
+                {/* Right Column: Delivery & Payment */}
+                <div className="lg:col-span-1 space-y-6">
+                    {/* Delivery Zones */}
+                    <div className="bg-white dark:bg-zinc-900 shadow rounded-lg p-6">
                         <div className="flex items-center gap-2 mb-6 text-indigo-600 dark:text-indigo-400 border-b border-gray-100 dark:border-gray-800 pb-4">
                             <Truck className="h-5 w-5" />
                             <h2 className="text-lg font-semibold">Domicilios</h2>
@@ -97,6 +103,15 @@ export default function SettingsPage() {
                         <DeliveryZonesManager
                             businessmanId={business.id}
                             initialZones={zones}
+                            surgeMultiplier={business.delivery_surge_multiplier}
+                        />
+                    </div>
+
+                    {/* Payment Methods */}
+                    <div className="bg-white dark:bg-zinc-900 shadow rounded-lg p-6">
+                        <PaymentMethodsManager
+                            businessmanId={business.id}
+                            initialMethods={paymentMethods}
                         />
                     </div>
                 </div>

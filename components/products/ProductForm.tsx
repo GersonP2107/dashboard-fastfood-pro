@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Category, Product } from "@/lib/types/base-types";
+import { Category, Product, ProductModifier, Modifier } from "@/lib/types/base-types";
 import { createProduct, updateProduct } from "@/lib/actions/products";
+import { addProductModifier, toggleProductModifierRequired } from "@/lib/actions/modifiers";
 import { createClient } from "@/lib/supabase/client";
 import { Loader2, Upload, X } from "lucide-react";
 import Image from "next/image";
@@ -21,6 +22,9 @@ export default function ProductForm({ categories, product, onSuccess, onCancel, 
     const [error, setError] = useState<string | null>(null);
     const [previewUrl, setPreviewUrl] = useState<string | null>(product?.image_url || null);
     const [uploading, setUploading] = useState(false);
+
+    // State for new product modifiers (local only until save)
+    const [pendingModifiers, setPendingModifiers] = useState<Array<Pick<ProductModifier, 'id' | 'is_required'> & { modifier: Modifier }>>([]);
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -49,6 +53,19 @@ export default function ProductForm({ categories, product, onSuccess, onCancel, 
             if (result.error) {
                 setError(result.error);
             } else {
+                // If creating, handle pending modifiers
+                if (!product && (result as any).product && pendingModifiers.length > 0) {
+                    const newProductId = (result as any).product.id;
+
+                    // Process modifiers sequentially (could be parallelized)
+                    for (const pm of pendingModifiers) {
+                        const linkRes = await addProductModifier(newProductId, pm.modifier.id);
+                        if (linkRes.success && linkRes.productModifier && pm.is_required) {
+                            await toggleProductModifierRequired(linkRes.productModifier.id, true);
+                        }
+                    }
+                }
+
                 onSuccess();
             }
         } catch (err) {
@@ -89,7 +106,7 @@ export default function ProductForm({ categories, product, onSuccess, onCancel, 
             setPreviewUrl(data.publicUrl);
         } catch (error: any) {
             console.error('Error uploading image:', error);
-            setError(error.message || 'Error uploading image');
+            setError(error.message || 'Error al subir la imagen');
         } finally {
             setUploading(false);
         }
@@ -106,7 +123,7 @@ export default function ProductForm({ categories, product, onSuccess, onCancel, 
             {/* Image Upload */}
             <div className="space-y-2">
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Product Image
+                    Imagen del Producto
                 </label>
                 <div className="flex items-center gap-4">
                     <div className="relative h-24 w-24 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-700 flex items-center justify-center overflow-hidden bg-gray-50 dark:bg-zinc-800">
@@ -114,7 +131,7 @@ export default function ProductForm({ categories, product, onSuccess, onCancel, 
                             <>
                                 <Image
                                     src={previewUrl}
-                                    alt="Preview"
+                                    alt="Vista previa"
                                     fill
                                     className="object-cover"
                                 />
@@ -147,7 +164,7 @@ export default function ProductForm({ categories, product, onSuccess, onCancel, 
                 file:bg-indigo-50 file:text-indigo-700
                 hover:file:bg-indigo-100 dark:file:bg-indigo-900 dark:file:text-indigo-300"
                         />
-                        <p className="mt-1 text-xs text-gray-500">PNG, JPG up to 10MB</p>
+                        <p className="mt-1 text-xs text-gray-500">PNG, JPG hasta 10MB</p>
                     </div>
                 </div>
             </div>
@@ -155,7 +172,7 @@ export default function ProductForm({ categories, product, onSuccess, onCancel, 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                     <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                        Name
+                        Nombre
                     </label>
                     <input
                         type="text"
@@ -164,13 +181,13 @@ export default function ProductForm({ categories, product, onSuccess, onCancel, 
                         required
                         defaultValue={product?.name}
                         className="w-full rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-zinc-900 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                        placeholder="Burger Deluxe"
+                        placeholder="Hamburguesa Deluxe"
                     />
                 </div>
 
                 <div className="space-y-2">
                     <label htmlFor="price" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                        Price
+                        Precio
                     </label>
                     <div className="relative">
                         <span className="absolute left-3 top-2 text-gray-500">$</span>
@@ -191,7 +208,7 @@ export default function ProductForm({ categories, product, onSuccess, onCancel, 
 
             <div className="space-y-2">
                 <label htmlFor="category_id" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Category
+                    Categoría
                 </label>
                 <select
                     id="category_id"
@@ -199,7 +216,7 @@ export default function ProductForm({ categories, product, onSuccess, onCancel, 
                     defaultValue={product?.category_id || ""}
                     className="w-full rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-zinc-900 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 >
-                    <option value="">Select a category</option>
+                    <option value="">Selecciona una categoría</option>
                     {categories.map((cat) => (
                         <option key={cat.id} value={cat.id}>
                             {cat.name}
@@ -210,7 +227,7 @@ export default function ProductForm({ categories, product, onSuccess, onCancel, 
 
             <div className="space-y-2">
                 <label htmlFor="description" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Description
+                    Descripción
                 </label>
                 <textarea
                     id="description"
@@ -218,7 +235,7 @@ export default function ProductForm({ categories, product, onSuccess, onCancel, 
                     rows={3}
                     defaultValue={product?.description || ""}
                     className="w-full rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-zinc-900 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                    placeholder="Detailed description of the product..."
+                    placeholder="Descripción detallada del producto..."
                 />
             </div>
 
@@ -231,17 +248,16 @@ export default function ProductForm({ categories, product, onSuccess, onCancel, 
                     className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
                 />
                 <label htmlFor="is_available" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Available for order
+                    Disponible para ordenar
                 </label>
             </div>
 
-            {product && (
-                <ProductModifiersManager
-                    productId={product.id}
-                    businessmanId={businessmanId}
-                    initialProductModifiers={product.product_modifiers || []}
-                />
-            )}
+            <ProductModifiersManager
+                productId={product?.id}
+                businessmanId={businessmanId}
+                initialProductModifiers={product ? (product.product_modifiers || []) : pendingModifiers}
+                onModifiersChange={!product ? setPendingModifiers : undefined}
+            />
 
             <div className="flex justify-end gap-3 pt-4">
                 <button
@@ -250,7 +266,7 @@ export default function ProductForm({ categories, product, onSuccess, onCancel, 
                     className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-zinc-800 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-zinc-700"
                     disabled={loading || uploading}
                 >
-                    Cancel
+                    Cancelar
                 </button>
                 <button
                     type="submit"
@@ -258,7 +274,7 @@ export default function ProductForm({ categories, product, onSuccess, onCancel, 
                     disabled={loading || uploading}
                 >
                     {loading && <Loader2 className="h-4 w-4 animate-spin" />}
-                    {product ? "Update Product" : "Create Product"}
+                    {product ? "Actualizar Producto" : "Crear Producto"}
                 </button>
             </div>
         </form>

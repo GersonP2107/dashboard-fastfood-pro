@@ -1,7 +1,7 @@
 import { DashboardOrder, OrderStatus } from '@/lib/types'
 import { formatDistanceToNow } from 'date-fns'
 import { es } from 'date-fns/locale'
-import { Clock, DollarSign, Package, Phone, AlertTriangle, CreditCard, ChevronRight, X, Bike, Store, MapPin } from 'lucide-react'
+import { Clock, DollarSign, Package, Phone, AlertTriangle, CreditCard, ChevronRight, X, Bike, Store, MapPin, Send } from 'lucide-react'
 import { motion } from 'framer-motion'
 
 interface OrderKanbanCardProps {
@@ -12,6 +12,7 @@ interface OrderKanbanCardProps {
 
 export default function OrderKanbanCard({ order, onStatusUpdate, onClick }: OrderKanbanCardProps) {
     const isTransfer = order.payment_method === 'transferencia'
+    const isDineIn = order.delivery_type === 'dine_in' || !!order.restaurant_tables
     const isCash = order.payment_method === 'efectivo'
 
     const getProductSummary = () => {
@@ -74,25 +75,41 @@ export default function OrderKanbanCard({ order, onStatusUpdate, onClick }: Orde
             {/* Badges Container */}
             <div className="mb-3 flex flex-wrap gap-2">
                 {/* Delivery Type Badge */}
-                {order.delivery_type === 'delivery' ? (
+                {order.delivery_type === 'delivery' && (
                     <div className="flex items-center gap-1 text-xs font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 px-2 py-1 rounded border border-blue-100 dark:border-blue-900/30">
                         <Bike className="w-3 h-3" /> DOMICILIO
                     </div>
-                ) : (
+                )}
+
+                {order.delivery_type === 'pickup' && (
                     <div className="flex items-center gap-1 text-xs font-bold text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/20 px-2 py-1 rounded border border-orange-100 dark:border-orange-900/30">
                         <Store className="w-3 h-3" /> RECOGER
                     </div>
                 )}
 
-                {/* Payment Badge */}
-                {isTransfer ? (
-                    <div className="flex items-center gap-1 text-xs font-bold text-yellow-600 dark:text-yellow-500 bg-yellow-50 dark:bg-yellow-900/20 px-2 py-1 rounded border border-yellow-100 dark:border-yellow-900/30">
-                        <AlertTriangle className="w-3 h-3" /> VERIFICAR
+                {/* Dine In / Table Badge */}
+                {(order.delivery_type === 'dine_in' || order.restaurant_tables) && (
+                    <div className="flex items-center gap-1 text-xs font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/20 px-2 py-1 rounded border border-indigo-100 dark:border-indigo-900/30">
+                        <Store className="w-3 h-3" />
+                        {order.restaurant_tables ? (
+                            <span>{order.restaurant_tables.restaurant_zones?.name} - {order.restaurant_tables.label}</span>
+                        ) : (
+                            <span>EN MESA</span>
+                        )}
                     </div>
-                ) : (
-                    <div className="flex items-center gap-1 text-xs text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/20 px-2 py-1 rounded border border-green-100 dark:border-green-900/30">
-                        <DollarSign className="w-3 h-3" /> Efectivo
-                    </div>
+                )}
+
+                {/* Payment Badge - Hide for Dine In */}
+                {!isDineIn && (
+                    isTransfer ? (
+                        <div className="flex items-center gap-1 text-xs font-bold text-yellow-600 dark:text-yellow-500 bg-yellow-50 dark:bg-yellow-900/20 px-2 py-1 rounded border border-yellow-100 dark:border-yellow-900/30">
+                            <AlertTriangle className="w-3 h-3" /> TRANSFER
+                        </div>
+                    ) : (
+                        <div className="flex items-center gap-1 text-xs font-bold text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/20 px-2 py-1 rounded border border-green-100 dark:border-green-900/30">
+                            <DollarSign className="w-3 h-3" /> {order.payment_method === 'efectivo' ? 'Efectivo' : order.payment_method}
+                        </div>
+                    )
                 )}
 
                 {/* Modifiers Badge */}
@@ -146,13 +163,27 @@ export default function OrderKanbanCard({ order, onStatusUpdate, onClick }: Orde
                         ENVIAR / RUTA
                     </button>
                 )}
-                {['en_camino', 'en_route'].includes(order.status) && (
-                    <button
-                        onClick={(e) => handleAction(e, 'entregado')}
-                        className="w-full bg-green-600 hover:bg-green-700 text-white text-xs font-bold py-2 rounded shadow-sm transition-colors"
-                    >
-                        FINALIZAR
-                    </button>
+                {['en_camino', 'en_route', 'on_way'].includes(order.status) && (
+                    <div className="flex gap-2 w-full">
+                        <button
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                const link = `${window.location.origin}/driver/${order.id}`;
+                                const text = `🛵 *Entrega Pedido #${order.order_number}*\n\n👤 Cliente: ${order.customer_name}\n📍 Dirección: ${order.delivery_address}\n💰 Total: $${order.total.toLocaleString()}\n\n🔗 *Gestionar Entrega aquí:* ${link}`;
+                                window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+                            }}
+                            className="bg-green-500 hover:bg-green-600 text-white p-2 rounded shadow-sm transition-colors flex items-center justify-center"
+                            title="Enviar al Repartidor (WhatsApp)"
+                        >
+                            <Send className="w-4 h-4" />
+                        </button>
+                        <button
+                            onClick={(e) => handleAction(e, 'entregado')}
+                            className="flex-1 bg-green-600 hover:bg-green-700 text-white text-xs font-bold py-2 rounded shadow-sm transition-colors"
+                        >
+                            FINALIZAR
+                        </button>
+                    </div>
                 )}
             </div>
         </motion.div >

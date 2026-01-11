@@ -96,6 +96,7 @@ export interface Order {
     payment_method: 'efectivo' | 'transferencia' | 'tarjeta'
     subtotal: number
     shipping_cost: number
+    tip?: number
     discount: number
     total: number
     status: 'pendiente' | 'confirmado' | 'preparando' | 'listo' | 'en_camino' | 'entregado' | 'cancelado' | 'pending' | 'confirmed' | 'preparing' | 'ready' | 'en_route' | 'delivered' | 'cancelled'
@@ -133,6 +134,18 @@ export interface DeliveryZone {
     businessman_id: string
     zone_name: string
     delivery_cost: number
+    is_active: boolean
+    created_at: string
+    updated_at: string
+}
+
+export interface PaymentMethod {
+    id: string
+    businessman_id: string
+    type: 'nequi' | 'daviplata' | 'bancolombia' | 'efectivo' | 'card' | 'other'
+    name: string
+    account_number?: string
+    instructions?: string
     is_active: boolean
     created_at: string
     updated_at: string

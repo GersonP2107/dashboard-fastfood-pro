@@ -8,9 +8,8 @@ export async function getOrders(businessmanId: string) {
     noStore();
     const supabase = await createClient();
 
-    // We select *, and join related tables if needed
-    // dashboard-schema.sql implies orders have order_items
-    const { data, error } = await supabase
+    // 1. Fetch Orders first
+    const { data: ordersData, error: ordersError } = await supabase
         .from("orders")
         .select(`
             *,
@@ -23,12 +22,48 @@ export async function getOrders(businessmanId: string) {
         .order("created_at", { ascending: false })
         .limit(100);
 
-    if (error) {
-        console.error("Error fetching orders:", error);
+    if (ordersError) {
+        console.error("Error fetching orders:", ordersError);
         return [];
     }
 
-    return data as DashboardOrder[];
+    // 2. Extract unique table_ids (manual join workaround due to missing FK)
+    const tableIds = Array.from(new Set(
+        ordersData
+            .map((o: any) => o.table_id)
+            .filter((id: any) => id) // filter nulls
+    )) as string[];
+
+    let tablesMap: Record<string, any> = {};
+
+    // 3. Fetch tables if any exist
+    if (tableIds.length > 0) {
+        const { data: tablesData } = await supabase
+            .from('restaurant_tables')
+            .select(`
+                id,
+                label,
+                restaurant_zones (
+                    name
+                )
+            `)
+            .in('id', tableIds);
+
+        if (tablesData) {
+            tablesMap = tablesData.reduce((acc: any, table: any) => {
+                acc[table.id] = table;
+                return acc;
+            }, {});
+        }
+    }
+
+    // 4. Stitch data together
+    const ordersWithTables = ordersData.map((order: any) => ({
+        ...order,
+        restaurant_tables: order.table_id ? tablesMap[order.table_id] : null
+    }));
+
+    return ordersWithTables as DashboardOrder[];
 }
 
 export async function updateOrderStatus(orderId: string, status: OrderStatus) {
@@ -40,22 +75,31 @@ export async function updateOrderStatus(orderId: string, status: OrderStatus) {
         'confirmado': 'confirmed',
         'preparando': 'preparing',
         'listo': 'ready',          // Packing/Ready phase
-        'en_camino': 'en_route',   // Out for delivery
+        'en_camino': 'on_way',     // Updated to match DB: on_way
         'entregado': 'delivered',
         'cancelado': 'cancelled'
     }
 
-    // fallback to status if not in map (e.g. if DB uses Spanish or mixed)
-    const dbStatus = statusMap[status] || status
+    const englishStatus = statusMap[status] || status;
 
-    const { error } = await supabase
+    // Try updating with the English status first
+    let { error } = await supabase
         .from("orders")
-        .update({ status: dbStatus, updated_at: new Date().toISOString() })
+        .update({ status: englishStatus, updated_at: new Date().toISOString() })
         .eq("id", orderId);
 
+    // If English failed, try the original Spanish status (fallback)
     if (error) {
-        console.error("Error updating order status:", error);
-        return { success: false, error: error.message };
+        console.warn(`Failed to update with status '${englishStatus}', trying fallback '${status}'...`);
+        const { error: fallbackError } = await supabase
+            .from("orders")
+            .update({ status: status, updated_at: new Date().toISOString() })
+            .eq("id", orderId);
+
+        if (fallbackError) {
+            console.error("Error updating order status (both attempts failed):", fallbackError);
+            return { success: false, error: fallbackError.message || error.message };
+        }
     }
 
     // Also log to history if table exists (from schema check earlier)
@@ -65,7 +109,7 @@ export async function updateOrderStatus(orderId: string, status: OrderStatus) {
             .from('order_status_history')
             .insert({
                 order_id: orderId,
-                status: dbStatus, // Log the actual DB status
+                status: englishStatus, // Log the intended status
                 changed_by: user.id
             })
             .select()
@@ -76,6 +120,7 @@ export async function updateOrderStatus(orderId: string, status: OrderStatus) {
             });
     }
 
+    // Determine path to revalidate based on current status or general orders
     revalidatePath("/orders");
     revalidatePath("/"); // Update dashboard stats too
     return { success: true };

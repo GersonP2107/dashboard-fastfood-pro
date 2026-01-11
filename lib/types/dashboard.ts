@@ -39,12 +39,13 @@ export interface DashboardOrder {
     customer_name: string
     customer_phone: string
     customer_email?: string
-    delivery_type: 'delivery' | 'pickup'
+    delivery_type: 'delivery' | 'pickup' | 'dine_in'
     delivery_address?: string
     delivery_notes?: string
     payment_method: 'efectivo' | 'transferencia' | 'tarjeta'
     subtotal: number
     shipping_cost: number
+    tip?: number
     discount: number
     total: number
     status: OrderStatus
@@ -56,6 +57,13 @@ export interface DashboardOrder {
     order_items?: OrderItem[]
     status_history?: OrderStatusHistory[]
     elapsed_time?: number // calculated field in minutes
+    // Table Info
+    restaurant_tables?: {
+        label: string
+        restaurant_zones?: {
+            name: string
+        }
+    }
 }
 
 // Dashboard Statistics

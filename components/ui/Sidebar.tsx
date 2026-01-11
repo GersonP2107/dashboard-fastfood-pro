@@ -3,17 +3,18 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { LayoutDashboard, ShoppingBag, ListOrdered, Settings, LogOut, Package, DollarSign } from 'lucide-react'
+import { LayoutDashboard, ShoppingBag, ListOrdered, Settings, LogOut, Package, DollarSign, Layers } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 
 const navigation = [
-    { name: 'Dashboard', href: '/', icon: LayoutDashboard },
-    { name: 'Productos', href: '/products', icon: ShoppingBag },
+    { name: 'Panel', href: '/', icon: LayoutDashboard },
     { name: 'Ordenes', href: '/orders', icon: ListOrdered },
-    { name: 'Configuración', href: '/settings', icon: Settings },
+    { name: 'Productos', href: '/products', icon: ShoppingBag },
+    { name: 'Categorías', href: '/categories', icon: Layers },
     { name: 'Inventario', href: '/inventory', icon: Package },
     { name: 'Finanzas', href: '/finance', icon: DollarSign },
+    { name: 'Configuración', href: '/settings', icon: Settings },
 ]
 
 function classNames(...classes: string[]) {
@@ -88,7 +89,7 @@ export default function Sidebar({ business }: SidebarProps) {
                                 className="text-gray-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 h-6 w-6 shrink-0"
                                 aria-hidden="true"
                             />
-                            Sign out
+                            Cerrar sesión
                         </button>
                     </li>
                 </ul>

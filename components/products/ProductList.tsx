@@ -47,7 +47,7 @@ export default function ProductList({ initialProducts, categories, businessmanId
     });
 
     const handleDelete = async (id: string) => {
-        if (!window.confirm("Are you sure you want to delete this product? This action cannot be undone.")) {
+        if (!window.confirm("¿Estás seguro de que quieres eliminar este producto? Esta acción no se puede deshacer.")) {
             return;
         }
 
@@ -56,7 +56,7 @@ export default function ProductList({ initialProducts, categories, businessmanId
             if (result.success) {
                 router.refresh();
             } else {
-                alert("Failed to delete product");
+                alert("Error al eliminar el producto");
             }
         });
     };
@@ -75,7 +75,7 @@ export default function ProductList({ initialProducts, categories, businessmanId
             } else {
                 // If it fails, the optimistic update will be reverted automatically 
                 // when the router refreshes (or we could revert manually but refresh is safer)
-                alert("Failed to update status");
+                alert("Error al actualizar el estado");
                 router.refresh();
             }
         });
@@ -107,7 +107,7 @@ export default function ProductList({ initialProducts, categories, businessmanId
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                     <input
                         type="text"
-                        placeholder="Search products..."
+                        placeholder="Buscar productos..."
                         className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-zinc-900 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
@@ -120,7 +120,7 @@ export default function ProductList({ initialProducts, categories, businessmanId
                         value={selectedCategory}
                         onChange={(e) => setSelectedCategory(e.target.value)}
                     >
-                        <option value="all">All Categories</option>
+                        <option value="all">Todas las categorías</option>
                         {categories.map((cat) => (
                             <option key={cat.id} value={cat.id}>{cat.name}</option>
                         ))}
@@ -131,7 +131,7 @@ export default function ProductList({ initialProducts, categories, businessmanId
                         className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors whitespace-nowrap"
                     >
                         <Plus className="h-4 w-4" />
-                        Add Product
+                        Agregar Producto
                     </button>
                 </div>
             </motion.div>
@@ -147,11 +147,11 @@ export default function ProductList({ initialProducts, categories, businessmanId
                     <table className="w-full text-left text-sm">
                         <thead className="bg-gray-50 dark:bg-zinc-800/50 text-gray-500 dark:text-gray-400 font-medium">
                             <tr>
-                                <th className="px-6 py-4">Product</th>
-                                <th className="px-6 py-4">Category</th>
-                                <th className="px-6 py-4">Price</th>
-                                <th className="px-6 py-4">Status</th>
-                                <th className="px-6 py-4 text-right">Actions</th>
+                                <th className="px-6 py-4">Producto</th>
+                                <th className="px-6 py-4">Categoría</th>
+                                <th className="px-6 py-4">Precio</th>
+                                <th className="px-6 py-4">Estado</th>
+                                <th className="px-6 py-4 text-right">Acciones</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
@@ -163,7 +163,7 @@ export default function ProductList({ initialProducts, categories, businessmanId
                                         exit={{ opacity: 0 }}
                                     >
                                         <td colSpan={5} className="px-6 py-12 text-center text-gray-500">
-                                            No products found matching your criteria.
+                                            No se encontraron productos con esos criterios.
                                         </td>
                                     </motion.tr>
                                 ) : (
@@ -195,13 +195,13 @@ export default function ProductList({ initialProducts, categories, businessmanId
                                                     <div>
                                                         <div className="font-medium text-gray-900 dark:text-white">{product.name}</div>
                                                         <div className="text-xs text-gray-500 truncate max-w-[200px]">
-                                                            {product.description || "No description"}
+                                                            {product.description || "Sin descripción"}
                                                         </div>
                                                     </div>
                                                 </div>
                                             </td>
                                             <td className="px-6 py-4 text-gray-600 dark:text-gray-400">
-                                                {product.category?.name || "Uncategorized"}
+                                                {product.category?.name || "Sin categoría"}
                                             </td>
                                             <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">
                                                 ${product.price.toFixed(2)}
@@ -214,7 +214,7 @@ export default function ProductList({ initialProducts, categories, businessmanId
                                                         : "bg-red-50 text-red-700 border-red-200 dark:bg-red-900/30 dark:text-red-400 dark:border-red-800"
                                                         }`}
                                                 >
-                                                    {product.is_available ? "Active" : "Inactive"}
+                                                    {product.is_available ? "Activo" : "Inactivo"}
                                                 </motion.span>
                                             </td>
                                             <td className="px-6 py-4 text-right">
@@ -225,14 +225,14 @@ export default function ProductList({ initialProducts, categories, businessmanId
                                                             ? "text-orange-500 hover:bg-orange-50 dark:hover:bg-orange-900/20"
                                                             : "text-green-500 hover:bg-green-50 dark:hover:bg-green-900/20"
                                                             }`}
-                                                        title={product.is_available ? "Deactivate" : "Activate"}
+                                                        title={product.is_available ? "Desactivar" : "Activar"}
                                                     >
                                                         {product.is_available ? <PowerOff size={18} /> : <Power size={18} />}
                                                     </button>
                                                     <button
                                                         onClick={() => openEditModal(product)}
                                                         className="p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
-                                                        title="Edit"
+                                                        title="Editar"
                                                     >
                                                         <Edit2 size={18} />
                                                     </button>
@@ -240,7 +240,7 @@ export default function ProductList({ initialProducts, categories, businessmanId
                                                         onClick={() => handleDelete(product.id)}
                                                         disabled={isPending}
                                                         className="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
-                                                        title="Delete"
+                                                        title="Eliminar"
                                                     >
                                                         <Trash2 size={18} />
                                                     </button>
@@ -259,7 +259,7 @@ export default function ProductList({ initialProducts, categories, businessmanId
             <ProductModal
                 isOpen={isAddModalOpen}
                 onClose={() => setIsAddModalOpen(false)}
-                title="Add New Product"
+                title="Agregar Nuevo Producto"
             >
                 <ProductForm
                     categories={categories}
@@ -273,7 +273,7 @@ export default function ProductList({ initialProducts, categories, businessmanId
             <ProductModal
                 isOpen={!!editingProduct}
                 onClose={closeEditModal}
-                title="Edit Product"
+                title="Editar Producto"
             >
                 {editingProduct && (
                     <ProductForm

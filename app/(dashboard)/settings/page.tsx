@@ -62,16 +62,16 @@ export default function SettingsPage() {
             className="space-y-6"
         >
             <div className="mb-8">
-                <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Configuración</h1>
-                <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-                    Administra la información de tu negocio, mesas y opciones de entrega.
+                <h1 className="text-3xl font-bold text-gray-900 dark:text-white tracking-tight">Configuración</h1>
+                <p className="mt-1 text-gray-500 dark:text-gray-400">
+                    Administra la información de tu negocio, mesas y opciones de entrega
                 </p>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Profile Section */}
                 <div className="lg:col-span-2 space-y-6">
-                    <div className="bg-white dark:bg-zinc-900 shadow rounded-lg p-6">
+                    <div className="bg-white dark:bg-zinc-900 shadow-sm rounded-3xl border border-gray-100 dark:border-zinc-800 p-6">
                         <div className="flex items-center gap-2 mb-6 text-indigo-600 dark:text-indigo-400 border-b border-gray-100 dark:border-gray-800 pb-4">
                             <Store className="h-5 w-5" />
                             <h2 className="text-lg font-semibold">Perfil del Negocio</h2>
@@ -80,7 +80,7 @@ export default function SettingsPage() {
                     </div>
 
                     {/* Table Manager Section */}
-                    <div className="bg-white dark:bg-zinc-900 shadow rounded-lg p-6">
+                    <div className="bg-white dark:bg-zinc-900 shadow-sm rounded-3xl border border-gray-100 dark:border-zinc-800 p-6">
                         <div className="flex items-center gap-2 mb-6 text-indigo-600 dark:text-indigo-400 border-b border-gray-100 dark:border-gray-800 pb-4">
                             <Layout className="h-5 w-5" />
                             <h2 className="text-lg font-semibold">Mesas y Zonas</h2>
@@ -95,7 +95,7 @@ export default function SettingsPage() {
                 {/* Right Column: Delivery & Payment */}
                 <div className="lg:col-span-1 space-y-6">
                     {/* Delivery Zones */}
-                    <div className="bg-white dark:bg-zinc-900 shadow rounded-lg p-6">
+                    <div className="bg-white dark:bg-zinc-900 shadow-sm rounded-3xl border border-gray-100 dark:border-zinc-800 p-6">
                         <div className="flex items-center gap-2 mb-6 text-indigo-600 dark:text-indigo-400 border-b border-gray-100 dark:border-gray-800 pb-4">
                             <Truck className="h-5 w-5" />
                             <h2 className="text-lg font-semibold">Domicilios</h2>
@@ -108,7 +108,7 @@ export default function SettingsPage() {
                     </div>
 
                     {/* Payment Methods */}
-                    <div className="bg-white dark:bg-zinc-900 shadow rounded-lg p-6">
+                    <div className="bg-white dark:bg-zinc-900 shadow-sm rounded-3xl border border-gray-100 dark:border-zinc-800 p-6">
                         <PaymentMethodsManager
                             businessmanId={business.id}
                             initialMethods={paymentMethods}

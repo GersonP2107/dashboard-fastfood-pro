@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
@@ -9,14 +11,18 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: 'Inter Variable', sans-serif;
-  --font-mono: 'Inter Variable', sans-serif; /* Optional: or keep a mono font if needed, but for now Inter */
+  --font-mono: 'Inter Variable', sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+.dark {
+  --background: #0a0a0a;
+  --foreground: #ededed;
+}
+
+html,
+body {
+  overflow: hidden;
+  height: 100%;
 }
 
 body {

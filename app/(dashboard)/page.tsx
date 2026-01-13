@@ -12,6 +12,7 @@ import { getDashboardStats, getSalesTrend, getTopProducts } from '@/lib/actions/
 import { motion } from 'framer-motion'
 import SalesTrendChart from '@/components/dashboard/SalesTrendChart'
 import TopProductsList from '@/components/dashboard/TopProductsList'
+import StatCard from '@/components/dashboard/StatCard'
 
 export default function DashboardHome() {
   const [stats, setStats] = useState<DashboardStats>({
@@ -70,44 +71,7 @@ export default function DashboardHome() {
     }
   }
 
-  const statCards = [
-    {
-      name: 'Ventas del Mes',
-      value: `$${stats.total_sales_month.toLocaleString()}`,
-      icon: DollarSign,
-      color: 'bg-green-500',
-    },
-    {
-      name: 'Pedidos del Mes',
-      value: stats.total_orders_month,
-      icon: ShoppingCart,
-      color: 'bg-blue-500',
-    },
-    {
-      name: 'Ticket Promedio',
-      value: `$${Math.round(stats.average_order_value).toLocaleString()}`,
-      icon: TrendingUp,
-      color: 'bg-purple-500',
-    },
-    {
-      name: 'Tasa de Aceptación',
-      value: `${Math.round(stats.acceptance_rate)}%`,
-      icon: CheckCircle,
-      color: 'bg-indigo-500',
-    },
-    {
-      name: 'Pedidos Pendientes',
-      value: stats.pending_orders,
-      icon: Clock,
-      color: 'bg-yellow-500',
-    },
-    {
-      name: 'Ventas de Hoy',
-      value: `$${stats.today_sales.toLocaleString()}`,
-      icon: Package,
-      color: 'bg-pink-500',
-    },
-  ]
+
 
   if (loading) {
     return (
@@ -142,111 +106,156 @@ export default function DashboardHome() {
       initial="hidden"
       animate="visible"
     >
-      <motion.div variants={itemVariants}>
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Resumen</h1>
-        <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-          Resumen de tu negocio en tiempo real
-        </p>
+      <motion.div variants={itemVariants} className="flex justify-between items-end">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white tracking-tight">Panel Principal</h1>
+          <p className="mt-1 text-gray-500 dark:text-gray-400">
+            Resumen de actividad en tiempo real
+          </p>
+        </div>
+        <div className="text-sm text-gray-500 bg-gray-100 dark:bg-zinc-800 px-3 py-1 rounded-full">
+          {new Date().toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+        </div>
       </motion.div>
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {statCards.map((stat) => (
-          <motion.div
-            key={stat.name}
-            variants={itemVariants}
-            className="overflow-hidden rounded-lg bg-white dark:bg-zinc-900 shadow hover:shadow-md transition-shadow"
-          >
-            <div className="p-6">
-              <div className="flex items-center">
-                <div className={`flex-shrink-0 rounded-md p-3 ${stat.color}`}>
-                  <stat.icon className="h-6 w-6 text-white" aria-hidden="true" />
-                </div>
-                <div className="ml-5 w-0 flex-1">
-                  <dl>
-                    <dt className="truncate text-sm font-medium text-gray-500 dark:text-gray-400">
-                      {stat.name}
-                    </dt>
-                    <dd className="mt-1 text-3xl font-semibold text-gray-900 dark:text-white">
-                      {stat.value}
-                    </dd>
-                  </dl>
-                </div>
-              </div>
-            </div>
-          </motion.div>
-        ))}
-      </div>
+      {/* Bento Grid Layout */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
 
-      {/* Charts Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Sales Chart (2/3 width) */}
-        <motion.div variants={itemVariants} className="lg:col-span-2 bg-white dark:bg-zinc-900 shadow rounded-lg p-6">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Ventas: Últimos 7 días</h2>
+        {/* Primary Stat: Total Sales Month */}
+        <StatCard
+          title="Ventas del Mes"
+          value={`$${stats.total_sales_month.toLocaleString()}`}
+          icon={DollarSign}
+          iconColor="text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/20"
+          className="md:col-span-2 bg-gradient-to-br from-white to-gray-50 dark:from-zinc-900 dark:to-zinc-900/50"
+          description="Ingresos acumulados este mes"
+        />
+
+        {/* Secondary Stats */}
+        <StatCard
+          title="Pedidos del Mes"
+          value={stats.total_orders_month.toString()}
+          icon={ShoppingCart}
+          iconColor="text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20"
+        />
+
+        <StatCard
+          title="Pedidos Pendientes"
+          value={stats.pending_orders.toString()}
+          icon={Clock}
+          iconColor="text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/20"
+          description="Requieren atención inmediata"
+        />
+
+        {/* Chart Section (Spans 3 cols) */}
+        <motion.div
+          variants={itemVariants}
+          className="md:col-span-2 lg:col-span-3 rounded-3xl bg-white dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800 p-6 shadow-sm"
+        >
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h2 className="text-lg font-bold text-gray-900 dark:text-white">Tendencia de Ventas</h2>
+              <p className="text-sm text-gray-500">Últimos 7 días</p>
+            </div>
+            <div className="p-2 bg-indigo-50 dark:bg-zinc-800 rounded-xl text-indigo-600 dark:text-indigo-400">
+              <TrendingUp className="w-5 h-5" />
+            </div>
+          </div>
           <SalesTrendChart data={salesTrend} />
         </motion.div>
 
-        {/* Top Products (1/3 width) */}
-        <motion.div variants={itemVariants} className="bg-white dark:bg-zinc-900 shadow rounded-lg p-6">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Top Productos (Mes)</h2>
+        {/* Top Products (Vertical Column) */}
+        <motion.div
+          variants={itemVariants}
+          className="md:col-span-1 lg:col-span-1 row-span-2 rounded-3xl bg-white dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800 p-6 shadow-sm"
+        >
+          <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Más Vendidos</h2>
           <TopProductsList products={topProducts} />
         </motion.div>
+
+        {/* Tertiary Stats */}
+        <StatCard
+          title="Ticket Promedio"
+          value={`$${Math.round(stats.average_order_value).toLocaleString()}`}
+          icon={DollarSign}
+          className="lg:col-start-1"
+        />
+
+        <StatCard
+          title="Ventas Hoy"
+          value={`$${stats.today_sales.toLocaleString()}`}
+          icon={Package}
+          iconColor="text-pink-600 dark:text-pink-400 bg-pink-50 dark:bg-pink-900/20"
+        />
+
+        <StatCard
+          title="Tasa Aceptación"
+          value={`${Math.round(stats.acceptance_rate)}%`}
+          icon={CheckCircle}
+        />
+
       </div>
 
-      {/* Recent Orders */}
+      {/* Recent Orders Section */}
       <motion.div
         variants={itemVariants}
-        className="bg-white dark:bg-zinc-900 shadow rounded-lg"
+        className="rounded-3xl bg-white dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800 overflow-hidden shadow-sm"
       >
-        <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Pedidos Recientes</h2>
+        <div className="px-6 py-4 border-b border-gray-100 dark:border-zinc-800 flex items-center justify-between bg-gray-50/50 dark:bg-zinc-800/20">
+          <h2 className="text-lg font-bold text-gray-900 dark:text-white">Pedidos Recientes</h2>
           <Link
             href="/orders"
-            className="text-sm text-indigo-600 dark:text-indigo-400 hover:text-indigo-500"
+            className="text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-500"
           >
             Ver todos
           </Link>
         </div>
-        <div className="divide-y divide-gray-200 dark:divide-gray-700">
+        <div className="divide-y divide-gray-100 dark:divide-zinc-800">
           {recentOrders.length === 0 ? (
             <div className="px-6 py-12 text-center text-gray-500 dark:text-gray-400">
               No hay pedidos recientes
             </div>
           ) : (
             recentOrders.map((order) => (
-              <Link
+              <div
                 key={order.id}
-                href="/orders"
-                className="block px-6 py-4 hover:bg-gray-50 dark:hover:bg-zinc-800 transition-colors"
+                className="group flex items-center justify-between px-6 py-4 hover:bg-gray-50 dark:hover:bg-zinc-800/50 transition-colors"
               >
-                <div className="flex items-center justify-between">
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-3">
-                      <span className="font-semibold text-gray-900 dark:text-white">
-                        #{order.order_number}
-                      </span>
-                      <span
-                        className={`px-2 py-1 rounded-full text-xs font-medium ${order.status === 'pendiente'
-                          ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
-                          : order.status === 'entregado'
-                            ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-                            : 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
-                          }`}
-                      >
-                        {order.status}
-                      </span>
-                    </div>
-                    <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                      {order.customer_name} • {formatDistanceToNow(new Date(order.created_at), { addSuffix: true, locale: es })}
-                    </p>
+                <div className="flex items-center gap-4">
+                  <div className={`w-10 h-10 rounded-full flex items-center justify-center text-lg font-bold
+                    ${order.status === 'pendiente' ? 'bg-yellow-100 text-yellow-600 dark:bg-yellow-900/30 dark:text-yellow-400' :
+                      order.status === 'entregado' ? 'bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400' :
+                        'bg-gray-100 text-gray-600 dark:bg-zinc-800 dark:text-gray-400'}`}
+                  >
+                    {order.customer_name.charAt(0)}
                   </div>
-                  <div className="ml-4 flex-shrink-0">
-                    <span className="text-lg font-bold text-gray-900 dark:text-white">
-                      ${order.total.toLocaleString()}
-                    </span>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="font-semibold text-gray-900 dark:text-white">{order.customer_name}</span>
+                      <span className="text-xs text-gray-400">#{order.order_number}</span>
+                    </div>
+                    <div className="text-sm text-gray-500">
+                      {formatDistanceToNow(new Date(order.created_at), { addSuffix: true, locale: es })}
+                    </div>
                   </div>
                 </div>
-              </Link>
+
+                <div className="flex items-center gap-6">
+                  <span
+                    className={`px-3 py-1 rounded-full text-xs font-medium border ${order.status === 'pendiente'
+                      ? 'bg-yellow-50 text-yellow-700 border-yellow-200 dark:bg-yellow-900/20 dark:text-yellow-400 dark:border-yellow-900'
+                      : order.status === 'entregado'
+                        ? 'bg-green-50 text-green-700 border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-900'
+                        : 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-900'
+                      }`}
+                  >
+                    {order.status}
+                  </span>
+                  <span className="text-lg font-bold text-gray-900 dark:text-white w-24 text-right">
+                    ${order.total.toLocaleString()}
+                  </span>
+                </div>
+              </div>
             ))
           )}
         </div>

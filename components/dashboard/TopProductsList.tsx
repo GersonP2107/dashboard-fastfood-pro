@@ -23,28 +23,36 @@ export default function TopProductsList({ products = [] }: TopProductsListProps)
         <div className="space-y-4">
             {products.map((product, index) => (
                 <div key={product.product_id} className="relative">
-                    <div className="flex items-center justify-between mb-1 relative z-10">
-                        <div className="flex items-center gap-3">
-                            <div className="flex items-center justify-center w-6 h-6 rounded-full bg-gray-100 dark:bg-zinc-800 text-xs font-bold text-gray-500">
+                    <div className="flex items-start justify-between gap-3 mb-2 relative z-10">
+                        <div className="flex items-start gap-3 flex-1 min-w-0">
+                            <div className="flex items-center justify-center w-6 h-6 rounded-full bg-gray-100 dark:bg-zinc-800 text-xs font-bold text-gray-500 flex-shrink-0">
                                 {index + 1}
                             </div>
-                            <span className="font-medium text-gray-900 dark:text-white truncate max-w-[150px] sm:max-w-xs" title={product.product_name}>
-                                {product.product_name}
-                            </span>
+                            <div className="flex-1 min-w-0">
+                                <span
+                                    className="block font-medium text-gray-900 dark:text-white text-sm leading-tight line-clamp-2"
+                                    title={product.product_name}
+                                >
+                                    {product.product_name}
+                                </span>
+                                <span className="block text-xs text-gray-500 mt-0.5">
+                                    ${product.total_revenue.toLocaleString()}
+                                </span>
+                            </div>
                         </div>
-                        <div className="text-right">
-                            <span className="block font-bold text-gray-900 dark:text-white">
-                                {product.total_quantity} vendidos
+                        <div className="text-right flex-shrink-0">
+                            <span className="block font-bold text-gray-900 dark:text-white text-sm whitespace-nowrap">
+                                {product.total_quantity}
                             </span>
-                            <span className="text-xs text-gray-500">
-                                ${product.total_revenue.toLocaleString()}
+                            <span className="block text-xs text-gray-500">
+                                vendidos
                             </span>
                         </div>
                     </div>
                     {/* Progress Bar Background */}
                     <div className="h-1.5 w-full bg-gray-100 dark:bg-zinc-800 rounded-full overflow-hidden">
                         <div
-                            className="h-full bg-indigo-500 rounded-full"
+                            className="h-full bg-indigo-500 rounded-full transition-all duration-500"
                             style={{ width: `${(product.total_quantity / maxQuantity) * 100}%` }}
                         ></div>
                     </div>

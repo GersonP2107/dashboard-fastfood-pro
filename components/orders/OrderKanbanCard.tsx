@@ -11,9 +11,10 @@ interface OrderKanbanCardProps {
 }
 
 export default function OrderKanbanCard({ order, onStatusUpdate, onClick }: OrderKanbanCardProps) {
-    const isTransfer = order.payment_method === 'transferencia'
+    const normalizedPayment = order.payment_method?.toLowerCase() || '';
+    const isTransfer = ['transfer', 'transferencia', 'nequi', 'daviplata', 'bancolombia'].some(m => normalizedPayment.includes(m));
     const isDineIn = order.delivery_type === 'dine_in' || !!order.restaurant_tables
-    const isCash = order.payment_method === 'efectivo'
+    const isCash = normalizedPayment === 'efectivo';
 
     const getProductSummary = () => {
         if (!order.order_items || order.order_items.length === 0) return 'Sin productos'
@@ -28,6 +29,11 @@ export default function OrderKanbanCard({ order, onStatusUpdate, onClick }: Orde
     if (minutesElapsed > 15) urgencyColor = 'border-l-yellow-500' // > 15 min
     if (minutesElapsed > 30) urgencyColor = 'border-l-red-500' // > 30 min
 
+    // Override urgency color border if it's a pending transfer to make it VERY visible
+    const borderStyle = isTransfer && (order.status === 'pendiente' || order.status === 'pending')
+        ? 'border-2 border-yellow-400 dark:border-yellow-500 shadow-[0_0_15px_rgba(250,204,21,0.3)]'
+        : `border border-gray-200 dark:border-zinc-700 border-l-[6px] ${urgencyColor}`;
+
     const handleAction = (e: React.MouseEvent, status: OrderStatus) => {
         e.stopPropagation()
         onStatusUpdate(order.id, status)
@@ -41,9 +47,8 @@ export default function OrderKanbanCard({ order, onStatusUpdate, onClick }: Orde
             exit={{ opacity: 0, scale: 0.95 }}
             onClick={() => onClick(order)}
             className={`
-                bg-white dark:bg-zinc-800 rounded-lg shadow-sm border border-gray-200 dark:border-zinc-700 p-3 cursor-pointer hover:shadow-md transition-all
-                border-l-[6px] ${urgencyColor}
-                ${isTransfer && (order.status === 'pendiente' || order.status === 'pending') ? 'ring-2 ring-yellow-400 ring-opacity-50' : ''}
+                bg-white dark:bg-zinc-800 rounded-lg shadow-sm p-3 cursor-pointer hover:shadow-md transition-all
+                ${borderStyle}
             `}
         >
             {/* Header */}
@@ -100,16 +105,22 @@ export default function OrderKanbanCard({ order, onStatusUpdate, onClick }: Orde
                 )}
 
                 {/* Payment Badge - Hide for Dine In */}
+                {/* Payment Badge - Hide for Dine In */}
                 {!isDineIn && (
-                    isTransfer ? (
-                        <div className="flex items-center gap-1 text-xs font-bold text-yellow-600 dark:text-yellow-500 bg-yellow-50 dark:bg-yellow-900/20 px-2 py-1 rounded border border-yellow-100 dark:border-yellow-900/30">
-                            <AlertTriangle className="w-3 h-3" /> TRANSFER
-                        </div>
-                    ) : (
-                        <div className="flex items-center gap-1 text-xs font-bold text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/20 px-2 py-1 rounded border border-green-100 dark:border-green-900/30">
-                            <DollarSign className="w-3 h-3" /> {order.payment_method === 'efectivo' ? 'Efectivo' : order.payment_method}
-                        </div>
-                    )
+                    <div className={`flex items-center gap-1 text-xs font-bold px-2 py-1 rounded border ${isTransfer
+                        ? "text-yellow-600 dark:text-yellow-500 bg-yellow-50 dark:bg-yellow-900/20 border-yellow-100 dark:border-yellow-900/30"
+                        : "text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/20 border-green-100 dark:border-green-900/30"
+                        }`}>
+                        {isTransfer ? (
+                            <>
+                                <AlertTriangle className="w-3 h-3" /> TRANSFERENCIA
+                            </>
+                        ) : (
+                            <>
+                                <DollarSign className="w-3 h-3" /> {isCash ? 'EFECTIVO' : order.payment_method?.toUpperCase()}
+                            </>
+                        )}
+                    </div>
                 )}
 
                 {/* Modifiers Badge */}

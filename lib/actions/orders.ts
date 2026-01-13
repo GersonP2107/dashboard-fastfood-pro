@@ -66,6 +66,86 @@ export async function getOrders(businessmanId: string) {
     return ordersWithTables as DashboardOrder[];
 }
 
+export async function getHistoryOrders(
+    businessmanId: string,
+    filters?: {
+        startDate?: Date;
+        endDate?: Date;
+        status?: string;
+    }
+) {
+    noStore();
+    const supabase = await createClient();
+
+    let query = supabase
+        .from("orders")
+        .select(`
+            *,
+            order_items (
+                *,
+                modifiers:order_item_modifiers (*)
+            )
+        `)
+        .eq("businessman_id", businessmanId)
+        .order("created_at", { ascending: false });
+
+    if (filters?.startDate) {
+        query = query.gte("created_at", filters.startDate.toISOString());
+    }
+    if (filters?.endDate) {
+        query = query.lte("created_at", filters.endDate.toISOString());
+    }
+    if (filters?.status && filters.status !== 'all') {
+        query = query.eq("status", filters.status);
+    }
+
+    // Default limit for history to avoid massive payloads, maybe paginated later
+    // query = query.limit(500); 
+
+    const { data: ordersData, error: ordersError } = await query;
+
+    if (ordersError) {
+        console.error("Error fetching history orders:", ordersError);
+        return [];
+    }
+
+    // Reuse logic to attach tables
+    const tableIds = Array.from(new Set(
+        ordersData
+            .map((o: any) => o.table_id)
+            .filter((id: any) => id)
+    )) as string[];
+
+    let tablesMap: Record<string, any> = {};
+
+    if (tableIds.length > 0) {
+        const { data: tablesData } = await supabase
+            .from('restaurant_tables')
+            .select(`
+                id,
+                label,
+                restaurant_zones (
+                    name
+                )
+            `)
+            .in('id', tableIds);
+
+        if (tablesData) {
+            tablesMap = tablesData.reduce((acc: any, table: any) => {
+                acc[table.id] = table;
+                return acc;
+            }, {});
+        }
+    }
+
+    const ordersWithTables = ordersData.map((order: any) => ({
+        ...order,
+        restaurant_tables: order.table_id ? tablesMap[order.table_id] : null
+    }));
+
+    return ordersWithTables as DashboardOrder[];
+}
+
 export async function updateOrderStatus(orderId: string, status: OrderStatus) {
     const supabase = await createClient();
 

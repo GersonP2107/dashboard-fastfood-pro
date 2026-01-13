@@ -56,13 +56,13 @@ export default function InventoryTable({ initialProducts, categories }: Inventor
     return (
         <div className="space-y-4">
             {/* Filters */}
-            <div className="flex flex-col md:flex-row gap-4 justify-between bg-white dark:bg-zinc-900 p-4 rounded-lg shadow-sm border border-gray-100 dark:border-zinc-800">
+            <div className="flex flex-col md:flex-row gap-4 justify-between bg-white dark:bg-zinc-900 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-zinc-800">
                 <div className="flex-1 relative">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                     <input
                         type="text"
                         placeholder="Buscar producto..."
-                        className="w-full pl-9 pr-4 py-2 text-sm border border-gray-200 dark:border-zinc-700 rounded-lg focus:ring-2 focus:ring-indigo-500 bg-transparent dark:text-white"
+                        className="w-full pl-9 pr-4 py-2.5 text-sm border border-gray-200 dark:border-zinc-800 rounded-xl focus:ring-2 focus:ring-indigo-500 bg-transparent dark:text-white transition-all"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
@@ -70,7 +70,7 @@ export default function InventoryTable({ initialProducts, categories }: Inventor
 
                 <div className="flex gap-2">
                     <select
-                        className="text-sm border border-gray-200 dark:border-zinc-700 rounded-lg px-3 py-2 bg-white dark:bg-zinc-800 dark:text-white focus:ring-2 focus:ring-indigo-500"
+                        className="text-sm border border-gray-200 dark:border-zinc-800 rounded-xl px-3 py-2.5 bg-white dark:bg-zinc-800 dark:text-white focus:ring-2 focus:ring-indigo-500 transition-all"
                         value={selectedCategory}
                         onChange={(e) => setSelectedCategory(e.target.value)}
                     >
@@ -82,9 +82,9 @@ export default function InventoryTable({ initialProducts, categories }: Inventor
 
                     <button
                         onClick={() => setFilterLowStock(!filterLowStock)}
-                        className={`flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg transition-colors border ${filterLowStock
+                        className={`flex items-center gap-2 px-3 py-2.5 text-sm font-medium rounded-xl transition-all border ${filterLowStock
                             ? 'bg-orange-50 text-orange-700 border-orange-200 dark:bg-orange-900/20 dark:text-orange-400'
-                            : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50 dark:bg-zinc-800 dark:text-gray-300 dark:border-zinc-700'
+                            : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50 dark:bg-zinc-800 dark:text-gray-300 dark:border-zinc-800'
                             }`}
                     >
                         <AlertTriangle className="w-4 h-4" />
@@ -94,7 +94,7 @@ export default function InventoryTable({ initialProducts, categories }: Inventor
             </div>
 
             {/* Table */}
-            <div className="bg-white dark:bg-zinc-900 rounded-lg shadow-sm border border-gray-200 dark:border-zinc-800 overflow-hidden">
+            <div className="bg-white dark:bg-zinc-900 rounded-3xl shadow-sm border border-gray-200 dark:border-zinc-800 overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="w-full text-sm text-left">
                         <thead className="text-xs text-gray-500 uppercase bg-gray-50 dark:bg-zinc-800/50 dark:text-gray-400">

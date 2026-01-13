@@ -122,23 +122,28 @@ export default function OrderDetailModal({ order, onClose, onUpdate }: OrderDeta
     const nextStatus = STATUS_FLOW[order.status]
 
     const getPaymentStyles = (method: string) => {
-        const m = method.toLowerCase()
-        if (m.includes('transferencia') || m.includes('transfer')) {
+        const m = method?.toLowerCase() || ''
+        const isTransfer = ['transfer', 'transferencia', 'nequi', 'daviplata', 'bancolombia'].some(t => m.includes(t))
+        const isCash = m.includes('efectivo') || m.includes('cash')
+
+        if (isTransfer) {
             return {
                 bg: 'bg-yellow-100 dark:bg-yellow-900/30',
                 text: 'text-yellow-800 dark:text-yellow-200',
                 border: 'border-yellow-200 dark:border-yellow-700',
                 icon: <AlertTriangle className="w-5 h-5" />,
-                label: 'Transferencia - Requiere Verificación'
+                label: 'Transferencia - Requiere Verificación',
+                displayText: 'TRANSFERENCIA'
             }
         }
-        if (m.includes('efectivo') || m.includes('cash')) {
+        if (isCash) {
             return {
                 bg: 'bg-green-100 dark:bg-green-900/30',
                 text: 'text-green-800 dark:text-green-200',
                 border: 'border-green-200 dark:border-green-700',
                 icon: <DollarSign className="w-5 h-5" />,
-                label: 'Efectivo - Cobrar al Entregar'
+                label: 'Efectivo - Cobrar al Entregar',
+                displayText: 'EFECTIVO'
             }
         }
         return {
@@ -146,7 +151,8 @@ export default function OrderDetailModal({ order, onClose, onUpdate }: OrderDeta
             text: 'text-gray-800 dark:text-gray-200',
             border: 'border-gray-200 dark:border-gray-700',
             icon: <CreditCard className="w-5 h-5" />,
-            label: 'Tarjeta / Otro'
+            label: 'Tarjeta / Otro',
+            displayText: method.toUpperCase()
         }
     }
 
@@ -181,7 +187,7 @@ export default function OrderDetailModal({ order, onClose, onUpdate }: OrderDeta
                             </span>
                             {!isDineIn && (
                                 <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wide border ${paymentStyle.bg} ${paymentStyle.text} ${paymentStyle.border}`}>
-                                    {order.payment_method}
+                                    {paymentStyle.displayText}
                                 </span>
                             )}
                         </div>
@@ -211,13 +217,13 @@ export default function OrderDetailModal({ order, onClose, onUpdate }: OrderDeta
                                 <h3 className={`font-bold text-lg ${paymentStyle.text}`}>
                                     {paymentStyle.label}
                                 </h3>
-                                {(order.payment_method.includes('transfer') || order.payment_method.includes('Transfer')) && (
+                                {(paymentStyle.displayText === 'TRANSFERENCIA') && (
                                     <p className={`text-sm opacity-90 ${paymentStyle.text}`}>
                                         Verifica que el dinero haya ingresado a la cuenta antes de aceptar.
                                     </p>
                                 )}
                             </div>
-                            {order.payment_method === 'transferencia' && (
+                            {paymentStyle.displayText === 'TRANSFERENCIA' && (
                                 <button
                                     onClick={confirmPayment}
                                     className="px-4 py-2 bg-white dark:bg-black/20 text-sm font-bold rounded-lg shadow-sm hover:opacity-90 transition-opacity"
@@ -364,7 +370,7 @@ export default function OrderDetailModal({ order, onClose, onUpdate }: OrderDeta
                             {/* Small Payment Method Reminder in Totals - Hide explicitly if user wants all invisible, but usually total is relevant */}
                             {!isDineIn && (
                                 <div className={`mt-2 text-right text-xs font-bold uppercase tracking-wide ${paymentStyle.text}`}>
-                                    Método de Pago: {order.payment_method}
+                                    Método de Pago: {paymentStyle.displayText}
                                 </div>
                             )}
                         </div>

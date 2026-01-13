@@ -62,7 +62,7 @@ function KanbanColumn({ col, dishCount, children }: { col: any, dishCount: numbe
     });
 
     return (
-        <div ref={setNodeRef} className={`flex-1 min-w-[260px] flex flex-col bg-white dark:bg-zinc-900 rounded-lg shadow-sm border border-gray-200 dark:border-zinc-800 ${col.borderColor}`}>
+        <div ref={setNodeRef} className={`flex-1 min-w-[260px] flex flex-col bg-white dark:bg-zinc-900 rounded-3xl shadow-sm border border-gray-200 dark:border-zinc-800 ${col.borderColor}`}>
             {/* Column Header */}
             <div className={`p-3 border-b border-gray-100 dark:border-zinc-800 flex flex-col gap-1 bg-gray-50/50 dark:bg-zinc-800/30`}>
                 <div className="flex items-center justify-between">
@@ -97,6 +97,7 @@ export default function OrdersPage() {
     const [selectedOrder, setSelectedOrder] = useState<DashboardOrder | null>(null)
     const [activeId, setActiveId] = useState<string | null>(null);
     const [activeOrder, setActiveOrder] = useState<DashboardOrder | null>(null);
+    const [timeFilter, setTimeFilter] = useState<'24h' | 'all'>('24h');
 
     const [loading, setLoading] = useState(true)
     const [businessId, setBusinessId] = useState<string | null>(null)
@@ -323,11 +324,19 @@ export default function OrdersPage() {
         }, 0)
     }
 
+    const filteredOrders = orders.filter(order => {
+        if (timeFilter === 'all') return true;
+        if (!order.created_at) return true;
+        const orderDate = new Date(order.created_at);
+        const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+        return orderDate >= twentyFourHoursAgo;
+    });
+
     const columns = [
         {
             id: 'pendiente',
             title: 'Nuevos',
-            orders: orders.filter(o => o.status === 'pendiente' || o.status === 'pending'),
+            orders: filteredOrders.filter(o => o.status === 'pendiente' || o.status === 'pending'),
             color: 'bg-zinc-100 dark:bg-zinc-800/50 border-zinc-200 dark:border-zinc-700',
             iconColor: 'text-zinc-600 dark:text-zinc-400',
             borderColor: 'border-t-4 border-t-zinc-400'
@@ -335,7 +344,7 @@ export default function OrdersPage() {
         {
             id: 'preparacion',
             title: 'Cocina',
-            orders: orders.filter(o => ['confirmado', 'confirmed', 'preparando', 'preparing'].includes(o.status)),
+            orders: filteredOrders.filter(o => ['confirmado', 'confirmed', 'preparando', 'preparing'].includes(o.status)),
             color: 'bg-purple-50 dark:bg-purple-900/10 border-purple-200 dark:border-purple-900/50',
             iconColor: 'text-purple-600 dark:text-purple-400',
             borderColor: 'border-t-4 border-t-purple-500'
@@ -343,7 +352,7 @@ export default function OrdersPage() {
         {
             id: 'listo',
             title: 'Listo',
-            orders: orders.filter(o => ['listo', 'ready'].includes(o.status)),
+            orders: filteredOrders.filter(o => ['listo', 'ready'].includes(o.status)),
             color: 'bg-orange-50 dark:bg-orange-900/10 border-orange-200 dark:border-orange-900/50',
             iconColor: 'text-orange-600 dark:text-orange-400',
             borderColor: 'border-t-4 border-t-orange-500'
@@ -351,7 +360,7 @@ export default function OrdersPage() {
         {
             id: 'en_camino',
             title: 'En Ruta',
-            orders: orders.filter(o => ['en_camino', 'en_route', 'on_way'].includes(o.status)),
+            orders: filteredOrders.filter(o => ['en_camino', 'en_route', 'on_way'].includes(o.status)),
             color: 'bg-blue-50 dark:bg-blue-900/10 border-blue-200 dark:border-blue-900/50',
             iconColor: 'text-blue-600 dark:text-blue-400',
             borderColor: 'border-t-4 border-t-blue-500'
@@ -359,7 +368,7 @@ export default function OrdersPage() {
         {
             id: 'entregado',
             title: 'Entregados',
-            orders: orders.filter(o => ['entregado', 'delivered'].includes(o.status)).slice(0, 5),
+            orders: filteredOrders.filter(o => ['entregado', 'delivered'].includes(o.status)).slice(0, 5),
             color: 'bg-green-50 dark:bg-green-900/10 border-green-200 dark:border-green-900/50',
             iconColor: 'text-green-600 dark:text-green-400',
             borderColor: 'border-t-4 border-t-green-500'
@@ -375,7 +384,7 @@ export default function OrdersPage() {
             <div className="h-[calc(100vh-8rem)] flex flex-col">
                 <div className="flex items-center justify-between mb-4 px-1">
                     <div className="flex items-center gap-4">
-                        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Tablero de Control</h1>
+                        <h1 className="text-3xl font-bold text-gray-900 dark:text-white tracking-tight">Tablero de Control</h1>
                         <div className={`flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium border ${isConnected
                             ? 'bg-green-50 text-green-700 border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800'
                             : 'bg-red-50 text-red-700 border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800'
@@ -393,10 +402,34 @@ export default function OrdersPage() {
                         )}
                         <button
                             onClick={() => businessId && refreshOrders(businessId)}
-                            className="p-2 text-gray-500 hover:text-indigo-600 hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-full transition-colors"
+                            className="p-2.5 text-gray-500 hover:text-indigo-600 hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-xl transition-all"
                             title="Actualizar ahora"
                         >
                             <RefreshCw className="w-4 h-4" />
+                        </button>
+                    </div>
+                </div>
+
+                {/* Filter Controls */}
+                <div className="flex justify-end mb-4 px-1">
+                    <div className="flex p-1 bg-gray-100 dark:bg-zinc-800 rounded-lg">
+                        <button
+                            onClick={() => setTimeFilter('24h')}
+                            className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${timeFilter === '24h'
+                                ? 'bg-white dark:bg-zinc-700 text-gray-900 dark:text-white shadow-sm'
+                                : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+                                }`}
+                        >
+                            Últimas 24h
+                        </button>
+                        <button
+                            onClick={() => setTimeFilter('all')}
+                            className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${timeFilter === 'all'
+                                ? 'bg-white dark:bg-zinc-700 text-gray-900 dark:text-white shadow-sm'
+                                : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+                                }`}
+                        >
+                            Todo el Historial
                         </button>
                     </div>
                 </div>

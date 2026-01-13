@@ -2,10 +2,11 @@
 
 import { useState, useEffect } from "react";
 import { PaymentMethod } from "@/lib/types";
-import { Plus, Trash2, Save, X, CreditCard, Banknote, Smartphone, AlertCircle } from "lucide-react";
+import { Plus, Trash2, Save, X, CreditCard, Banknote, Smartphone, AlertCircle, Pencil } from "lucide-react";
 import { createPaymentMethod, updatePaymentMethod, deletePaymentMethod } from "@/lib/actions/payment-methods";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
+import ConfirmDialog from "@/components/ui/ConfirmDialog";
 
 interface PaymentMethodsManagerProps {
     businessmanId: string;
@@ -29,6 +30,7 @@ export default function PaymentMethodsManager({ businessmanId, initialMethods }:
     }, [initialMethods]);
 
     const [isAdding, setIsAdding] = useState(false);
+    const [editingId, setEditingId] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
 
     // New Method State
@@ -40,35 +42,81 @@ export default function PaymentMethodsManager({ businessmanId, initialMethods }:
         is_active: true
     });
 
-    const handleAdd = async () => {
+    // Confirm dialog state
+    const [confirmDialog, setConfirmDialog] = useState<{
+        isOpen: boolean;
+        title: string;
+        message: string;
+        onConfirm: () => void;
+    }>({ isOpen: false, title: "", message: "", onConfirm: () => { } });
+
+    const handleSave = async () => {
         if (!newMethod.name) {
             toast.error("El nombre es obligatorio");
             return;
         }
 
         setLoading(true);
-        const result = await createPaymentMethod(businessmanId, newMethod);
 
-        if (result.success && result.data) {
-            setMethods([...methods, result.data as PaymentMethod]);
-            setNewMethod({ type: 'nequi', name: '', account_number: '', instructions: '', is_active: true });
-            setIsAdding(false);
-            toast.success("Método de pago agregado");
+        if (editingId) {
+            // Update existing method
+            const result = await updatePaymentMethod(editingId, newMethod);
+            if (result.success && result.data) {
+                setMethods(methods.map(m => m.id === editingId ? (result.data as PaymentMethod) : m));
+                toast.success("Método actualizado correctamente");
+                resetForm();
+            } else {
+                toast.error(`Error al actualizar: ${result.error}`);
+            }
         } else {
-            toast.error(`Error: ${result.error}`);
+            // Create new method
+            const result = await createPaymentMethod(businessmanId, newMethod);
+            if (result.success && result.data) {
+                setMethods([...methods, result.data as PaymentMethod]);
+                toast.success("Método de pago agregado");
+                resetForm();
+            } else {
+                toast.error(`Error: ${result.error}`);
+            }
         }
         setLoading(false);
     };
 
-    const handleDelete = async (id: string) => {
-        if (!confirm("¿Eliminar este método de pago?")) return;
-        const result = await deletePaymentMethod(id);
-        if (result.success) {
-            setMethods(methods.filter(m => m.id !== id));
-            toast.success("Método eliminado");
-        } else {
-            toast.error("Error al eliminar");
-        }
+    const handleEdit = (method: PaymentMethod) => {
+        setNewMethod({
+            type: method.type,
+            name: method.name,
+            account_number: method.account_number || '',
+            instructions: method.instructions || '',
+            is_active: method.is_active
+        });
+        setEditingId(method.id);
+        setIsAdding(true);
+        // Scroll to top to see the form
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    const resetForm = () => {
+        setNewMethod({ type: 'nequi', name: '', account_number: '', instructions: '', is_active: true });
+        setEditingId(null);
+        setIsAdding(false);
+    };
+
+    const handleDelete = async (id: string, methodName: string) => {
+        setConfirmDialog({
+            isOpen: true,
+            title: "¿Eliminar método de pago?",
+            message: `¿Estás seguro de eliminar "${methodName}"? Los clientes ya no podrán seleccionar este método.`,
+            onConfirm: async () => {
+                const result = await deletePaymentMethod(id);
+                if (result.success) {
+                    setMethods(methods.filter(m => m.id !== id));
+                    toast.success("Método eliminado");
+                } else {
+                    toast.error("Error al eliminar");
+                }
+            }
+        });
     };
 
     const handleToggleActive = async (id: string, currentStatus: boolean) => {
@@ -97,7 +145,10 @@ export default function PaymentMethodsManager({ businessmanId, initialMethods }:
                     <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Métodos de Pago</h2>
                 </div>
                 <button
-                    onClick={() => setIsAdding(true)}
+                    onClick={() => {
+                        resetForm();
+                        setIsAdding(true);
+                    }}
                     disabled={isAdding}
                     className="flex items-center gap-2 text-sm text-indigo-600 dark:text-indigo-400 hover:text-indigo-500 disabled:opacity-50"
                 >
@@ -116,6 +167,11 @@ export default function PaymentMethodsManager({ businessmanId, initialMethods }:
                             className="bg-gray-50 dark:bg-zinc-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700 overflow-hidden mb-4"
                         >
                             <div className="space-y-4">
+                                <div className="flex justify-between items-center mb-2 pb-2 border-b border-gray-100 dark:border-zinc-700">
+                                    <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
+                                        {editingId ? 'Editar Método de Pago' : 'Nuevo Método de Pago'}
+                                    </h3>
+                                </div>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div>
                                         <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Tipo</label>
@@ -163,19 +219,19 @@ export default function PaymentMethodsManager({ businessmanId, initialMethods }:
 
                                 <div className="flex justify-end gap-3 pt-2">
                                     <button
-                                        onClick={() => setIsAdding(false)}
+                                        onClick={resetForm}
                                         className="px-4 py-2 border border-gray-300 dark:border-zinc-700 text-sm font-medium rounded-lg text-gray-700 dark:text-gray-300 bg-white dark:bg-zinc-900 hover:bg-gray-50 dark:hover:bg-zinc-800 transition-colors flex items-center"
                                     >
                                         <X className="h-4 w-4 mr-1.5" />
                                         Cancelar
                                     </button>
                                     <button
-                                        onClick={handleAdd}
+                                        onClick={handleSave}
                                         disabled={loading || !newMethod.name}
                                         className="px-4 py-2 border border-transparent text-sm font-medium rounded-lg shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 transition-colors flex items-center"
                                     >
                                         <Save className="h-4 w-4 mr-1.5" />
-                                        Guardar
+                                        {editingId ? 'Actualizar' : 'Guardar'}
                                     </button>
                                 </div>
                             </div>
@@ -230,7 +286,15 @@ export default function PaymentMethodsManager({ businessmanId, initialMethods }:
                                 </button>
 
                                 <button
-                                    onClick={() => handleDelete(method.id)}
+                                    onClick={() => handleEdit(method)}
+                                    className="p-1.5 text-gray-400 hover:text-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg transition-colors"
+                                    title="Editar"
+                                >
+                                    <Pencil className="h-4 w-4" />
+                                </button>
+
+                                <button
+                                    onClick={() => handleDelete(method.id, method.name)}
                                     className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
                                     title="Eliminar"
                                 >
@@ -249,6 +313,15 @@ export default function PaymentMethodsManager({ businessmanId, initialMethods }:
                     )}
                 </AnimatePresence>
             </div>
+
+            <ConfirmDialog
+                isOpen={confirmDialog.isOpen}
+                onClose={() => setConfirmDialog({ ...confirmDialog, isOpen: false })}
+                onConfirm={confirmDialog.onConfirm}
+                title={confirmDialog.title}
+                message={confirmDialog.message}
+                type="danger"
+            />
         </div>
     );
 }

@@ -11,15 +11,17 @@ export default async function DashboardLayout({
     const business = await getCurrentBusinessman();
 
     return (
-        <div className="flex h-screen bg-gray-50 dark:bg-black">
+        <div className="flex h-screen bg-gray-50 dark:bg-zinc-950 overflow-hidden">
             <div className="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-64 lg:flex-col">
                 <Sidebar business={business} />
             </div>
 
-            <div className="lg:pl-64 flex flex-col flex-1">
+            <div className="lg:pl-64 flex flex-col flex-1 min-h-0">
                 <Header business={business} />
-                <main className="flex-1 py-10 px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-black">
-                    {children}
+                <main className="flex-1 py-8 px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-zinc-950 overflow-y-auto">
+                    <div className="max-w-[1600px] mx-auto">
+                        {children}
+                    </div>
                 </main>
             </div>
         </div>

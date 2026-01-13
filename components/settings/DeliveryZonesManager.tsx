@@ -2,9 +2,10 @@
 
 import { useState, useEffect } from "react";
 import { DeliveryZone } from "@/lib/types";
-import { MoveRight, Plus, Trash2, Save, X, Zap } from "lucide-react";
+import { MoveRight, Plus, Trash2, Save, X, Zap, Pencil } from "lucide-react";
 import { createDeliveryZone, updateDeliveryZone, deleteDeliveryZone } from "@/lib/actions/settings";
 import { motion, AnimatePresence } from "framer-motion";
+import ConfirmDialog from "@/components/ui/ConfirmDialog";
 
 interface DeliveryZonesManagerProps {
     businessmanId: string;
@@ -20,39 +21,86 @@ export default function DeliveryZonesManager({ businessmanId, initialZones, surg
         setZones(initialZones);
     }, [initialZones]);
     const [isAdding, setIsAdding] = useState(false);
+    const [editingId, setEditingId] = useState<string | null>(null);
     const [newZone, setNewZone] = useState({ zone_name: "", delivery_cost: 0 });
     const [loading, setLoading] = useState(false);
 
-    const handleAdd = async () => {
+    // Confirm dialog state
+    const [confirmDialog, setConfirmDialog] = useState<{
+        isOpen: boolean;
+        title: string;
+        message: string;
+        onConfirm: () => void;
+    }>({ isOpen: false, title: "", message: "", onConfirm: () => { } });
+
+    const handleSave = async () => {
         if (!newZone.zone_name) return;
         setLoading(true);
-        console.log("Attempting to create zone:", newZone, "for business:", businessmanId);
 
-        const result = await createDeliveryZone(businessmanId, {
-            zone_name: newZone.zone_name,
-            delivery_cost: newZone.delivery_cost,
-            is_active: true
-        });
+        if (editingId) {
+            // Update existing zone
+            // We use updateDeliveryZone but we need to pass only the fields we want to update
+            const result = await updateDeliveryZone(editingId, {
+                zone_name: newZone.zone_name,
+                delivery_cost: newZone.delivery_cost
+            });
 
-        console.log("Create zone result:", result);
-
-        if (result.success && result.data) {
-            setZones([...zones, result.data as DeliveryZone]);
-            setNewZone({ zone_name: "", delivery_cost: 0 });
-            setIsAdding(false);
+            if (result.success && result.data) {
+                setZones(zones.map(z => z.id === editingId ? (result.data as DeliveryZone) : z));
+                setIsAdding(false);
+                setNewZone({ zone_name: "", delivery_cost: 0 });
+                setEditingId(null);
+            } else {
+                alert(`Error al actualizar la zona: ${result.error || 'Desconocido'}`);
+            }
         } else {
-            console.error("Failed to create zone:", result.error);
-            alert(`Error al guardar la zona: ${result.error || 'Desconocido'}`);
+            // Create new zone
+            const result = await createDeliveryZone(businessmanId, {
+                zone_name: newZone.zone_name,
+                delivery_cost: newZone.delivery_cost,
+                is_active: true
+            });
+
+            if (result.success && result.data) {
+                setZones([...zones, result.data as DeliveryZone]);
+                setNewZone({ zone_name: "", delivery_cost: 0 });
+                setIsAdding(false);
+            } else {
+                alert(`Error al guardar la zona: ${result.error || 'Desconocido'}`);
+            }
         }
         setLoading(false);
     };
 
-    const handleDelete = async (id: string) => {
-        if (!confirm("¿Eliminar esta zona?")) return;
-        const result = await deleteDeliveryZone(id);
-        if (result.success) {
-            setZones(zones.filter(z => z.id !== id));
-        }
+    const handleEdit = (zone: DeliveryZone) => {
+        setNewZone({
+            zone_name: zone.zone_name,
+            delivery_cost: zone.delivery_cost
+        });
+        setEditingId(zone.id);
+        setIsAdding(true);
+        // Scroll to top to see the form
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    const resetForm = () => {
+        setNewZone({ zone_name: "", delivery_cost: 0 });
+        setEditingId(null);
+        setIsAdding(false);
+    };
+
+    const handleDelete = async (id: string, zoneName: string) => {
+        setConfirmDialog({
+            isOpen: true,
+            title: "¿Eliminar zona de domicilio?",
+            message: `¿Estás seguro de eliminar la zona "${zoneName}"? Los clientes ya no podrán seleccionar esta zona para entregas.`,
+            onConfirm: async () => {
+                const result = await deleteDeliveryZone(id);
+                if (result.success) {
+                    setZones(zones.filter(z => z.id !== id));
+                }
+            }
+        });
     };
 
     const handleUpdate = async (id: string, updates: Partial<DeliveryZone>) => {
@@ -67,8 +115,11 @@ export default function DeliveryZonesManager({ businessmanId, initialZones, surg
             <div className="flex items-center justify-between">
                 <h3 className="text-lg font-medium text-gray-900 dark:text-white">Zonas de Domicilio</h3>
                 <button
-                    onClick={() => setIsAdding(true)}
-                    disabled={isAdding}
+                    onClick={() => {
+                        resetForm();
+                        setIsAdding(true);
+                    }}
+                    disabled={isAdding && !editingId}
                     className="flex items-center gap-2 text-sm text-indigo-600 dark:text-indigo-400 hover:text-indigo-500 disabled:opacity-50"
                 >
                     <Plus className="h-4 w-4" />
@@ -105,6 +156,11 @@ export default function DeliveryZonesManager({ businessmanId, initialZones, surg
                             className="bg-gray-50 dark:bg-zinc-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700 overflow-hidden"
                         >
                             <div className="space-y-4">
+                                <div className="flex justify-between items-center mb-2 pb-2 border-b border-gray-100 dark:border-zinc-700">
+                                    <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
+                                        {editingId ? 'Editar Zona de Domicilio' : 'Nueva Zona de Domicilio'}
+                                    </h3>
+                                </div>
                                 <div className="flex flex-col sm:flex-row gap-4">
                                     <div className="flex-1 w-full">
                                         <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Nombre de la Zona</label>
@@ -134,19 +190,19 @@ export default function DeliveryZonesManager({ businessmanId, initialZones, surg
 
                                 <div className="flex justify-end gap-3 pt-2">
                                     <button
-                                        onClick={() => setIsAdding(false)}
+                                        onClick={resetForm}
                                         className="px-4 py-2 border border-gray-300 dark:border-zinc-700 text-sm font-medium rounded-lg text-gray-700 dark:text-gray-300 bg-white dark:bg-zinc-900 hover:bg-gray-50 dark:hover:bg-zinc-800 transition-colors flex items-center"
                                     >
                                         <X className="h-4 w-4 mr-1.5" />
                                         Cancelar
                                     </button>
                                     <button
-                                        onClick={handleAdd}
+                                        onClick={handleSave}
                                         disabled={loading || !newZone.zone_name}
                                         className="px-4 py-2 border border-transparent text-sm font-medium rounded-lg shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 transition-colors flex items-center"
                                     >
                                         <Save className="h-4 w-4 mr-1.5" />
-                                        Guardar
+                                        {editingId ? 'Actualizar' : 'Guardar'}
                                     </button>
                                 </div>
                             </div>
@@ -190,12 +246,23 @@ export default function DeliveryZonesManager({ businessmanId, initialZones, surg
                                 </div>
                             </div>
 
-                            <button
-                                onClick={() => handleDelete(zone.id)}
-                                className="text-gray-400 hover:text-red-500 transition-colors"
-                            >
-                                <Trash2 className="h-4 w-4" />
-                            </button>
+                            <div className="flex items-center gap-2">
+                                <button
+                                    onClick={() => handleEdit(zone)}
+                                    className="p-1.5 text-gray-400 hover:text-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg transition-colors"
+                                    title="Editar"
+                                >
+                                    <Pencil className="h-4 w-4" />
+                                </button>
+
+                                <button
+                                    onClick={() => handleDelete(zone.id, zone.zone_name)}
+                                    className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                                    title="Eliminar"
+                                >
+                                    <Trash2 className="h-4 w-4" />
+                                </button>
+                            </div>
                         </motion.div>
                     ))}
 
@@ -206,6 +273,15 @@ export default function DeliveryZonesManager({ businessmanId, initialZones, surg
                     )}
                 </AnimatePresence>
             </div>
+
+            <ConfirmDialog
+                isOpen={confirmDialog.isOpen}
+                onClose={() => setConfirmDialog({ ...confirmDialog, isOpen: false })}
+                onConfirm={confirmDialog.onConfirm}
+                title={confirmDialog.title}
+                message={confirmDialog.message}
+                type="danger"
+            />
         </div>
     );
 }

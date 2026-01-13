@@ -1,16 +1,18 @@
 "use server";
 
-import { createClient } from "@/lib/supabase/server";
+import { createClient } from "@supabase/supabase-js";
 import { DashboardOrder } from "@/lib/types";
 import { revalidatePath, unstable_noStore as noStore } from "next/cache";
 
+const supabaseAdmin = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+);
+
 export async function getDriverOrder(orderId: string) {
     noStore();
-    const supabase = await createClient();
-
-    // Fetch order with necessary details for the driver
-    // We strictly filter by ID. RLS now allows this.
-    const { data, error } = await supabase
+    // Use admin client to bypass RLS for public driver view
+    const { data, error } = await supabaseAdmin
         .from("orders")
         .select(`
             *,
@@ -31,9 +33,7 @@ export async function getDriverOrder(orderId: string) {
 }
 
 export async function confirmDelivery(orderId: string) {
-    const supabase = await createClient();
-
-    const { error } = await supabase
+    const { error } = await supabaseAdmin
         .from("orders")
         .update({
             status: 'delivered',

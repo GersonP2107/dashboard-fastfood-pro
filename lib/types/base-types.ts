@@ -20,6 +20,7 @@ export interface Businessman {
     closing_hours?: string
     delivery_surge_multiplier?: number;
     operating_schedule?: OperatingScheduleItem[];
+    delivery_time_estimate?: string;
     created_at: string
     updated_at: string
 }

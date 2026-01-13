@@ -21,13 +21,13 @@ export default async function InventoryPage() {
     return (
         <div className="max-w-7xl mx-auto space-y-6">
             <div className="flex items-center gap-3 mb-6">
-                <div className="p-2 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg text-indigo-600 dark:text-indigo-400">
+                <div className="p-2.5 bg-indigo-50 dark:bg-indigo-900/20 rounded-2xl text-indigo-600 dark:text-indigo-400">
                     <Package className="w-6 h-6" />
                 </div>
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Inventario Rápido</h1>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">
-                        Gestiona el stock de tus productos de forma ágil.
+                    <h1 className="text-3xl font-bold text-gray-900 dark:text-white tracking-tight">Inventario Rápido</h1>
+                    <p className="text-gray-500 dark:text-gray-400">
+                        Gestiona el stock de tus productos de forma ágil
                     </p>
                 </div>
             </div>
@@ -42,8 +42,8 @@ export default async function InventoryPage() {
 function InventoryLoading() {
     return (
         <div className="space-y-4 animate-pulse">
-            <div className="h-14 bg-gray-200 dark:bg-zinc-800 rounded-lg w-full" />
-            <div className="h-96 bg-gray-200 dark:bg-zinc-800 rounded-lg w-full" />
+            <div className="h-14 bg-gray-200 dark:bg-zinc-800 rounded-xl w-full" />
+            <div className="h-96 bg-gray-200 dark:bg-zinc-800 rounded-3xl w-full" />
         </div>
     )
 }

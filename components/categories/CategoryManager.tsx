@@ -26,15 +26,15 @@ export default function CategoryManager({ categories, businessmanId }: CategoryM
         <div className="space-y-6">
             <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
                 <div>
-                    <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Categorías</h1>
-                    <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-                        Administra las categorías de tu menú.
+                    <h1 className="text-3xl font-bold text-gray-900 dark:text-white tracking-tight">Categorías</h1>
+                    <p className="mt-1 text-gray-500 dark:text-gray-400">
+                        Administra las categorías de tu menú
                     </p>
                 </div>
 
                 <button
                     onClick={() => setIsAddModalOpen(true)}
-                    className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors whitespace-nowrap"
+                    className="flex items-center gap-2 px-4 py-2.5 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-all shadow-sm whitespace-nowrap font-medium"
                 >
                     <Plus className="h-4 w-4" />
                     Nueva Categoría

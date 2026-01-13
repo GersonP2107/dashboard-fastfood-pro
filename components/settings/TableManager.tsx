@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Zone, RestaurantTable } from "@/lib/types";
 import { createZone, deleteZone, createTable, deleteTable } from "@/lib/actions/tables";
 import { Plus, Trash2, Layout, Table as TableIcon } from "lucide-react";
+import ConfirmDialog from "@/components/ui/ConfirmDialog";
 
 interface TableManagerProps {
     businessmanId: string;
@@ -20,6 +21,14 @@ export default function TableManager({ businessmanId, initialZones }: TableManag
     const [newTableName, setNewTableName] = useState("");
     const [newTableCapacity, setNewTableCapacity] = useState(4);
 
+    // Confirm dialog state
+    const [confirmDialog, setConfirmDialog] = useState<{
+        isOpen: boolean;
+        title: string;
+        message: string;
+        onConfirm: () => void;
+    }>({ isOpen: false, title: "", message: "", onConfirm: () => { } });
+
     const handleCreateZone = async () => {
         if (!newZoneName.trim()) return;
         setLoading(true);
@@ -33,16 +42,22 @@ export default function TableManager({ businessmanId, initialZones }: TableManag
         setLoading(false);
     };
 
-    const handleDeleteZone = async (id: string) => {
-        if (!confirm("Are you sure? This will delete all tables in this zone.")) return;
-        setLoading(true);
-        const result = await deleteZone(id);
-        if (result.success) {
-            setZones(zones.filter(z => z.id !== id));
-        } else {
-            alert("Error deleting zone");
-        }
-        setLoading(false);
+    const handleDeleteZone = async (id: string, zoneName: string) => {
+        setConfirmDialog({
+            isOpen: true,
+            title: "¿Eliminar zona?",
+            message: `¿Estás seguro de eliminar la zona "${zoneName}"? Esto eliminará todas las mesas asociadas.`,
+            onConfirm: async () => {
+                setLoading(true);
+                const result = await deleteZone(id);
+                if (result.success) {
+                    setZones(zones.filter(z => z.id !== id));
+                } else {
+                    alert("Error al eliminar zona");
+                }
+                setLoading(false);
+            }
+        });
     };
 
     const handleCreateTable = async (zoneId: string) => {
@@ -67,24 +82,30 @@ export default function TableManager({ businessmanId, initialZones }: TableManag
         setLoading(false);
     };
 
-    const handleDeleteTable = async (zoneId: string, tableId: string) => {
-        if (!confirm("Delete this table?")) return;
-        setLoading(true);
-        const result = await deleteTable(tableId);
-        if (result.success) {
-            setZones(zones.map(z => {
-                if (z.id === zoneId) {
-                    return {
-                        ...z,
-                        tables: z.tables?.filter(t => t.id !== tableId)
-                    };
+    const handleDeleteTable = async (zoneId: string, tableId: string, tableName: string) => {
+        setConfirmDialog({
+            isOpen: true,
+            title: "¿Eliminar mesa?",
+            message: `¿Estás seguro de eliminar "${tableName}"?`,
+            onConfirm: async () => {
+                setLoading(true);
+                const result = await deleteTable(tableId);
+                if (result.success) {
+                    setZones(zones.map(z => {
+                        if (z.id === zoneId) {
+                            return {
+                                ...z,
+                                tables: z.tables?.filter(t => t.id !== tableId)
+                            };
+                        }
+                        return z;
+                    }));
+                } else {
+                    alert("Error al eliminar mesa");
                 }
-                return z;
-            }));
-        } else {
-            alert("Error deleting table");
-        }
-        setLoading(false);
+                setLoading(false);
+            }
+        });
     };
 
     return (
@@ -131,7 +152,7 @@ export default function TableManager({ businessmanId, initialZones }: TableManag
                                 </span>
                             </div>
                             <button
-                                onClick={() => handleDeleteZone(zone.id)}
+                                onClick={() => handleDeleteZone(zone.id, zone.name)}
                                 className="text-red-500 hover:text-red-700 p-2 rounded-full hover:bg-red-50 dark:hover:bg-red-900/20"
                             >
                                 <Trash2 className="w-4 h-4" />
@@ -148,7 +169,7 @@ export default function TableManager({ businessmanId, initialZones }: TableManag
                                         <span className="text-xs text-gray-400">{table.capacity} pax</span>
 
                                         <button
-                                            onClick={() => handleDeleteTable(zone.id, table.id)}
+                                            onClick={() => handleDeleteTable(zone.id, table.id, table.name)}
                                             className="absolute -top-2 -right-2 bg-red-100 dark:bg-red-900 text-red-600 dark:text-red-300 p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-sm"
                                         >
                                             <X className="w-3 h-3" />
@@ -214,6 +235,15 @@ export default function TableManager({ businessmanId, initialZones }: TableManag
                     </div>
                 )}
             </div>
+
+            <ConfirmDialog
+                isOpen={confirmDialog.isOpen}
+                onClose={() => setConfirmDialog({ ...confirmDialog, isOpen: false })}
+                onConfirm={confirmDialog.onConfirm}
+                title={confirmDialog.title}
+                message={confirmDialog.message}
+                type="danger"
+            />
         </div>
     );
 }

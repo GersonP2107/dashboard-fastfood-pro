@@ -1,10 +1,8 @@
-"use client";
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Businessman, OperatingScheduleItem } from "@/lib/types";
 import { createClient } from "@/lib/supabase/client";
 import { updateBusinessProfile } from "@/lib/actions/settings";
-import { Camera, Loader2, Save, Clock, Check, X } from "lucide-react";
+import { Camera, Loader2, Save, Clock, Check, X, Phone } from "lucide-react";
 import Image from "next/image";
 
 interface BusinessProfileFormProps {
@@ -21,6 +19,16 @@ const DEFAULT_SCHEDULE: OperatingScheduleItem[] = [
     { day: 'sunday', label: 'Domingo', open: '09:00', close: '21:00', isActive: true },
 ];
 
+const COUNTRY_CODES = [
+    { code: '57', label: '🇨🇴 +57', country: 'CO' },
+    { code: '1', label: '🇺🇸 +1', country: 'US' },
+    { code: '52', label: '🇲🇽 +52', country: 'MX' },
+    { code: '34', label: '🇪🇸 +34', country: 'ES' },
+    { code: '54', label: '🇦🇷 +54', country: 'AR' },
+    { code: '56', label: '🇨🇱 +56', country: 'CL' },
+    { code: '51', label: '🇵🇪 +51', country: 'PE' },
+];
+
 export default function BusinessProfileForm({ businessman }: BusinessProfileFormProps) {
     const [formData, setFormData] = useState<Partial<Businessman>>({
         business_name: businessman.business_name,
@@ -28,10 +36,35 @@ export default function BusinessProfileForm({ businessman }: BusinessProfileForm
         phone: businessman.phone || "",
         whatsapp_number: businessman.whatsapp_number,
         address: businessman.address || "",
-        operating_schedule: businessman.operating_schedule?.length ? businessman.operating_schedule : DEFAULT_SCHEDULE
+        operating_schedule: businessman.operating_schedule?.length ? businessman.operating_schedule : DEFAULT_SCHEDULE,
+        delivery_time_estimate: businessman.delivery_time_estimate || "30 - 45 min"
     });
 
-    // Helper to update a specific day in the schedule
+    // Parse initial phone prefix
+    const [phonePrefix, setPhonePrefix] = useState('57');
+    const [phoneNumberOnly, setPhoneNumberOnly] = useState('');
+
+    useEffect(() => {
+        if (businessman.whatsapp_number) {
+            // Try to find a matching prefix
+            const match = COUNTRY_CODES.find(c => businessman.whatsapp_number.startsWith(c.code));
+            if (match) {
+                setPhonePrefix(match.code);
+                setPhoneNumberOnly(businessman.whatsapp_number.slice(match.code.length));
+            } else {
+                setPhoneNumberOnly(businessman.whatsapp_number);
+            }
+        }
+    }, [businessman.whatsapp_number]);
+
+    // Update formData when prefix or number changes
+    useEffect(() => {
+        setFormData(prev => ({
+            ...prev,
+            whatsapp_number: `${phonePrefix}${phoneNumberOnly}`
+        }));
+    }, [phonePrefix, phoneNumberOnly]);
+
     const updateScheduleDay = (index: number, field: keyof OperatingScheduleItem, value: any) => {
         const currentSchedule = formData.operating_schedule || DEFAULT_SCHEDULE;
         const newSchedule = [...currentSchedule];
@@ -150,12 +183,57 @@ export default function BusinessProfileForm({ businessman }: BusinessProfileForm
 
                 <div className="col-span-2 md:col-span-1">
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">WhatsApp (Pedidos)</label>
+                    <div className="flex rounded-md shadow-sm">
+                        <div className="relative flex items-stretch flex-grow focus-within:z-10">
+                            <select
+                                value={phonePrefix}
+                                onChange={(e) => setPhonePrefix(e.target.value)}
+                                className="block w-[110px] rounded-l-md border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-zinc-800 text-gray-500 dark:text-gray-300 sm:text-sm focus:border-indigo-500 focus:ring-indigo-500 border-r-0"
+                            >
+                                {COUNTRY_CODES.map((c) => (
+                                    <option key={c.code} value={c.code}>
+                                        {c.label}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                        <input
+                            type="tel"
+                            value={phoneNumberOnly}
+                            onChange={(e) => setPhoneNumberOnly(e.target.value.replace(/\D/g, ''))} // Only allow numbers
+                            className="block w-full rounded-none rounded-r-md border-gray-300 dark:border-gray-600 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm dark:bg-zinc-700 dark:text-white px-4 py-2.5"
+                            placeholder="300 123 4567"
+                            required
+                        />
+                    </div>
+                    <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                        Número completo: +{phonePrefix}{phoneNumberOnly}
+                    </p>
+                </div>
+
+                <div className="col-span-2 md:col-span-1">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tiempo de Entrega Estimado</label>
+                    <div className="relative rounded-md shadow-sm">
+                        <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                            <Clock className="h-5 w-5 text-gray-400" aria-hidden="true" />
+                        </div>
+                        <input
+                            type="text"
+                            value={formData.delivery_time_estimate}
+                            onChange={(e) => setFormData({ ...formData, delivery_time_estimate: e.target.value })}
+                            className="block w-full rounded-md border-gray-300 dark:border-gray-600 pl-10 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm dark:bg-zinc-700 dark:text-white px-4 py-2.5"
+                            placeholder="Ej. 30 - 45 min"
+                        />
+                    </div>
+                </div>
+
+                <div className="col-span-2 md:col-span-1">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Dirección</label>
                     <input
-                        type="tel"
-                        value={formData.whatsapp_number}
-                        onChange={(e) => setFormData({ ...formData, whatsapp_number: e.target.value })}
+                        type="text"
+                        value={formData.address || ""}
+                        onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                         className="block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm dark:bg-zinc-700 dark:text-white px-4 py-2.5 transition-shadow"
-                        required
                     />
                 </div>
 
@@ -167,16 +245,6 @@ export default function BusinessProfileForm({ businessman }: BusinessProfileForm
                         onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                         className="block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm dark:bg-zinc-700 dark:text-white px-4 py-2.5 transition-shadow"
                         placeholder="Breve descripción de tu negocio..."
-                    />
-                </div>
-
-                <div className="col-span-2">
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Dirección</label>
-                    <input
-                        type="text"
-                        value={formData.address || ""}
-                        onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                        className="block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm dark:bg-zinc-700 dark:text-white px-4 py-2.5 transition-shadow"
                     />
                 </div>
 

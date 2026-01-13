@@ -51,19 +51,19 @@ export default function FinancePage() {
             {/* Header & Filters */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                        <DollarSign className="w-8 h-8 text-green-600 p-1 bg-green-100 rounded-lg dark:bg-green-900/30" />
+                    <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3 tracking-tight">
+                        <DollarSign className="w-8 h-8 text-green-600 p-1.5 bg-green-50 rounded-2xl dark:bg-green-900/20" />
                         Finanzas
                     </h1>
-                    <p className="text-gray-500 dark:text-gray-400 text-sm">Resumen de ingresos y rendimiento.</p>
+                    <p className="text-gray-500 dark:text-gray-400">Resumen de ingresos y rendimiento</p>
                 </div>
 
-                <div className="bg-white dark:bg-zinc-900 p-1 rounded-lg border border-gray-200 dark:border-zinc-800 flex text-sm font-medium">
+                <div className="bg-white dark:bg-zinc-900 p-1 rounded-2xl border border-gray-200 dark:border-zinc-800 flex text-sm font-medium">
                     {(['today', 'week', 'month'] as const).map((r) => (
                         <button
                             key={r}
                             onClick={() => setRange(r)}
-                            className={`px-4 py-2 rounded-md transition-colors ${range === r
+                            className={`px-4 py-2 rounded-xl transition-all ${range === r
                                 ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400'
                                 : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-zinc-800'
                                 }`}
@@ -102,7 +102,7 @@ export default function FinancePage() {
             {/* Charts Section */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Main Sales Chart */}
-                <div className="lg:col-span-2 bg-white dark:bg-zinc-900 p-6 rounded-xl shadow-sm border border-gray-100 dark:border-zinc-800">
+                <div className="lg:col-span-2 bg-white dark:bg-zinc-900 p-6 rounded-3xl shadow-sm border border-gray-100 dark:border-zinc-800">
                     <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">Tendencia de Ventas</h3>
                     <div className="h-[300px] w-full">
                         <ResponsiveContainer width="100%" height="100%">
@@ -144,7 +144,7 @@ export default function FinancePage() {
                 </div>
 
                 {/* Payment Methods Pie Chart */}
-                <div className="lg:col-span-1 bg-white dark:bg-zinc-900 p-6 rounded-xl shadow-sm border border-gray-100 dark:border-zinc-800">
+                <div className="lg:col-span-1 bg-white dark:bg-zinc-900 p-6 rounded-3xl shadow-sm border border-gray-100 dark:border-zinc-800">
                     <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">Métodos de Pago</h3>
                     <div className="h-[300px] w-full relative">
                         <ResponsiveContainer width="100%" height="100%">
@@ -195,7 +195,7 @@ function KPICard({ title, value, icon: Icon, color, bg }: any) {
                 <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">{title}</p>
                 <h3 className="text-2xl font-bold text-gray-900 dark:text-white">{value}</h3>
             </div>
-            <div className={`p-3 rounded-lg ${bg} dark:bg-opacity-20`}>
+            <div className={`p-3 rounded-2xl ${bg} dark:bg-opacity-20`}>
                 <Icon className={`w-6 h-6 ${color}`} />
             </div>
         </motion.div>

@@ -44,7 +44,7 @@ export default function SalesTrendChart({ data }: SalesTrendChartProps) {
                             boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
                         }}
                         itemStyle={{ color: '#111827', fontWeight: 600 }}
-                        formatter={(value: number) => [`$${value.toLocaleString()}`, 'Ventas']}
+                        formatter={(value: any) => [`$${Number(value).toLocaleString()}`, 'Ventas']}
                         labelStyle={{ color: '#6B7280', marginBottom: '4px' }}
                     />
                     <Bar

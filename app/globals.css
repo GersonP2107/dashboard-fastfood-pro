@@ -5,6 +5,16 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+
+  /* Brand Colors */
+  --brand-primary: #ea580c; /* orange-600 */
+  --brand-primary-hover: #c2410c; /* orange-700 */
+  --brand-accent: #dc2626; /* red-600 */
+  --brand-light: #fb923c; /* orange-400 */
+  
+  /* Semantic Colors */
+  --brand-success: #22c55e; /* green-500 */
+  --brand-success-bg: #dcfce7; /* green-100 */
 }
 
 @theme inline {
@@ -12,6 +22,18 @@
   --color-foreground: var(--foreground);
   --font-sans: 'Inter Variable', sans-serif;
   --font-mono: 'Inter Variable', sans-serif;
+
+  /* Brand Theme Colors */
+  --color-brand-primary: var(--brand-primary);
+  --color-brand-primary-hover: var(--brand-primary-hover);
+  --color-brand-accent: var(--brand-accent);
+  --color-brand-light: var(--brand-light);
+  --color-brand-success: var(--brand-success);
+  --color-brand-success-bg: var(--brand-success-bg);
+  
+  /* Aliases for ease of use if needed */
+  --color-primary: var(--brand-primary);
+  --color-primary-foreground: #ffffff;
 }
 
 .dark {

@@ -48,7 +48,7 @@ export default function SettingsPage() {
     if (loading) {
         return (
             <div className="flex items-center justify-center h-96">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-primary"></div>
             </div>
         )
     }
@@ -72,7 +72,7 @@ export default function SettingsPage() {
                 {/* Profile Section */}
                 <div className="lg:col-span-2 space-y-6">
                     <div className="bg-white dark:bg-zinc-900 shadow-sm rounded-3xl border border-gray-100 dark:border-zinc-800 p-6">
-                        <div className="flex items-center gap-2 mb-6 text-indigo-600 dark:text-indigo-400 border-b border-gray-100 dark:border-gray-800 pb-4">
+                        <div className="flex items-center gap-2 mb-6 text-brand-primary dark:text-brand-light border-b border-gray-100 dark:border-gray-800 pb-4">
                             <Store className="h-5 w-5" />
                             <h2 className="text-lg font-semibold">Perfil del Negocio</h2>
                         </div>
@@ -81,7 +81,7 @@ export default function SettingsPage() {
 
                     {/* Table Manager Section */}
                     <div className="bg-white dark:bg-zinc-900 shadow-sm rounded-3xl border border-gray-100 dark:border-zinc-800 p-6">
-                        <div className="flex items-center gap-2 mb-6 text-indigo-600 dark:text-indigo-400 border-b border-gray-100 dark:border-gray-800 pb-4">
+                        <div className="flex items-center gap-2 mb-6 text-brand-primary dark:text-brand-light border-b border-gray-100 dark:border-gray-800 pb-4">
                             <Layout className="h-5 w-5" />
                             <h2 className="text-lg font-semibold">Mesas y Zonas</h2>
                         </div>
@@ -96,7 +96,7 @@ export default function SettingsPage() {
                 <div className="lg:col-span-1 space-y-6">
                     {/* Delivery Zones */}
                     <div className="bg-white dark:bg-zinc-900 shadow-sm rounded-3xl border border-gray-100 dark:border-zinc-800 p-6">
-                        <div className="flex items-center gap-2 mb-6 text-indigo-600 dark:text-indigo-400 border-b border-gray-100 dark:border-gray-800 pb-4">
+                        <div className="flex items-center gap-2 mb-6 text-brand-primary dark:text-brand-light border-b border-gray-100 dark:border-gray-800 pb-4">
                             <Truck className="h-5 w-5" />
                             <h2 className="text-lg font-semibold">Domicilios</h2>
                         </div>

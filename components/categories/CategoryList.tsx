@@ -109,7 +109,7 @@ export default function CategoryList({ categories, onEdit }: CategoryListProps) 
                                             </button>
                                             <button
                                                 onClick={() => onEdit(cat)}
-                                                className="p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
+                                                className="p-2 text-brand-primary hover:bg-orange-50 dark:hover:bg-orange-900/20 rounded-lg transition-colors"
                                                 title="Editar"
                                                 disabled={isPending}
                                             >

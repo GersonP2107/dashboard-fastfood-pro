@@ -132,7 +132,7 @@ export default function TableManager({ businessmanId, initialZones }: TableManag
                 <button
                     onClick={handleCreateZone}
                     disabled={loading || !newZoneName.trim()}
-                    className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50 font-bold"
+                    className="px-4 py-2 bg-brand-primary text-white rounded-lg hover:bg-brand-primary-hover disabled:opacity-50 font-bold"
                 >
                     Crear Zona
                 </button>
@@ -145,7 +145,7 @@ export default function TableManager({ businessmanId, initialZones }: TableManag
                         {/* Zone Header */}
                         <div className="px-6 py-4 bg-gray-50 dark:bg-zinc-800/80 border-b border-gray-200 dark:border-zinc-700 flex justify-between items-center">
                             <div className="flex items-center gap-3">
-                                <Layout className="w-5 h-5 text-indigo-500" />
+                                <Layout className="w-5 h-5 text-brand-primary" />
                                 <h3 className="font-bold text-lg text-gray-900 dark:text-white">{zone.name}</h3>
                                 <span className="bg-gray-200 dark:bg-zinc-700 text-gray-700 dark:text-gray-300 px-2 py-0.5 rounded text-xs">
                                     {zone.tables?.length || 0} mesas
@@ -163,8 +163,8 @@ export default function TableManager({ businessmanId, initialZones }: TableManag
                         <div className="p-6">
                             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
                                 {zone.tables?.map(table => (
-                                    <div key={table.id} className="relative group bg-white dark:bg-zinc-800 border-2 border-dashed border-gray-300 dark:border-zinc-600 rounded-xl p-4 flex flex-col items-center justify-center gap-2 hover:border-indigo-400 dark:hover:border-indigo-500 transition-colors">
-                                        <TableIcon className="w-6 h-6 text-gray-400 dark:text-gray-500 group-hover:text-indigo-500 transition-colors" />
+                                    <div key={table.id} className="relative group bg-white dark:bg-zinc-800 border-2 border-dashed border-gray-300 dark:border-zinc-600 rounded-xl p-4 flex flex-col items-center justify-center gap-2 hover:border-brand-light dark:hover:border-brand-primary transition-colors">
+                                        <TableIcon className="w-6 h-6 text-gray-400 dark:text-gray-500 group-hover:text-brand-primary transition-colors" />
                                         <span className="font-bold text-gray-800 dark:text-gray-200">{table.name}</span>
                                         <span className="text-xs text-gray-400">{table.capacity} pax</span>
 
@@ -198,7 +198,7 @@ export default function TableManager({ businessmanId, initialZones }: TableManag
                                             />
                                             <button
                                                 onClick={() => handleCreateTable(zone.id)}
-                                                className="flex-1 bg-indigo-600 text-white text-xs font-bold rounded hover:bg-indigo-700"
+                                                className="flex-1 bg-brand-primary text-white text-xs font-bold rounded hover:bg-brand-primary-hover"
                                             >
                                                 Crear
                                             </button>
@@ -216,7 +216,7 @@ export default function TableManager({ businessmanId, initialZones }: TableManag
                                             setActiveZoneIdForTable(zone.id);
                                             setNewTableName(`Mesa ${(zone.tables?.length || 0) + 1}`);
                                         }}
-                                        className="flex flex-col items-center justify-center p-4 border-2 border-dashed border-gray-200 dark:border-zinc-700 rounded-xl text-gray-400 hover:text-indigo-500 hover:border-indigo-400 hover:bg-gray-50 dark:hover:bg-zinc-800 transition-all gap-2 h-full min-h-[100px]"
+                                        className="flex flex-col items-center justify-center p-4 border-2 border-dashed border-gray-200 dark:border-zinc-700 rounded-xl text-gray-400 hover:text-brand-primary hover:border-brand-light hover:bg-gray-50 dark:hover:bg-zinc-800 transition-all gap-2 h-full min-h-[100px]"
                                     >
                                         <Plus className="w-6 h-6" />
                                         <span className="text-xs font-bold">Agregar Mesa</span>

@@ -207,7 +207,7 @@ export default function OrdersPage() {
         playNotificationSound()
 
         toast.custom((t) => (
-            <div className="bg-white dark:bg-zinc-800 rounded-lg shadow-lg p-4 border-l-4 border-indigo-500 w-full max-w-sm cursor-pointer hover:bg-gray-50 dark:hover:bg-zinc-700 transition-colors" onClick={() => {
+            <div className="bg-white dark:bg-zinc-800 rounded-lg shadow-lg p-4 border-l-4 border-brand-primary w-full max-w-sm cursor-pointer hover:bg-gray-50 dark:hover:bg-zinc-700 transition-colors" onClick={() => {
                 setSelectedOrder(order)
                 toast.dismiss(t)
             }}>
@@ -217,17 +217,17 @@ export default function OrdersPage() {
                         <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
                             {order.customer_name}
                         </p>
-                        <p className="text-sm font-semibold text-indigo-600 dark:text-indigo-400 mt-1">
+                        <p className="text-sm font-semibold text-brand-primary dark:text-brand-light mt-1">
                             ${order.total.toLocaleString()}
                         </p>
                     </div>
-                    <div className="bg-indigo-100 dark:bg-indigo-900 p-2 rounded-full">
-                        <Bell className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
+                    <div className="bg-orange-100 dark:bg-orange-900 p-2 rounded-full">
+                        <Bell className="h-5 w-5 text-brand-primary dark:text-brand-light" />
                     </div>
                 </div>
                 <div className="mt-3 flex justify-end">
                     <button
-                        className="text-xs font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-500"
+                        className="text-xs font-medium text-brand-primary dark:text-brand-light hover:text-brand-primary-hover"
                     >
                         Ver detalles &rarr;
                     </button>
@@ -313,7 +313,7 @@ export default function OrdersPage() {
     if (loading) {
         return (
             <div className="flex items-center justify-center h-96">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-primary"></div>
             </div>
         )
     }
@@ -402,7 +402,7 @@ export default function OrdersPage() {
                         )}
                         <button
                             onClick={() => businessId && refreshOrders(businessId)}
-                            className="p-2.5 text-gray-500 hover:text-indigo-600 hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-xl transition-all"
+                            className="p-2.5 text-gray-500 hover:text-brand-primary hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-xl transition-all"
                             title="Actualizar ahora"
                         >
                             <RefreshCw className="w-4 h-4" />

@@ -76,7 +76,7 @@ export default function DashboardHome() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-96">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-primary"></div>
       </div>
     )
   }
@@ -136,14 +136,14 @@ export default function DashboardHome() {
           title="Pedidos del Mes"
           value={stats.total_orders_month.toString()}
           icon={ShoppingCart}
-          iconColor="text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20"
+          iconColor="text-brand-light dark:text-brand-light bg-orange-50 dark:bg-orange-900/20"
         />
 
         <StatCard
           title="Pedidos Pendientes"
           value={stats.pending_orders.toString()}
           icon={Clock}
-          iconColor="text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/20"
+          iconColor="text-brand-primary dark:text-brand-primary bg-orange-50 dark:bg-orange-900/20"
           description="Requieren atención inmediata"
         />
 
@@ -157,7 +157,7 @@ export default function DashboardHome() {
               <h2 className="text-lg font-bold text-gray-900 dark:text-white">Tendencia de Ventas</h2>
               <p className="text-sm text-gray-500">Últimos 7 días</p>
             </div>
-            <div className="p-2 bg-indigo-50 dark:bg-zinc-800 rounded-xl text-indigo-600 dark:text-indigo-400">
+            <div className="p-2 bg-orange-50 dark:bg-zinc-800 rounded-xl text-brand-primary dark:text-brand-light">
               <TrendingUp className="w-5 h-5" />
             </div>
           </div>
@@ -185,7 +185,7 @@ export default function DashboardHome() {
           title="Ventas Hoy"
           value={`$${stats.today_sales.toLocaleString()}`}
           icon={Package}
-          iconColor="text-pink-600 dark:text-pink-400 bg-pink-50 dark:bg-pink-900/20"
+          iconColor="text-brand-accent dark:text-red-400 bg-red-50 dark:bg-red-900/20"
         />
 
         <StatCard
@@ -205,7 +205,7 @@ export default function DashboardHome() {
           <h2 className="text-lg font-bold text-gray-900 dark:text-white">Pedidos Recientes</h2>
           <Link
             href="/orders"
-            className="text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-500"
+            className="text-sm font-medium text-brand-primary dark:text-brand-light hover:text-brand-primary-hover"
           >
             Ver todos
           </Link>
@@ -219,19 +219,19 @@ export default function DashboardHome() {
             recentOrders.map((order) => (
               <div
                 key={order.id}
-                className="group flex items-center justify-between px-6 py-4 hover:bg-gray-50 dark:hover:bg-zinc-800/50 transition-colors"
+                className="group flex flex-col sm:flex-row items-start sm:items-center justify-between px-6 py-4 hover:bg-gray-50 dark:hover:bg-zinc-800/50 transition-colors gap-4"
               >
-                <div className="flex items-center gap-4">
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center text-lg font-bold
-                    ${order.status === 'pendiente' ? 'bg-yellow-100 text-yellow-600 dark:bg-yellow-900/30 dark:text-yellow-400' :
-                      order.status === 'entregado' ? 'bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400' :
+                <div className="flex items-center gap-4 w-full sm:w-auto">
+                  <div className={`w-10 h-10 rounded-full flex items-center justify-center text-lg font-bold shrink-0
+                    ${order.status === 'pendiente' ? 'bg-orange-50 text-brand-primary dark:bg-orange-900/30 dark:text-orange-400' :
+                      order.status === 'entregado' ? 'bg-green-100 text-brand-success dark:bg-green-900/30 dark:text-green-400' :
                         'bg-gray-100 text-gray-600 dark:bg-zinc-800 dark:text-gray-400'}`}
                   >
                     {order.customer_name.charAt(0)}
                   </div>
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <span className="font-semibold text-gray-900 dark:text-white">{order.customer_name}</span>
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="font-semibold text-gray-900 dark:text-white truncate">{order.customer_name}</span>
                       <span className="text-xs text-gray-400">#{order.order_number}</span>
                     </div>
                     <div className="text-sm text-gray-500">
@@ -240,13 +240,13 @@ export default function DashboardHome() {
                   </div>
                 </div>
 
-                <div className="flex items-center gap-6">
+                <div className="flex items-center justify-between w-full sm:w-auto gap-6 sm:justify-end">
                   <span
                     className={`px-3 py-1 rounded-full text-xs font-medium border ${order.status === 'pendiente'
-                      ? 'bg-yellow-50 text-yellow-700 border-yellow-200 dark:bg-yellow-900/20 dark:text-yellow-400 dark:border-yellow-900'
+                      ? 'bg-orange-50 text-brand-primary border-orange-200 dark:bg-orange-900/20 dark:text-orange-400 dark:border-orange-900'
                       : order.status === 'entregado'
-                        ? 'bg-green-50 text-green-700 border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-900'
-                        : 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-900'
+                        ? 'bg-green-50 text-brand-success border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-900'
+                        : 'bg-gray-50 text-gray-700 border-gray-200 dark:bg-gray-900/20 dark:text-gray-400 dark:border-gray-900'
                       }`}
                   >
                     {order.status}
@@ -260,6 +260,6 @@ export default function DashboardHome() {
           )}
         </div>
       </motion.div>
-    </motion.div>
+    </motion.div >
   )
 }

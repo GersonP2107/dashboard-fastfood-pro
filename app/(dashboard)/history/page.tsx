@@ -115,8 +115,8 @@ export default function HistoryPage() {
             'cancelled': 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400',
             'pendiente': 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400',
             'pending': 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400',
-            'confirmado': 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-400',
-            'confirmed': 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-400',
+            'confirmado': 'bg-orange-50 text-brand-primary dark:bg-orange-900/30 dark:text-orange-400',
+            'confirmed': 'bg-orange-50 text-brand-primary dark:bg-orange-900/30 dark:text-orange-400',
             'preparando': 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400',
             'preparing': 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400',
             'listo': 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400',
@@ -176,7 +176,7 @@ export default function HistoryPage() {
 
                 <div className="flex gap-4">
                     <div className="bg-white dark:bg-zinc-900 p-4 rounded-xl border border-gray-200 dark:border-zinc-800 shadow-sm flex items-center gap-3">
-                        <div className="p-2 bg-green-50 dark:bg-green-900/20 rounded-lg text-green-600">
+                        <div className="p-2 bg-green-50 dark:bg-green-900/20 rounded-lg text-brand-success">
                             <DollarSign className="w-5 h-5" />
                         </div>
                         <div>
@@ -185,7 +185,7 @@ export default function HistoryPage() {
                         </div>
                     </div>
                     <div className="bg-white dark:bg-zinc-900 p-4 rounded-xl border border-gray-200 dark:border-zinc-800 shadow-sm flex items-center gap-3">
-                        <div className="p-2 bg-indigo-50 dark:bg-indigo-900/20 rounded-lg text-indigo-600">
+                        <div className="p-2 bg-orange-50 dark:bg-orange-900/20 rounded-lg text-brand-primary">
                             <ShoppingCart className="w-5 h-5" />
                         </div>
                         <div>
@@ -212,8 +212,8 @@ export default function HistoryPage() {
                             key={filter.id}
                             onClick={() => handleQuickFilter(filter.id)}
                             className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors border ${rangeType === filter.id
-                                    ? 'bg-indigo-50 border-indigo-200 text-indigo-700 dark:bg-indigo-900/30 dark:border-indigo-800 dark:text-indigo-400'
-                                    : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50 dark:bg-zinc-900 dark:border-zinc-700 dark:text-gray-400 dark:hover:bg-zinc-800'
+                                ? 'bg-orange-50 border-orange-200 text-brand-primary dark:bg-orange-900/30 dark:border-orange-800 dark:text-orange-400'
+                                : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50 dark:bg-zinc-900 dark:border-zinc-700 dark:text-gray-400 dark:hover:bg-zinc-800'
                                 }`}
                         >
                             {filter.label}
@@ -225,7 +225,7 @@ export default function HistoryPage() {
                     <select
                         value={statusFilter}
                         onChange={(e) => setStatusFilter(e.target.value)}
-                        className="text-sm border-gray-200 dark:border-zinc-700 rounded-lg bg-white dark:bg-zinc-900 dark:text-white focus:ring-indigo-500 focus:border-indigo-500"
+                        className="text-sm border-gray-200 dark:border-zinc-700 rounded-lg bg-white dark:bg-zinc-900 dark:text-white focus:ring-brand-primary focus:border-brand-primary"
                     >
                         <option value="all">Todos los estados</option>
                         <option value="entregado">Entregados</option>
@@ -260,7 +260,7 @@ export default function HistoryPage() {
                             {loading ? (
                                 <tr>
                                     <td colSpan={7} className="px-6 py-12 text-center text-gray-500">
-                                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600 mx-auto mb-2"></div>
+                                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-primary mx-auto mb-2"></div>
                                         Cargando historial...
                                     </td>
                                 </tr>
@@ -295,7 +295,7 @@ export default function HistoryPage() {
                                         <td className="px-6 py-4 text-center">
                                             <button
                                                 onClick={() => setSelectedOrder(order)}
-                                                className="p-2 text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg transition-colors"
+                                                className="p-2 text-brand-primary hover:bg-orange-50 dark:hover:bg-orange-900/20 rounded-lg transition-colors"
                                                 title="Ver detalles"
                                             >
                                                 <Eye className="w-4 h-4" />

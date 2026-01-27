@@ -21,7 +21,7 @@ export default function StatCard({
     icon: Icon,
     trend,
     className,
-    iconColor = "text-indigo-600 dark:text-indigo-400",
+    iconColor = "text-brand-primary dark:text-brand-light bg-orange-50 dark:bg-orange-900/20",
     description
 }: StatCardProps) {
     return (

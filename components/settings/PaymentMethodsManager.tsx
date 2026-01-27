@@ -141,7 +141,7 @@ export default function PaymentMethodsManager({ businessmanId, initialMethods }:
         <div className="space-y-6">
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                    <CreditCard className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
+                    <CreditCard className="h-5 w-5 text-brand-primary dark:text-brand-light" />
                     <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Métodos de Pago</h2>
                 </div>
                 <button
@@ -150,7 +150,7 @@ export default function PaymentMethodsManager({ businessmanId, initialMethods }:
                         setIsAdding(true);
                     }}
                     disabled={isAdding}
-                    className="flex items-center gap-2 text-sm text-indigo-600 dark:text-indigo-400 hover:text-indigo-500 disabled:opacity-50"
+                    className="flex items-center gap-2 text-sm text-brand-primary dark:text-brand-light hover:text-brand-primary-hover disabled:opacity-50"
                 >
                     <Plus className="h-4 w-4" />
                     Nuevo Método
@@ -178,7 +178,7 @@ export default function PaymentMethodsManager({ businessmanId, initialMethods }:
                                         <select
                                             value={newMethod.type}
                                             onChange={(e) => setNewMethod({ ...newMethod, type: e.target.value as any })}
-                                            className="block w-full rounded-md border-gray-300 dark:border-zinc-700 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm bg-white dark:bg-zinc-950 dark:text-gray-100 px-3 py-2"
+                                            className="block w-full rounded-md border-gray-300 dark:border-zinc-700 shadow-sm focus:border-brand-primary focus:ring-brand-primary sm:text-sm bg-white dark:bg-zinc-950 dark:text-gray-100 px-3 py-2"
                                         >
                                             {METHOD_TYPES.map(type => (
                                                 <option key={type.value} value={type.value}>{type.label}</option>
@@ -192,7 +192,7 @@ export default function PaymentMethodsManager({ businessmanId, initialMethods }:
                                             value={newMethod.name}
                                             onChange={(e) => setNewMethod({ ...newMethod, name: e.target.value })}
                                             placeholder="Ej. Nequi - Juan"
-                                            className="block w-full rounded-md border-gray-300 dark:border-zinc-700 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm bg-white dark:bg-zinc-950 dark:text-gray-100 px-3 py-2"
+                                            className="block w-full rounded-md border-gray-300 dark:border-zinc-700 shadow-sm focus:border-brand-primary focus:ring-brand-primary sm:text-sm bg-white dark:bg-zinc-950 dark:text-gray-100 px-3 py-2"
                                         />
                                     </div>
                                     <div>
@@ -202,7 +202,7 @@ export default function PaymentMethodsManager({ businessmanId, initialMethods }:
                                             value={newMethod.account_number}
                                             onChange={(e) => setNewMethod({ ...newMethod, account_number: e.target.value })}
                                             placeholder="Ej. 3001234567"
-                                            className="block w-full rounded-md border-gray-300 dark:border-zinc-700 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm bg-white dark:bg-zinc-950 dark:text-gray-100 px-3 py-2"
+                                            className="block w-full rounded-md border-gray-300 dark:border-zinc-700 shadow-sm focus:border-brand-primary focus:ring-brand-primary sm:text-sm bg-white dark:bg-zinc-950 dark:text-gray-100 px-3 py-2"
                                         />
                                     </div>
                                 </div>
@@ -213,7 +213,7 @@ export default function PaymentMethodsManager({ businessmanId, initialMethods }:
                                         onChange={(e) => setNewMethod({ ...newMethod, instructions: e.target.value })}
                                         placeholder="Ej. Envía el comprobante a este chat..."
                                         rows={2}
-                                        className="block w-full rounded-md border-gray-300 dark:border-zinc-700 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm bg-white dark:bg-zinc-950 dark:text-gray-100 px-3 py-2"
+                                        className="block w-full rounded-md border-gray-300 dark:border-zinc-700 shadow-sm focus:border-brand-primary focus:ring-brand-primary sm:text-sm bg-white dark:bg-zinc-950 dark:text-gray-100 px-3 py-2"
                                     />
                                 </div>
 
@@ -228,7 +228,7 @@ export default function PaymentMethodsManager({ businessmanId, initialMethods }:
                                     <button
                                         onClick={handleSave}
                                         disabled={loading || !newMethod.name}
-                                        className="px-4 py-2 border border-transparent text-sm font-medium rounded-lg shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 transition-colors flex items-center"
+                                        className="px-4 py-2 border border-transparent text-sm font-medium rounded-lg shadow-sm text-white bg-brand-primary hover:bg-brand-primary-hover disabled:opacity-50 transition-colors flex items-center"
                                     >
                                         <Save className="h-4 w-4 mr-1.5" />
                                         {editingId ? 'Actualizar' : 'Guardar'}
@@ -287,7 +287,7 @@ export default function PaymentMethodsManager({ businessmanId, initialMethods }:
 
                                 <button
                                     onClick={() => handleEdit(method)}
-                                    className="p-1.5 text-gray-400 hover:text-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg transition-colors"
+                                    className="p-1.5 text-gray-400 hover:text-brand-primary hover:bg-orange-50 dark:hover:bg-orange-900/20 rounded-lg transition-colors"
                                     title="Editar"
                                 >
                                     <Pencil className="h-4 w-4" />

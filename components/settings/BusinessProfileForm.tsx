@@ -154,7 +154,7 @@ export default function BusinessProfileForm({ businessman }: BusinessProfileForm
                             </div>
                         )}
                     </div>
-                    <label className="absolute bottom-0 right-0 p-1.5 bg-indigo-600 rounded-full text-white cursor-pointer hover:bg-indigo-700 transition-colors shadow-sm">
+                    <label className="absolute bottom-0 right-0 p-1.5 bg-brand-primary rounded-full text-white cursor-pointer hover:bg-brand-primary-hover transition-colors shadow-sm">
                         <Camera className="w-4 h-4" />
                         <input type="file" accept="image/*" onChange={handleLogoUpload} className="hidden" />
                     </label>
@@ -176,7 +176,7 @@ export default function BusinessProfileForm({ businessman }: BusinessProfileForm
                         type="text"
                         value={formData.business_name}
                         onChange={(e) => setFormData({ ...formData, business_name: e.target.value })}
-                        className="block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm dark:bg-zinc-700 dark:text-white px-4 py-2.5 transition-shadow"
+                        className="block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-brand-primary focus:ring-brand-primary sm:text-sm dark:bg-zinc-700 dark:text-white px-4 py-2.5 transition-shadow"
                         required
                     />
                 </div>
@@ -188,7 +188,7 @@ export default function BusinessProfileForm({ businessman }: BusinessProfileForm
                             <select
                                 value={phonePrefix}
                                 onChange={(e) => setPhonePrefix(e.target.value)}
-                                className="block w-[110px] rounded-l-md border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-zinc-800 text-gray-500 dark:text-gray-300 sm:text-sm focus:border-indigo-500 focus:ring-indigo-500 border-r-0"
+                                className="block w-[110px] rounded-l-md border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-zinc-800 text-gray-500 dark:text-gray-300 sm:text-sm focus:border-brand-primary focus:ring-brand-primary border-r-0"
                             >
                                 {COUNTRY_CODES.map((c) => (
                                     <option key={c.code} value={c.code}>
@@ -201,7 +201,7 @@ export default function BusinessProfileForm({ businessman }: BusinessProfileForm
                             type="tel"
                             value={phoneNumberOnly}
                             onChange={(e) => setPhoneNumberOnly(e.target.value.replace(/\D/g, ''))} // Only allow numbers
-                            className="block w-full rounded-none rounded-r-md border-gray-300 dark:border-gray-600 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm dark:bg-zinc-700 dark:text-white px-4 py-2.5"
+                            className="block w-full rounded-none rounded-r-md border-gray-300 dark:border-gray-600 focus:border-brand-primary focus:ring-brand-primary sm:text-sm dark:bg-zinc-700 dark:text-white px-4 py-2.5"
                             placeholder="300 123 4567"
                             required
                         />
@@ -221,7 +221,7 @@ export default function BusinessProfileForm({ businessman }: BusinessProfileForm
                             type="text"
                             value={formData.delivery_time_estimate}
                             onChange={(e) => setFormData({ ...formData, delivery_time_estimate: e.target.value })}
-                            className="block w-full rounded-md border-gray-300 dark:border-gray-600 pl-10 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm dark:bg-zinc-700 dark:text-white px-4 py-2.5"
+                            className="block w-full rounded-md border-gray-300 dark:border-gray-600 pl-10 focus:border-brand-primary focus:ring-brand-primary sm:text-sm dark:bg-zinc-700 dark:text-white px-4 py-2.5"
                             placeholder="Ej. 30 - 45 min"
                         />
                     </div>
@@ -233,7 +233,7 @@ export default function BusinessProfileForm({ businessman }: BusinessProfileForm
                         type="text"
                         value={formData.address || ""}
                         onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                        className="block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm dark:bg-zinc-700 dark:text-white px-4 py-2.5 transition-shadow"
+                        className="block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-brand-primary focus:ring-brand-primary sm:text-sm dark:bg-zinc-700 dark:text-white px-4 py-2.5 transition-shadow"
                     />
                 </div>
 
@@ -243,7 +243,7 @@ export default function BusinessProfileForm({ businessman }: BusinessProfileForm
                         rows={3}
                         value={formData.description || ""}
                         onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                        className="block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm dark:bg-zinc-700 dark:text-white px-4 py-2.5 transition-shadow"
+                        className="block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-brand-primary focus:ring-brand-primary sm:text-sm dark:bg-zinc-700 dark:text-white px-4 py-2.5 transition-shadow"
                         placeholder="Breve descripción de tu negocio..."
                     />
                 </div>
@@ -251,7 +251,7 @@ export default function BusinessProfileForm({ businessman }: BusinessProfileForm
                 {/* Operating Schedule Section */}
                 <div className="col-span-2 border-t border-gray-200 dark:border-gray-700 pt-6 mt-2">
                     <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                        <Clock className="h-5 w-5 text-indigo-500" />
+                        <Clock className="h-5 w-5 text-brand-primary" />
                         Horarios de Atención Semanal
                     </h3>
 
@@ -266,7 +266,7 @@ export default function BusinessProfileForm({ businessman }: BusinessProfileForm
                                     <button
                                         type="button"
                                         onClick={() => updateScheduleDay(index, 'isActive', !item.isActive)}
-                                        className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${item.isActive ? 'bg-indigo-600' : 'bg-gray-200 dark:bg-zinc-600'
+                                        className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${item.isActive ? 'bg-brand-primary' : 'bg-gray-200 dark:bg-zinc-600'
                                             }`}
                                     >
                                         <span className="sr-only">Use setting</span>
@@ -289,7 +289,7 @@ export default function BusinessProfileForm({ businessman }: BusinessProfileForm
                                             value={item.open}
                                             disabled={!item.isActive}
                                             onChange={(e) => updateScheduleDay(index, 'open', e.target.value)}
-                                            className="block w-full rounded-md border-gray-300 dark:border-zinc-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm dark:bg-zinc-700 dark:text-white px-3 py-2 disabled:bg-gray-100 dark:disabled:bg-zinc-800 disabled:text-gray-400"
+                                            className="block w-full rounded-md border-gray-300 dark:border-zinc-600 shadow-sm focus:border-brand-primary focus:ring-brand-primary sm:text-sm dark:bg-zinc-700 dark:text-white px-3 py-2 disabled:bg-gray-100 dark:disabled:bg-zinc-800 disabled:text-gray-400"
                                         />
                                     </div>
                                     <span className="text-gray-400">-</span>
@@ -300,7 +300,7 @@ export default function BusinessProfileForm({ businessman }: BusinessProfileForm
                                             value={item.close}
                                             disabled={!item.isActive}
                                             onChange={(e) => updateScheduleDay(index, 'close', e.target.value)}
-                                            className="block w-full rounded-md border-gray-300 dark:border-zinc-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm dark:bg-zinc-700 dark:text-white px-3 py-2 disabled:bg-gray-100 dark:disabled:bg-zinc-800 disabled:text-gray-400"
+                                            className="block w-full rounded-md border-gray-300 dark:border-zinc-600 shadow-sm focus:border-brand-primary focus:ring-brand-primary sm:text-sm dark:bg-zinc-700 dark:text-white px-3 py-2 disabled:bg-gray-100 dark:disabled:bg-zinc-800 disabled:text-gray-400"
                                         />
                                     </div>
                                 </div>
@@ -325,7 +325,7 @@ export default function BusinessProfileForm({ businessman }: BusinessProfileForm
                 <button
                     type="submit"
                     disabled={saving}
-                    className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
+                    className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-brand-primary hover:bg-brand-primary-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-primary disabled:opacity-50"
                 >
                     {saving ? (
                         <>

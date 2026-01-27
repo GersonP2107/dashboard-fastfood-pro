@@ -21,7 +21,7 @@ export default async function InventoryPage() {
     return (
         <div className="max-w-7xl mx-auto space-y-6">
             <div className="flex items-center gap-3 mb-6">
-                <div className="p-2.5 bg-indigo-50 dark:bg-indigo-900/20 rounded-2xl text-indigo-600 dark:text-indigo-400">
+                <div className="p-2.5 bg-brand-primary/10 rounded-2xl text-brand-primary">
                     <Package className="w-6 h-6" />
                 </div>
                 <div>

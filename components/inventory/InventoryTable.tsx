@@ -62,7 +62,7 @@ export default function InventoryTable({ initialProducts, categories }: Inventor
                     <input
                         type="text"
                         placeholder="Buscar producto..."
-                        className="w-full pl-9 pr-4 py-2.5 text-sm border border-gray-200 dark:border-zinc-800 rounded-xl focus:ring-2 focus:ring-indigo-500 bg-transparent dark:text-white transition-all"
+                        className="w-full pl-9 pr-4 py-2.5 text-sm border border-gray-200 dark:border-zinc-800 rounded-xl focus:ring-2 focus:ring-brand-primary bg-transparent dark:text-white transition-all"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
@@ -70,7 +70,7 @@ export default function InventoryTable({ initialProducts, categories }: Inventor
 
                 <div className="flex gap-2">
                     <select
-                        className="text-sm border border-gray-200 dark:border-zinc-800 rounded-xl px-3 py-2.5 bg-white dark:bg-zinc-800 dark:text-white focus:ring-2 focus:ring-indigo-500 transition-all"
+                        className="text-sm border border-gray-200 dark:border-zinc-800 rounded-xl px-3 py-2.5 bg-white dark:bg-zinc-800 dark:text-white focus:ring-2 focus:ring-brand-primary transition-all"
                         value={selectedCategory}
                         onChange={(e) => setSelectedCategory(e.target.value)}
                     >
@@ -204,7 +204,7 @@ function StockInput({ initialValue, onChange }: { initialValue: number | null, o
                 onKeyDown={handleKeyDown}
                 placeholder="∞"
                 className={`
-                    w-20 px-3 py-1.5 text-center text-sm font-medium rounded-md border transition-colors focus:ring-2 focus:ring-indigo-500 outline-none
+                    w-20 px-3 py-1.5 text-center text-sm font-medium rounded-md border transition-colors focus:ring-2 focus:ring-brand-primary outline-none
                     ${initialValue !== null && initialValue < 5
                         ? 'bg-red-50 text-red-700 border-red-200 dark:bg-red-900/10'
                         : 'bg-white text-gray-900 border-gray-200 dark:bg-zinc-800 dark:text-white dark:border-zinc-700'}

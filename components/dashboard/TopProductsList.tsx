@@ -52,7 +52,7 @@ export default function TopProductsList({ products = [] }: TopProductsListProps)
                     {/* Progress Bar Background */}
                     <div className="h-1.5 w-full bg-gray-100 dark:bg-zinc-800 rounded-full overflow-hidden">
                         <div
-                            className="h-full bg-indigo-500 rounded-full transition-all duration-500"
+                            className="h-full bg-brand-primary rounded-full transition-all duration-500"
                             style={{ width: `${(product.total_quantity / maxQuantity) * 100}%` }}
                         ></div>
                     </div>

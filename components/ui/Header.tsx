@@ -63,7 +63,7 @@ export default function Header({ business }: HeaderProps) {
 
                     <div className="flex items-center gap-x-3">
                         {/* Profile */}
-                        <div className="h-9 w-9 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold shadow-sm">
+                        <div className="h-9 w-9 rounded-2xl bg-gradient-to-br from-brand-primary to-brand-accent flex items-center justify-center text-white font-bold shadow-sm">
                             {business?.business_name?.charAt(0) || 'D'}
                         </div>
                     </div>

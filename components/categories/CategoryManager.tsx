@@ -34,7 +34,7 @@ export default function CategoryManager({ categories, businessmanId }: CategoryM
 
                 <button
                     onClick={() => setIsAddModalOpen(true)}
-                    className="flex items-center gap-2 px-4 py-2.5 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-all shadow-sm whitespace-nowrap font-medium"
+                    className="flex items-center gap-2 px-4 py-2.5 bg-brand-primary text-white rounded-xl hover:bg-brand-primary-hover transition-all shadow-sm whitespace-nowrap font-medium"
                 >
                     <Plus className="h-4 w-4" />
                     Nueva Categoría

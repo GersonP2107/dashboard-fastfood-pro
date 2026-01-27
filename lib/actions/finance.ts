@@ -30,14 +30,14 @@ export async function getFinancialStats(businessmanId: string, range: DateRange 
             startDate = startOfDay(now)
     }
 
-    // 1. Fetch completed orders in range
+    // 1. Fetch completed orders in range with items for top products
     const { data: orders, error } = await supabase
         .from('orders')
-        .select('*')
+        .select('*, order_items(*)')
         .eq('businessman_id', businessmanId)
         .gte('created_at', startDate.toISOString())
         .lte('created_at', endDate.toISOString())
-        .in('status', ['entregado', 'delivered', 'listo', 'ready']) // Assuming "listo" also counts as sale made for KDS flow, or just "delivered"? Usually delivered. Let's include delivered.
+        .in('status', ['entregado', 'delivered', 'listo', 'ready'])
 
     if (error) {
         console.error('Error fetching finance stats:', error)
@@ -61,13 +61,39 @@ export async function getFinancialStats(businessmanId: string, range: DateRange 
         value
     }))
 
-    // 4. Sales Over Time (Chart Data)
+    // 4. Sales by Delivery Type
+    const salesByType = orders.reduce((acc, order) => {
+        const type = order.delivery_type || 'unknown'
+        acc[type] = (acc[type] || 0) + order.total
+        return acc
+    }, {} as Record<string, number>)
+
+    const salesByTypeData = Object.entries(salesByType).map(([name, value]) => ({
+        name: name === 'delivery' ? 'Domicilio' : name === 'pickup' ? 'Recoger' : name === 'dine_in' ? 'Mesa' : name,
+        value
+    }))
+
+    // 5. Top Products
+    const productStats = orders.flatMap(o => o.order_items || []).reduce((acc, item) => {
+        const name = item.product_name
+        if (!acc[name]) {
+            acc[name] = { name, quantity: 0, revenue: 0 }
+        }
+        acc[name].quantity += item.quantity
+        acc[name].revenue += item.subtotal // Approximately, ignoring order-level discounts for item simplicity
+        return acc
+    }, {} as Record<string, { name: string, quantity: number, revenue: number }>)
+
+    const topProducts = Object.values(productStats)
+        .sort((a, b) => b.quantity - a.quantity)
+        .slice(0, 5)
+
+    // 6. Sales Over Time (Chart Data)
     // Initialize all days/hours with 0 to have a continuous line
     let salesOverTime: { date: string; total: number; count: number }[] = []
 
     if (range === 'today') {
         // Hourly breakdown
-        // Simple Implementation: Group by hour
         const hours = Array.from({ length: 24 }, (_, i) => i)
         salesOverTime = hours.map(hour => {
             const hourOrders = orders.filter(o => new Date(o.created_at).getHours() === hour)
@@ -85,7 +111,7 @@ export async function getFinancialStats(businessmanId: string, range: DateRange 
             const dayOrders = orders.filter(o => format(new Date(o.created_at), 'yyyy-MM-dd') === dayStr)
             return {
                 date: format(day, 'EEE d', { locale: es }), // Lun 6
-                total: dayOrders.reduce((a, b) => a + b.total, 0),
+                total: dayOrders.reduce((a: number, b: any) => a + b.total, 0),
                 count: dayOrders.length
             }
         })
@@ -96,6 +122,9 @@ export async function getFinancialStats(businessmanId: string, range: DateRange 
         orderCount,
         averageTicket,
         paymentMethodData,
-        salesOverTime
+        salesByTypeData,
+        topProducts,
+        salesOverTime,
+        rawOrders: orders // For CSV export
     }
 }

@@ -2,6 +2,7 @@
 import Sidebar from '@/components/ui/Sidebar'
 import Header from '@/components/ui/Header'
 import { getCurrentBusinessman } from '@/lib/actions/users'
+import { BusinessChatHelper } from '@/components/ai/BusinessChatHelper'
 
 export default async function DashboardLayout({
     children,
@@ -24,6 +25,7 @@ export default async function DashboardLayout({
                     </div>
                 </main>
             </div>
+            <BusinessChatHelper />
         </div>
     )
 }

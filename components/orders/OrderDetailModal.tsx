@@ -170,7 +170,7 @@ export default function OrderDetailModal({ order, onClose, onUpdate }: OrderDeta
             ></div>
 
             {/* Modal Content */}
-            <div className="relative w-full max-w-3xl max-h-[90vh] flex flex-col bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl overflow-hidden ring-1 ring-black/5">
+            <div className="relative w-full h-full sm:h-auto sm:max-w-3xl sm:max-h-[90vh] flex flex-col bg-white dark:bg-zinc-900 sm:rounded-2xl shadow-2xl overflow-hidden ring-1 ring-black/5">
 
                 {/* Header */}
                 <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 dark:border-zinc-800 bg-white dark:bg-zinc-900 sticky top-0 z-10">
@@ -182,7 +182,7 @@ export default function OrderDetailModal({ order, onClose, onUpdate }: OrderDeta
                             <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wide border
                                 ${order.status === 'pendiente' ? 'bg-yellow-50 text-yellow-700 border-yellow-200' :
                                     order.status === 'entregado' ? 'bg-green-50 text-green-700 border-green-200' :
-                                        'bg-indigo-50 text-indigo-700 border-indigo-200'}`}>
+                                        'bg-orange-50 text-brand-primary border-orange-200'}`}>
                                 {STATUS_LABELS[order.status]}
                             </span>
                             {!isDineIn && (
@@ -243,7 +243,7 @@ export default function OrderDetailModal({ order, onClose, onUpdate }: OrderDeta
                             </h3>
                             <div className="bg-gray-50 dark:bg-zinc-800/50 p-4 rounded-xl border border-gray-100 dark:border-zinc-800 space-y-3 h-full">
                                 <div className="flex items-center gap-3">
-                                    <div className="h-8 w-8 rounded-full bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center text-indigo-600 font-bold">
+                                    <div className="h-8 w-8 rounded-full bg-brand-primary/10 dark:bg-orange-900/30 flex items-center justify-center text-brand-primary font-bold">
                                         {order.customer_name.charAt(0)}
                                     </div>
                                     <div>
@@ -270,14 +270,14 @@ export default function OrderDetailModal({ order, onClose, onUpdate }: OrderDeta
                                     <div className="flex flex-col gap-2">
                                         <div className="flex justify-between items-center">
                                             <span className="text-gray-500">Tipo:</span>
-                                            <span className="font-bold text-indigo-600 dark:text-indigo-400">Consumo en Local</span>
+                                            <span className="font-bold text-brand-primary dark:text-brand-light">Consumo en Local</span>
                                         </div>
                                         {order.restaurant_tables ? (
-                                            <div className="mt-1 p-3 bg-indigo-50 dark:bg-indigo-900/20 rounded-lg border border-indigo-100 dark:border-indigo-900/30 text-center">
-                                                <p className="text-xs text-indigo-500 dark:text-indigo-400 uppercase font-bold tracking-wider mb-1">
+                                            <div className="mt-1 p-3 bg-brand-primary/10 dark:bg-orange-900/20 rounded-lg border border-brand-light/30 dark:border-orange-900/30 text-center">
+                                                <p className="text-xs text-brand-primary dark:text-brand-light uppercase font-bold tracking-wider mb-1">
                                                     {order.restaurant_tables.restaurant_zones?.name || 'Zona'}
                                                 </p>
-                                                <p className="text-xl font-bold text-indigo-700 dark:text-indigo-300">
+                                                <p className="text-xl font-bold text-brand-primary dark:text-brand-light">
                                                     {order.restaurant_tables.label}
                                                 </p>
                                             </div>
@@ -319,7 +319,7 @@ export default function OrderDetailModal({ order, onClose, onUpdate }: OrderDeta
                         <div className="divide-y divide-gray-100 dark:divide-zinc-800 border border-gray-200 dark:border-zinc-800 rounded-xl overflow-hidden">
                             {order.order_items?.map((item) => (
                                 <div key={item.id} className="p-4 flex gap-4 bg-white dark:bg-zinc-900/50 hover:bg-gray-50 dark:hover:bg-zinc-800/50 transition-colors">
-                                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 font-bold text-sm">
+                                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-orange-50 dark:bg-orange-900/20 text-brand-primary font-bold text-sm">
                                         {item.quantity}x
                                     </div>
                                     <div className="flex-1">
@@ -329,9 +329,9 @@ export default function OrderDetailModal({ order, onClose, onUpdate }: OrderDeta
                                                 <p className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-1">Extras / Modificadores:</p>
                                                 {item.modifiers.map((mod: { id: string; modifier_name: string; additional_price: number }) => (
                                                     <div key={mod.id} className="text-sm text-gray-700 dark:text-gray-300 flex items-center gap-1.5">
-                                                        <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 shrink-0"></span>
+                                                        <span className="w-1.5 h-1.5 rounded-full bg-brand-primary shrink-0"></span>
                                                         <span className="font-medium">{mod.modifier_name}</span>
-                                                        {mod.additional_price > 0 && <span className="text-indigo-600 dark:text-indigo-400 font-bold">(+${mod.additional_price.toLocaleString()})</span>}
+                                                        {mod.additional_price > 0 && <span className="text-brand-primary dark:text-brand-light font-bold">(+${mod.additional_price.toLocaleString()})</span>}
                                                     </div>
                                                 ))}
                                             </div>
@@ -365,7 +365,7 @@ export default function OrderDetailModal({ order, onClose, onUpdate }: OrderDeta
                             </div>
                             <div className="pt-3 border-t border-gray-200 dark:border-zinc-700 flex justify-between items-center">
                                 <span className="font-bold text-gray-900 dark:text-white text-lg">Total</span>
-                                <span className="font-bold text-indigo-600 dark:text-indigo-400 text-2xl">${order.total.toLocaleString()}</span>
+                                <span className="font-bold text-brand-primary dark:text-brand-light text-2xl">${order.total.toLocaleString()}</span>
                             </div>
                             {/* Small Payment Method Reminder in Totals - Hide explicitly if user wants all invisible, but usually total is relevant */}
                             {!isDineIn && (
@@ -391,7 +391,7 @@ export default function OrderDetailModal({ order, onClose, onUpdate }: OrderDeta
                             <button
                                 onClick={handleNextStatus}
                                 disabled={updating}
-                                className="flex-[2] px-4 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-lg shadow-indigo-200 dark:shadow-none transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                                className="flex-[2] px-4 py-3 bg-brand-primary hover:bg-brand-primary-hover text-white font-bold rounded-xl shadow-lg shadow-orange-200 dark:shadow-none transition-all disabled:opacity-50 flex items-center justify-center gap-2"
                             >
                                 {updating ? 'Procesando...' : 'Aceptar Pedido'} <CheckCircle className="w-5 h-5" />
                             </button>
@@ -409,7 +409,7 @@ export default function OrderDetailModal({ order, onClose, onUpdate }: OrderDeta
                                 <button
                                     onClick={handleNextStatus}
                                     disabled={updating}
-                                    className="flex-[2] px-4 py-3 bg-slate-900 dark:bg-indigo-600 hover:bg-slate-800 dark:hover:bg-indigo-700 text-white font-bold rounded-xl shadow-lg transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                                    className="flex-[2] px-4 py-3 bg-slate-900 dark:bg-brand-primary hover:bg-slate-800 dark:hover:bg-brand-primary-hover text-white font-bold rounded-xl shadow-lg transition-all disabled:opacity-50 flex items-center justify-center gap-2"
                                 >
                                     {updating ? 'Actualizando...' : NEXT_STATUS_LABELS[order.status]}
                                 </button>

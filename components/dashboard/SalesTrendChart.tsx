@@ -36,7 +36,7 @@ export default function SalesTrendChart({ data }: SalesTrendChartProps) {
                         tickFormatter={(value) => `$${value}`}
                     />
                     <Tooltip
-                        cursor={{ fill: 'rgba(99, 102, 241, 0.1)' }}
+                        cursor={{ fill: 'rgba(234, 88, 12, 0.1)' }}
                         contentStyle={{
                             backgroundColor: '#fff',
                             borderRadius: '8px',
@@ -49,7 +49,7 @@ export default function SalesTrendChart({ data }: SalesTrendChartProps) {
                     />
                     <Bar
                         dataKey="sales"
-                        fill="#4F46E5"
+                        fill="#ea580c"
                         radius={[4, 4, 0, 0]}
                         barSize={32}
                     />

@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Businessman, OperatingScheduleItem } from "@/lib/types";
 import { createClient } from "@/lib/supabase/client";
 import { updateBusinessProfile } from "@/lib/actions/settings";
+import { colombiaLocations } from "@/lib/data/colombia";
 import { Camera, Loader2, Save, Clock, Check, X, Phone } from "lucide-react";
 import Image from "next/image";
 
@@ -36,6 +37,8 @@ export default function BusinessProfileForm({ businessman }: BusinessProfileForm
         phone: businessman.phone || "",
         whatsapp_number: businessman.whatsapp_number,
         address: businessman.address || "",
+        department: businessman.department || "",
+        city: businessman.city || "",
         operating_schedule: businessman.operating_schedule?.length ? businessman.operating_schedule : DEFAULT_SCHEDULE,
         delivery_time_estimate: businessman.delivery_time_estimate || "30 - 45 min"
     });
@@ -64,6 +67,10 @@ export default function BusinessProfileForm({ businessman }: BusinessProfileForm
             whatsapp_number: `${phonePrefix}${phoneNumberOnly}`
         }));
     }, [phonePrefix, phoneNumberOnly]);
+
+    const availableCities = formData.department
+        ? colombiaLocations.find(d => d.department === formData.department)?.cities || []
+        : [];
 
     const updateScheduleDay = (index: number, field: keyof OperatingScheduleItem, value: any) => {
         const currentSchedule = formData.operating_schedule || DEFAULT_SCHEDULE;
@@ -176,7 +183,7 @@ export default function BusinessProfileForm({ businessman }: BusinessProfileForm
                         type="text"
                         value={formData.business_name}
                         onChange={(e) => setFormData({ ...formData, business_name: e.target.value })}
-                        className="block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-brand-primary focus:ring-brand-primary sm:text-sm dark:bg-zinc-700 dark:text-white px-4 py-2.5 transition-shadow"
+                        className="block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-brand-primary focus:ring-brand-primary sm:text-sm bg-gray-50 dark:bg-zinc-700 dark:text-white px-4 py-2.5 transition-shadow"
                         required
                     />
                 </div>
@@ -184,11 +191,11 @@ export default function BusinessProfileForm({ businessman }: BusinessProfileForm
                 <div className="col-span-2 md:col-span-1">
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">WhatsApp (Pedidos)</label>
                     <div className="flex rounded-md shadow-sm">
-                        <div className="relative flex items-stretch flex-grow focus-within:z-10">
+                        <div className="relative flex items-stretch grow focus-within:z-10">
                             <select
                                 value={phonePrefix}
                                 onChange={(e) => setPhonePrefix(e.target.value)}
-                                className="block w-[110px] rounded-l-md border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-zinc-800 text-gray-500 dark:text-gray-300 sm:text-sm focus:border-brand-primary focus:ring-brand-primary border-r-0"
+                                className="block w-[110px] rounded-l-md border-gray-300 dark:border-gray-600 bg-gray-200 dark:bg-zinc-800 text-gray-500 dark:text-gray-300 sm:text-sm focus:border-brand-primary focus:ring-brand-primary border-r-0"
                             >
                                 {COUNTRY_CODES.map((c) => (
                                     <option key={c.code} value={c.code}>
@@ -201,7 +208,7 @@ export default function BusinessProfileForm({ businessman }: BusinessProfileForm
                             type="tel"
                             value={phoneNumberOnly}
                             onChange={(e) => setPhoneNumberOnly(e.target.value.replace(/\D/g, ''))} // Only allow numbers
-                            className="block w-full rounded-none rounded-r-md border-gray-300 dark:border-gray-600 focus:border-brand-primary focus:ring-brand-primary sm:text-sm dark:bg-zinc-700 dark:text-white px-4 py-2.5"
+                            className="block w-full rounded-none rounded-r-md border-gray-300 dark:border-gray-600 focus:border-brand-primary focus:ring-brand-primary sm:text-sm bg-gray-50 dark:bg-zinc-700 dark:text-white px-4 py-2.5"
                             placeholder="300 123 4567"
                             required
                         />
@@ -221,10 +228,49 @@ export default function BusinessProfileForm({ businessman }: BusinessProfileForm
                             type="text"
                             value={formData.delivery_time_estimate}
                             onChange={(e) => setFormData({ ...formData, delivery_time_estimate: e.target.value })}
-                            className="block w-full rounded-md border-gray-300 dark:border-gray-600 pl-10 focus:border-brand-primary focus:ring-brand-primary sm:text-sm dark:bg-zinc-700 dark:text-white px-4 py-2.5"
+                            className="block w-full rounded-md border-gray-300 dark:border-gray-600 pl-10 focus:border-brand-primary focus:ring-brand-primary sm:text-sm bg-gray-50 dark:bg-zinc-700 dark:text-white px-4 py-2.5"
                             placeholder="Ej. 30 - 45 min"
                         />
                     </div>
+                </div>
+
+                <div className="col-span-2 md:col-span-1">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Departamento</label>
+                    <select
+                        value={formData.department}
+                        onChange={(e) => {
+                            setFormData({
+                                ...formData,
+                                department: e.target.value,
+                                city: "" // Reset city when department changes
+                            });
+                        }}
+                        className="block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-brand-primary focus:ring-brand-primary sm:text-sm bg-gray-50 dark:bg-zinc-700 dark:text-white px-4 py-2.5 transition-shadow"
+                    >
+                        <option value="">Selecciona un departamento</option>
+                        {colombiaLocations.map((loc) => (
+                            <option key={loc.department} value={loc.department}>
+                                {loc.department}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+
+                <div className="col-span-2 md:col-span-1">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Ciudad</label>
+                    <select
+                        value={formData.city}
+                        onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                        disabled={!formData.department}
+                        className="block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-brand-primary focus:ring-brand-primary sm:text-sm bg-gray-50 dark:bg-zinc-700 dark:text-white px-4 py-2.5 transition-shadow disabled:opacity-50"
+                    >
+                        <option value="">Selecciona una ciudad</option>
+                        {availableCities.map((city) => (
+                            <option key={city} value={city}>
+                                {city}
+                            </option>
+                        ))}
+                    </select>
                 </div>
 
                 <div className="col-span-2 md:col-span-1">
@@ -233,7 +279,7 @@ export default function BusinessProfileForm({ businessman }: BusinessProfileForm
                         type="text"
                         value={formData.address || ""}
                         onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                        className="block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-brand-primary focus:ring-brand-primary sm:text-sm dark:bg-zinc-700 dark:text-white px-4 py-2.5 transition-shadow"
+                        className="block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-brand-primary focus:ring-brand-primary sm:text-sm bg-gray-50 dark:bg-zinc-700 dark:text-white px-4 py-2.5 transition-shadow"
                     />
                 </div>
 
@@ -243,7 +289,7 @@ export default function BusinessProfileForm({ businessman }: BusinessProfileForm
                         rows={3}
                         value={formData.description || ""}
                         onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                        className="block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-brand-primary focus:ring-brand-primary sm:text-sm dark:bg-zinc-700 dark:text-white px-4 py-2.5 transition-shadow"
+                        className="block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-brand-primary focus:ring-brand-primary sm:text-sm bg-gray-50 dark:bg-zinc-700 dark:text-white px-4 py-2.5 transition-shadow"
                         placeholder="Breve descripción de tu negocio..."
                     />
                 </div>
@@ -266,7 +312,7 @@ export default function BusinessProfileForm({ businessman }: BusinessProfileForm
                                     <button
                                         type="button"
                                         onClick={() => updateScheduleDay(index, 'isActive', !item.isActive)}
-                                        className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${item.isActive ? 'bg-brand-primary' : 'bg-gray-200 dark:bg-zinc-600'
+                                        className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${item.isActive ? 'bg-brand-primary' : 'bg-gray-200 dark:bg-zinc-600'
                                             }`}
                                     >
                                         <span className="sr-only">Use setting</span>
@@ -289,7 +335,7 @@ export default function BusinessProfileForm({ businessman }: BusinessProfileForm
                                             value={item.open}
                                             disabled={!item.isActive}
                                             onChange={(e) => updateScheduleDay(index, 'open', e.target.value)}
-                                            className="block w-full rounded-md border-gray-300 dark:border-zinc-600 shadow-sm focus:border-brand-primary focus:ring-brand-primary sm:text-sm dark:bg-zinc-700 dark:text-white px-3 py-2 disabled:bg-gray-100 dark:disabled:bg-zinc-800 disabled:text-gray-400"
+                                            className="block w-full rounded-md border-gray-300 dark:border-zinc-600 shadow-sm focus:border-brand-primary focus:ring-brand-primary sm:text-sm bg-gray-50 dark:bg-zinc-700 dark:text-white px-3 py-2 disabled:bg-gray-100 dark:disabled:bg-zinc-800 disabled:text-gray-400"
                                         />
                                     </div>
                                     <span className="text-gray-400">-</span>
@@ -300,7 +346,7 @@ export default function BusinessProfileForm({ businessman }: BusinessProfileForm
                                             value={item.close}
                                             disabled={!item.isActive}
                                             onChange={(e) => updateScheduleDay(index, 'close', e.target.value)}
-                                            className="block w-full rounded-md border-gray-300 dark:border-zinc-600 shadow-sm focus:border-brand-primary focus:ring-brand-primary sm:text-sm dark:bg-zinc-700 dark:text-white px-3 py-2 disabled:bg-gray-100 dark:disabled:bg-zinc-800 disabled:text-gray-400"
+                                            className="block w-full rounded-md border-gray-300 dark:border-zinc-600 shadow-sm focus:border-brand-primary focus:ring-brand-primary sm:text-sm bg-gray-50 dark:bg-zinc-700 dark:text-white px-3 py-2 disabled:bg-gray-100 dark:disabled:bg-zinc-800 disabled:text-gray-400"
                                         />
                                     </div>
                                 </div>

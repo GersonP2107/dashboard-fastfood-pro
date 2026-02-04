@@ -178,7 +178,7 @@ export default function PaymentMethodsManager({ businessmanId, initialMethods }:
                                         <select
                                             value={newMethod.type}
                                             onChange={(e) => setNewMethod({ ...newMethod, type: e.target.value as any })}
-                                            className="block w-full rounded-md border-gray-300 dark:border-zinc-700 shadow-sm focus:border-brand-primary focus:ring-brand-primary sm:text-sm bg-white dark:bg-zinc-950 dark:text-gray-100 px-3 py-2"
+                                            className="block w-full rounded-md border-gray-300 dark:border-zinc-700 shadow-sm focus:border-brand-primary focus:ring-brand-primary sm:text-sm bg-gray-50 dark:bg-zinc-950 dark:text-gray-100 px-3 py-2"
                                         >
                                             {METHOD_TYPES.map(type => (
                                                 <option key={type.value} value={type.value}>{type.label}</option>
@@ -192,7 +192,7 @@ export default function PaymentMethodsManager({ businessmanId, initialMethods }:
                                             value={newMethod.name}
                                             onChange={(e) => setNewMethod({ ...newMethod, name: e.target.value })}
                                             placeholder="Ej. Nequi - Juan"
-                                            className="block w-full rounded-md border-gray-300 dark:border-zinc-700 shadow-sm focus:border-brand-primary focus:ring-brand-primary sm:text-sm bg-white dark:bg-zinc-950 dark:text-gray-100 px-3 py-2"
+                                            className="block w-full rounded-md border-gray-300 dark:border-zinc-700 shadow-sm focus:border-brand-primary focus:ring-brand-primary sm:text-sm bg-gray-50 dark:bg-zinc-950 dark:text-gray-100 px-3 py-2"
                                         />
                                     </div>
                                     <div>
@@ -202,7 +202,7 @@ export default function PaymentMethodsManager({ businessmanId, initialMethods }:
                                             value={newMethod.account_number}
                                             onChange={(e) => setNewMethod({ ...newMethod, account_number: e.target.value })}
                                             placeholder="Ej. 3001234567"
-                                            className="block w-full rounded-md border-gray-300 dark:border-zinc-700 shadow-sm focus:border-brand-primary focus:ring-brand-primary sm:text-sm bg-white dark:bg-zinc-950 dark:text-gray-100 px-3 py-2"
+                                            className="block w-full rounded-md border-gray-300 dark:border-zinc-700 shadow-sm focus:border-brand-primary focus:ring-brand-primary sm:text-sm bg-gray-50 dark:bg-zinc-950 dark:text-gray-100 px-3 py-2"
                                         />
                                     </div>
                                 </div>
@@ -213,7 +213,7 @@ export default function PaymentMethodsManager({ businessmanId, initialMethods }:
                                         onChange={(e) => setNewMethod({ ...newMethod, instructions: e.target.value })}
                                         placeholder="Ej. Envía el comprobante a este chat..."
                                         rows={2}
-                                        className="block w-full rounded-md border-gray-300 dark:border-zinc-700 shadow-sm focus:border-brand-primary focus:ring-brand-primary sm:text-sm bg-white dark:bg-zinc-950 dark:text-gray-100 px-3 py-2"
+                                        className="block w-full rounded-md border-gray-300 dark:border-zinc-700 shadow-sm focus:border-brand-primary focus:ring-brand-primary sm:text-sm bg-gray-50 dark:bg-zinc-950 dark:text-gray-100 px-3 py-2"
                                     />
                                 </div>
 

@@ -26,7 +26,7 @@ export default function StatCard({
 }: StatCardProps) {
     return (
         <div className={cn(
-            "relative overflow-hidden rounded-3xl bg-white dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800 p-6 transition-all hover:shadow-lg",
+            "relative overflow-hidden shadow-sm rounded-3xl bg-white dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800 p-6 transition-all hover:shadow-lg",
             className
         )}>
             <div className="flex items-start justify-between">

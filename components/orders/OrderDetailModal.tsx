@@ -391,7 +391,7 @@ export default function OrderDetailModal({ order, onClose, onUpdate }: OrderDeta
                             <button
                                 onClick={handleNextStatus}
                                 disabled={updating}
-                                className="flex-[2] px-4 py-3 bg-brand-primary hover:bg-brand-primary-hover text-white font-bold rounded-xl shadow-lg shadow-orange-200 dark:shadow-none transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                                className="flex-2 px-4 py-3 bg-brand-primary hover:bg-brand-primary-hover text-white font-bold rounded-xl shadow-lg shadow-orange-200 dark:shadow-none transition-all disabled:opacity-50 flex items-center justify-center gap-2"
                             >
                                 {updating ? 'Procesando...' : 'Aceptar Pedido'} <CheckCircle className="w-5 h-5" />
                             </button>
@@ -409,7 +409,7 @@ export default function OrderDetailModal({ order, onClose, onUpdate }: OrderDeta
                                 <button
                                     onClick={handleNextStatus}
                                     disabled={updating}
-                                    className="flex-[2] px-4 py-3 bg-slate-900 dark:bg-brand-primary hover:bg-slate-800 dark:hover:bg-brand-primary-hover text-white font-bold rounded-xl shadow-lg transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                                    className="flex-2 px-4 py-3 bg-slate-900 dark:bg-brand-primary hover:bg-slate-800 dark:hover:bg-brand-primary-hover text-white font-bold rounded-xl shadow-lg transition-all disabled:opacity-50 flex items-center justify-center gap-2"
                                 >
                                     {updating ? 'Actualizando...' : NEXT_STATUS_LABELS[order.status]}
                                 </button>

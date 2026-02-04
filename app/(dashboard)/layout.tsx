@@ -25,7 +25,7 @@ export default async function DashboardLayout({
                     </div>
                 </main>
             </div>
-            <BusinessChatHelper />
+            {/* <BusinessChatHelper /> */}
         </div>
     )
 }

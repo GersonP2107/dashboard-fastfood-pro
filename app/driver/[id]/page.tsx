@@ -69,7 +69,7 @@ export default function DriverPage({ params }: { params: { id: string } }) {
     return (
         <div className="min-h-screen bg-gray-100 pb-8">
             {/* Header */}
-            <div className="bg-white p-6 shadow-sm pb-8 rounded-b-[2rem]">
+            <div className="bg-white p-6 shadow-sm pb-8 rounded-b-2xl">
                 <div className="flex justify-between items-start mb-4">
                     <div>
                         <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">Pedido</span>

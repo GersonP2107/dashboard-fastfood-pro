@@ -89,7 +89,7 @@ export function BusinessChatHelper() {
                         animate={{ scale: 1, opacity: 1 }}
                         exit={{ scale: 0, opacity: 0 }}
                         onClick={() => setIsOpen(true)}
-                        className="fixed bottom-6 right-6 z-50 p-4 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full shadow-lg hover:shadow-xl transition-all hover:scale-105 group"
+                        className="fixed bottom-6 right-6 z-50 p-4 bg-linear-to-r from-blue-600 to-indigo-600 rounded-full shadow-lg hover:shadow-xl transition-all hover:scale-105 group"
                     >
                         <Bot className="w-8 h-8 text-white" />
                         <span className="absolute -top-2 -right-2 flex h-5 w-5">

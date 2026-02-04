@@ -178,7 +178,7 @@ export default function ProductList({ initialProducts, categories, businessmanId
                                         >
                                             <td className="px-6 py-4">
                                                 <div className="flex items-center gap-4">
-                                                    <div className="relative h-12 w-12 rounded-lg bg-gray-100 dark:bg-zinc-800 overflow-hidden flex-shrink-0">
+                                                    <div className="relative h-12 w-12 rounded-lg bg-gray-100 dark:bg-zinc-800 overflow-hidden shrink-0">
                                                         {product.image_url ? (
                                                             <Image
                                                                 src={product.image_url}

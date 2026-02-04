@@ -169,7 +169,7 @@ export default function DeliveryZonesManager({ businessmanId, initialZones, surg
                                             value={newZone.zone_name}
                                             onChange={(e) => setNewZone({ ...newZone, zone_name: e.target.value })}
                                             placeholder="Ej. Centro, Norte"
-                                            className="block w-full rounded-md border-gray-300 dark:border-zinc-700 shadow-sm focus:border-brand-primary focus:ring-brand-primary sm:text-sm bg-white dark:bg-zinc-950 dark:text-gray-100 placeholder-gray-400 dark:placeholder-zinc-600 px-4 py-2.5 transition-colors"
+                                            className="block w-full rounded-md border-gray-300 dark:border-zinc-700 shadow-sm focus:border-brand-primary focus:ring-brand-primary sm:text-sm bg-gray-50 dark:bg-zinc-950 dark:text-gray-100 placeholder-gray-400 dark:placeholder-zinc-600 px-4 py-2.5 transition-colors"
                                         />
                                     </div>
                                     <div className="w-full sm:w-1/3">
@@ -182,7 +182,7 @@ export default function DeliveryZonesManager({ businessmanId, initialZones, surg
                                                 type="number"
                                                 value={newZone.delivery_cost}
                                                 onChange={(e) => setNewZone({ ...newZone, delivery_cost: Number(e.target.value) })}
-                                                className="block w-full rounded-md border-gray-300 dark:border-zinc-700 pl-7 pr-4 py-2.5 focus:border-brand-primary focus:ring-brand-primary sm:text-sm bg-white dark:bg-zinc-950 dark:text-gray-100 placeholder-gray-400 dark:placeholder-zinc-600 transition-colors"
+                                                className="block w-full rounded-md border-gray-300 dark:border-zinc-700 pl-7 pr-4 py-2.5 focus:border-brand-primary focus:ring-brand-primary sm:text-sm bg-gray-50 dark:bg-zinc-950 dark:text-gray-100 placeholder-gray-400 dark:placeholder-zinc-600 transition-colors"
                                             />
                                         </div>
                                     </div>

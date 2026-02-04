@@ -74,7 +74,7 @@ export default function SettingsPage() {
                     <div className="bg-white dark:bg-zinc-900 shadow-sm rounded-3xl border border-gray-100 dark:border-zinc-800 p-6">
                         <div className="flex items-center gap-2 mb-6 text-brand-primary dark:text-brand-light border-b border-gray-100 dark:border-gray-800 pb-4">
                             <Store className="h-5 w-5" />
-                            <h2 className="text-lg font-semibold">Perfil del Negocio</h2>
+                            <h2 className="text-lg font-semibold">Información del Negocio</h2>
                         </div>
                         <BusinessProfileForm businessman={business} />
                     </div>

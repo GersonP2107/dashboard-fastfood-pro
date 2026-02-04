@@ -7,6 +7,7 @@ import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { DollarSign, ShoppingBag, CreditCard, TrendingUp, Calendar, Download, Store, Bike, Utensils } from 'lucide-react'
 import { motion } from 'framer-motion'
 
+
 // Inline formatter if utility missing
 const formatMoney = (amount: number) => {
     return new Intl.NumberFormat('es-CO', {
@@ -22,6 +23,7 @@ export default function FinancePage() {
     const [stats, setStats] = useState<any>(null)
     const [loading, setLoading] = useState(true)
     const [range, setRange] = useState<DateRange>('week')
+
 
     useEffect(() => {
         loadStats()
@@ -45,21 +47,26 @@ export default function FinancePage() {
     const handleExport = () => {
         if (!stats?.rawOrders) return
 
+        // 1. Definimos los encabezados
         const headers = ['Orden #', 'Fecha', 'Cliente', 'Tipo', 'Estado', 'Total', 'Método Pago']
-        const csvContent = [
-            headers.join(','),
-            ...stats.rawOrders.map((o: any) => [
-                o.order_number,
-                new Date(o.created_at).toLocaleDateString(),
-                `"${o.customer_name}"`,
-                o.delivery_type,
-                o.status,
-                o.total,
-                o.payment_method
-            ].join(','))
-        ].join('\n')
 
-        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+        // 2. Mapeamos los datos usando ";" como separador
+        const rows = stats.rawOrders.map((o: any) => [
+            o.order_number,
+            new Date(o.created_at).toLocaleDateString(),
+            `"${o.customer_name.replace(/"/g, '""')}"`, // Escapar comillas dobles si existen
+            o.delivery_type,
+            o.status,
+            o.total,
+            o.payment_method
+        ].join(';')) // <--- Cambiado a punto y coma
+
+        // 3. Unimos todo con saltos de línea
+        const csvContent = [headers.join(';'), ...rows].join('\n')
+
+        // 4. El truco del almendruco: Agregamos el BOM para UTF-8 (\uFEFF)
+        const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' })
+
         const link = document.createElement('a')
         link.href = URL.createObjectURL(blob)
         link.download = `reporte_ventas_${range}.csv`

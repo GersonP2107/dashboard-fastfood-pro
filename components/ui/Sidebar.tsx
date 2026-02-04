@@ -50,7 +50,7 @@ export default function Sidebar({ business, onCloseMobile }: SidebarProps) {
                             <img src={business.logo_url} alt={business.business_name} className="h-full w-full rounded-xl object-cover" />
                         </div>
                     ) : (
-                        <div className="h-10 w-10 rounded-2xl bg-gradient-to-br from-brand-primary to-brand-accent flex items-center justify-center text-white font-bold text-lg shadow-sm">
+                        <div className="h-10 w-10 rounded-2xl bg-linear-to-br from-brand-primary to-brand-accent flex items-center justify-center text-white font-bold text-lg shadow-sm">
                             {business?.business_name?.charAt(0) || 'D'}
                         </div>
                     )}

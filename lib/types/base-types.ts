@@ -12,6 +12,8 @@ export interface Businessman {
     phone?: string
     email?: string
     address?: string
+    city?: string
+    department?: string
     whatsapp_number: string
     whatsapp_api_token?: string
     is_active: boolean
@@ -21,6 +23,8 @@ export interface Businessman {
     delivery_surge_multiplier?: number;
     operating_schedule?: OperatingScheduleItem[];
     delivery_time_estimate?: string;
+    min_order_value: number;
+    delivery_cost: number;
     created_at: string
     updated_at: string
 }

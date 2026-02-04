@@ -25,7 +25,7 @@ export default function TopProductsList({ products = [] }: TopProductsListProps)
                 <div key={product.product_id} className="relative">
                     <div className="flex items-start justify-between gap-3 mb-2 relative z-10">
                         <div className="flex items-start gap-3 flex-1 min-w-0">
-                            <div className="flex items-center justify-center w-6 h-6 rounded-full bg-gray-100 dark:bg-zinc-800 text-xs font-bold text-gray-500 flex-shrink-0">
+                            <div className="flex items-center justify-center w-6 h-6 rounded-full bg-gray-100 dark:bg-zinc-800 text-xs font-bold text-gray-500 shrink-0">
                                 {index + 1}
                             </div>
                             <div className="flex-1 min-w-0">
@@ -40,7 +40,7 @@ export default function TopProductsList({ products = [] }: TopProductsListProps)
                                 </span>
                             </div>
                         </div>
-                        <div className="text-right flex-shrink-0">
+                        <div className="text-right shrink-0">
                             <span className="block font-bold text-gray-900 dark:text-white text-sm whitespace-nowrap">
                                 {product.total_quantity}
                             </span>

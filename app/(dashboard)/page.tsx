@@ -127,7 +127,7 @@ export default function DashboardHome() {
           value={`$${stats.total_sales_month.toLocaleString()}`}
           icon={DollarSign}
           iconColor="text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/20"
-          className="md:col-span-2 bg-gradient-to-br from-white to-gray-50 dark:from-zinc-900 dark:to-zinc-900/50"
+          className="md:col-span-2 dark:from-zinc-900 dark:to-zinc-900/50"
           description="Ingresos acumulados este mes"
         />
 

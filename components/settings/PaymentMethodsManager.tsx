@@ -17,8 +17,9 @@ const METHOD_TYPES = [
     { value: 'nequi', label: 'Nequi', icon: Smartphone, color: 'text-purple-600 bg-purple-50 dark:bg-purple-900/20' },
     { value: 'daviplata', label: 'Daviplata', icon: Smartphone, color: 'text-red-600 bg-red-50 dark:bg-red-900/20' },
     { value: 'bancolombia', label: 'Bancolombia', icon: Banknote, color: 'text-yellow-600 bg-yellow-50 dark:bg-yellow-900/20' },
+    { value: 'cuenta-ahorros', label: 'Cuenta Ahorros', icon: Banknote, color: 'text-yellow-600 bg-yellow-50 dark:bg-yellow-900/20' },
+    { value: 'cuenta-corriente', label: 'Cuenta Corriente', icon: Banknote, color: 'text-yellow-600 bg-yellow-50 dark:bg-yellow-900/20' },
     { value: 'efectivo', label: 'Efectivo', icon: Banknote, color: 'text-green-600 bg-green-50 dark:bg-green-900/20' },
-    { value: 'card', label: 'Tarjeta (Datáfono)', icon: CreditCard, color: 'text-blue-600 bg-blue-50 dark:bg-blue-900/20' },
     { value: 'other', label: 'Otro', icon: AlertCircle, color: 'text-gray-600 bg-gray-50 dark:bg-gray-800' },
 ];
 
@@ -177,7 +178,14 @@ export default function PaymentMethodsManager({ businessmanId, initialMethods }:
                                         <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Tipo</label>
                                         <select
                                             value={newMethod.type}
-                                            onChange={(e) => setNewMethod({ ...newMethod, type: e.target.value as any })}
+                                            onChange={(e) => {
+                                                const val = e.target.value as any;
+                                                setNewMethod({
+                                                    ...newMethod,
+                                                    type: val,
+                                                    name: val === 'efectivo' ? 'Efectivo' : newMethod.name
+                                                });
+                                            }}
                                             className="block w-full rounded-md border-gray-300 dark:border-zinc-700 shadow-sm focus:border-brand-primary focus:ring-brand-primary sm:text-sm bg-gray-50 dark:bg-zinc-950 dark:text-gray-100 px-3 py-2"
                                         >
                                             {METHOD_TYPES.map(type => (
@@ -185,37 +193,43 @@ export default function PaymentMethodsManager({ businessmanId, initialMethods }:
                                             ))}
                                         </select>
                                     </div>
+                                    {newMethod.type !== 'efectivo' && (
+                                        <div>
+                                            <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Nombre para mostrar</label>
+                                            <input
+                                                type="text"
+                                                value={newMethod.name}
+                                                onChange={(e) => setNewMethod({ ...newMethod, name: e.target.value })}
+                                                placeholder="Ej. Nequi - Juan"
+                                                className="block w-full rounded-md border-gray-300 dark:border-zinc-700 shadow-sm focus:border-brand-primary focus:ring-brand-primary sm:text-sm bg-gray-50 dark:bg-zinc-950 dark:text-gray-100 px-3 py-2"
+                                            />
+                                        </div>
+                                    )}
+                                    {newMethod.type !== 'efectivo' && (
+                                        <div>
+                                            <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Número de Cuenta / Celular</label>
+                                            <input
+                                                type="text"
+                                                value={newMethod.account_number}
+                                                onChange={(e) => setNewMethod({ ...newMethod, account_number: e.target.value })}
+                                                placeholder="Ej. 3001234567"
+                                                className="block w-full rounded-md border-gray-300 dark:border-zinc-700 shadow-sm focus:border-brand-primary focus:ring-brand-primary sm:text-sm bg-gray-50 dark:bg-zinc-950 dark:text-gray-100 px-3 py-2"
+                                            />
+                                        </div>
+                                    )}
+                                </div>
+                                {newMethod.type !== 'efectivo' && (
                                     <div>
-                                        <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Nombre para mostrar</label>
-                                        <input
-                                            type="text"
-                                            value={newMethod.name}
-                                            onChange={(e) => setNewMethod({ ...newMethod, name: e.target.value })}
-                                            placeholder="Ej. Nequi - Juan"
+                                        <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Instrucciones para el cliente</label>
+                                        <textarea
+                                            value={newMethod.instructions}
+                                            onChange={(e) => setNewMethod({ ...newMethod, instructions: e.target.value })}
+                                            placeholder="Ej. Envía el comprobante a este chat..."
+                                            rows={2}
                                             className="block w-full rounded-md border-gray-300 dark:border-zinc-700 shadow-sm focus:border-brand-primary focus:ring-brand-primary sm:text-sm bg-gray-50 dark:bg-zinc-950 dark:text-gray-100 px-3 py-2"
                                         />
                                     </div>
-                                    <div>
-                                        <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Número de Cuenta / Celular</label>
-                                        <input
-                                            type="text"
-                                            value={newMethod.account_number}
-                                            onChange={(e) => setNewMethod({ ...newMethod, account_number: e.target.value })}
-                                            placeholder="Ej. 3001234567"
-                                            className="block w-full rounded-md border-gray-300 dark:border-zinc-700 shadow-sm focus:border-brand-primary focus:ring-brand-primary sm:text-sm bg-gray-50 dark:bg-zinc-950 dark:text-gray-100 px-3 py-2"
-                                        />
-                                    </div>
-                                </div>
-                                <div>
-                                    <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Instrucciones para el cliente</label>
-                                    <textarea
-                                        value={newMethod.instructions}
-                                        onChange={(e) => setNewMethod({ ...newMethod, instructions: e.target.value })}
-                                        placeholder="Ej. Envía el comprobante a este chat..."
-                                        rows={2}
-                                        className="block w-full rounded-md border-gray-300 dark:border-zinc-700 shadow-sm focus:border-brand-primary focus:ring-brand-primary sm:text-sm bg-gray-50 dark:bg-zinc-950 dark:text-gray-100 px-3 py-2"
-                                    />
-                                </div>
+                                )}
 
                                 <div className="flex justify-end gap-3 pt-2">
                                     <button

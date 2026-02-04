@@ -11,7 +11,8 @@ import TableManager from '@/components/settings/TableManager'
 import BusinessProfileForm from '@/components/settings/BusinessProfileForm'
 import DeliveryZonesManager from '@/components/settings/DeliveryZonesManager'
 import PaymentMethodsManager from '@/components/settings/PaymentMethodsManager'
-import { Store, Truck, Layout } from 'lucide-react'
+import QrCodesManager from '@/components/settings/QrCodesManager'
+import { Store, Truck, Layout, QrCode } from 'lucide-react'
 
 export default function SettingsPage() {
     const [business, setBusiness] = useState<Businessman | null>(null)
@@ -88,6 +89,18 @@ export default function SettingsPage() {
                         <TableManager
                             businessmanId={business.id}
                             initialZones={tableZones}
+                        />
+                    </div>
+
+                    {/* QR Codes Section */}
+                    <div className="bg-white dark:bg-zinc-900 shadow-sm rounded-3xl border border-gray-100 dark:border-zinc-800 p-6">
+                        <div className="flex items-center gap-2 mb-6 text-brand-primary dark:text-brand-light border-b border-gray-100 dark:border-gray-800 pb-4">
+                            <QrCode className="h-5 w-5" />
+                            <h2 className="text-lg font-semibold">Códigos QR para Mesas</h2>
+                        </div>
+                        <QrCodesManager
+                            businessman={business}
+                            zones={tableZones}
                         />
                     </div>
                 </div>

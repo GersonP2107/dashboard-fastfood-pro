@@ -54,7 +54,7 @@ export default function Sidebar({ business, onCloseMobile }: SidebarProps) {
                             {business?.business_name?.charAt(0) || 'D'}
                         </div>
                     )}
-                    <span className="text-lg font-bold text-gray-900 dark:text-white truncate max-w-[120px]">
+                    <span className="text-lg font-bold text-gray-900 dark:text-white truncate max-w-[160px]">
                         {business?.business_name || 'DigitalMenu'}
                     </span>
                 </div>

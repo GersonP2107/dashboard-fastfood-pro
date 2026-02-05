@@ -125,8 +125,8 @@ export default function ProductForm({ categories, product, onSuccess, onCancel, 
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                     Imagen del Producto
                 </label>
-                <div className="flex items-center gap-4">
-                    <div className="relative h-24 w-24 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-700 flex items-center justify-center overflow-hidden bg-gray-50 dark:bg-zinc-800">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                    <div className="relative h-24 w-24 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-700 flex items-center justify-center overflow-hidden bg-gray-50 dark:bg-zinc-800 shrink-0">
                         {previewUrl ? (
                             <>
                                 <Image
@@ -152,7 +152,7 @@ export default function ProductForm({ categories, product, onSuccess, onCancel, 
                             </div>
                         )}
                     </div>
-                    <div className="flex-1">
+                    <div className="flex-1 w-full">
                         <input
                             type="file"
                             accept="image/*"
@@ -161,8 +161,8 @@ export default function ProductForm({ categories, product, onSuccess, onCancel, 
                 file:mr-4 file:py-2 file:px-4
                 file:rounded-full file:border-0
                 file:text-sm file:font-semibold
-                file:bg-indigo-50 file:text-indigo-700
-                hover:file:bg-indigo-100 dark:file:bg-indigo-900 dark:file:text-indigo-300"
+                file:bg-orange-50 file:text-orange-700
+                hover:file:bg-orange-100 dark:file:bg-orange-900/20 dark:file:text-orange-400"
                         />
                         <p className="mt-1 text-xs text-gray-500">PNG, JPG hasta 10MB</p>
                     </div>
@@ -180,7 +180,7 @@ export default function ProductForm({ categories, product, onSuccess, onCancel, 
                         name="name"
                         required
                         defaultValue={product?.name}
-                        className="w-full rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-zinc-900 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        className="w-full rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-zinc-900 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary"
                         placeholder="Hamburguesa Deluxe"
                     />
                 </div>
@@ -199,7 +199,7 @@ export default function ProductForm({ categories, product, onSuccess, onCancel, 
                             step="0.01"
                             min="0"
                             defaultValue={product?.price}
-                            className="w-full rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-zinc-900 pl-7 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            className="w-full rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-zinc-900 pl-7 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary"
                             placeholder="0.00"
                         />
                     </div>
@@ -214,7 +214,7 @@ export default function ProductForm({ categories, product, onSuccess, onCancel, 
                     id="category_id"
                     name="category_id"
                     defaultValue={product?.category_id || ""}
-                    className="w-full rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-zinc-900 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    className="w-full rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-zinc-900 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary"
                 >
                     <option value="">Selecciona una categoría</option>
                     {categories.map((cat) => (
@@ -234,7 +234,7 @@ export default function ProductForm({ categories, product, onSuccess, onCancel, 
                     name="description"
                     rows={3}
                     defaultValue={product?.description || ""}
-                    className="w-full rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-zinc-900 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    className="w-full rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-zinc-900 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary"
                     placeholder="Descripción detallada del producto..."
                 />
             </div>
@@ -245,7 +245,7 @@ export default function ProductForm({ categories, product, onSuccess, onCancel, 
                     id="is_available"
                     name="is_available"
                     defaultChecked={product ? product.is_available : true}
-                    className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                    className="h-4 w-4 rounded border-gray-300 text-orange-600 focus:ring-brand-primary"
                 />
                 <label htmlFor="is_available" className="text-sm font-medium text-gray-700 dark:text-gray-300">
                     Disponible para ordenar
@@ -259,18 +259,18 @@ export default function ProductForm({ categories, product, onSuccess, onCancel, 
                 onModifiersChange={!product ? setPendingModifiers : undefined}
             />
 
-            <div className="flex justify-end gap-3 pt-4">
+            <div className="flex flex-col-reverse sm:flex-row justify-end gap-3 pt-6 border-t border-gray-100 dark:border-gray-800">
                 <button
                     type="button"
                     onClick={onCancel}
-                    className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-zinc-800 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-zinc-700"
+                    className="w-full sm:w-auto px-4 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-brand-primary dark:bg-zinc-800 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-zinc-700"
                     disabled={loading || uploading}
                 >
                     Cancelar
                 </button>
                 <button
                     type="submit"
-                    className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-50 flex items-center gap-2"
+                    className="w-full sm:w-auto px-6 py-2.5 text-sm font-medium text-white bg-brand-primary rounded-xl hover:bg-brand-primary/90 focus:outline-none focus:ring-2 focus:ring-brand-primary disabled:opacity-50 flex items-center justify-center gap-2 shadow-lg shadow-brand-primary/20"
                     disabled={loading || uploading}
                 >
                     {loading && <Loader2 className="h-4 w-4 animate-spin" />}

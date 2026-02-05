@@ -96,7 +96,18 @@ export async function getHistoryOrders(
         query = query.lte("created_at", filters.endDate.toISOString());
     }
     if (filters?.status && filters.status !== 'all') {
-        query = query.eq("status", filters.status);
+        const s = filters.status.toLowerCase();
+        let statusList: string[] = [s];
+
+        if (s === 'entregado' || s === 'delivered') {
+            statusList = ['entregado', 'delivered', 'completed'];
+        } else if (s === 'cancelado' || s === 'cancelled') {
+            statusList = ['cancelado', 'cancelled', 'canceled'];
+        } else if (s === 'pendiente' || s === 'pending') {
+            statusList = ['pendiente', 'pending'];
+        }
+
+        query = query.in("status", statusList);
     }
 
     // Default limit for history to avoid massive payloads, maybe paginated later

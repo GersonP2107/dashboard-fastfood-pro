@@ -13,6 +13,7 @@ import { motion } from 'framer-motion'
 import SalesTrendChart from '@/components/dashboard/SalesTrendChart'
 import TopProductsList from '@/components/dashboard/TopProductsList'
 import StatCard from '@/components/dashboard/StatCard'
+import SetupGuide from '@/components/dashboard/SetupGuide'
 
 export default function DashboardHome() {
   const [stats, setStats] = useState<DashboardStats>({
@@ -27,6 +28,7 @@ export default function DashboardHome() {
   const [salesTrend, setSalesTrend] = useState<SalesTrendPoint[]>([])
   const [topProducts, setTopProducts] = useState<TopProduct[]>([])
   const [loading, setLoading] = useState(true)
+  const [businessId, setBusinessId] = useState<string>("")
   const supabase = createClient()
 
   useEffect(() => {
@@ -37,6 +39,7 @@ export default function DashboardHome() {
     try {
       const business = await getCurrentBusinessman();
       if (!business) return;
+      setBusinessId(business.id);
 
       // Parallel data fetching using Server Actions
       const [
@@ -117,6 +120,9 @@ export default function DashboardHome() {
           {new Date().toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
         </div>
       </motion.div>
+
+      {/* Setup Guide Alert */}
+      {businessId && <SetupGuide businessmanId={businessId} />}
 
       {/* Bento Grid Layout */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">

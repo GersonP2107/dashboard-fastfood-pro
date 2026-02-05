@@ -92,9 +92,11 @@ export async function registerUser(prevState: RegistrationState, formData: FormD
 
     const adminSupabase = await createAdminClient();
 
-    const { error: dbError } = await adminSupabase
+    const { data: createdBusiness, error: dbError } = await adminSupabase
         .from("businessmans")
-        .insert(newBusinessman);
+        .insert(newBusinessman)
+        .select()
+        .single();
 
     if (dbError) {
         // If db insert fails, ideally we should rollback auth user, 
@@ -102,6 +104,18 @@ export async function registerUser(prevState: RegistrationState, formData: FormD
         // This is a known issue with dual-writes without transactions.
         // However, since uuid is used, retrying might be possible.
         return { success: false, error: "Created account but failed to set up business profile: " + dbError.message, step: 2 };
+    }
+
+    // 3. Create Default Payment Method (Efectivo)
+    // We use adminSupabase here as well to ensure permissions, although user should be able to do it if RLS allows.
+    // But since this is a system action on registration, admin is safer.
+    if (createdBusiness) {
+        await adminSupabase.from("payment_methods").insert({
+            businessman_id: createdBusiness.id,
+            type: 'efectivo',
+            name: 'Efectivo',
+            is_active: true
+        });
     }
 
     // If successful

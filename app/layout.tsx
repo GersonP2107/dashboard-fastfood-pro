@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import '@fontsource-variable/inter';
+import '@fontsource-variable/plus-jakarta-sans';
 import { Toaster } from "sonner";
 
 export const metadata: Metadata = {

@@ -6,15 +6,59 @@ import { revalidatePath } from "next/cache";
 
 // --- Business Profile Actions ---
 
+import { differenceInDays, addDays, format } from "date-fns";
+import { es } from "date-fns/locale";
+
 export async function updateBusinessProfile(businessmanId: string, formData: Partial<Businessman>) {
     const supabase = await createClient();
 
+    // 1. Fetch current data to verify rules
+    const { data: currentData, error: fetchError } = await supabase
+        .from("businessmans")
+        .select("business_name, last_name_change")
+        .eq("id", businessmanId)
+        .single();
+
+    if (fetchError || !currentData) {
+        console.error("Error fetching current profile:", fetchError);
+        return { success: false, error: "No se pudo verificar la información actual." };
+    }
+
+    const updates: any = { ...formData, updated_at: new Date().toISOString() };
+
+    // 2. Check if name is changing
+    if (formData.business_name && formData.business_name !== currentData.business_name) {
+        const lastChange = currentData.last_name_change ? new Date(currentData.last_name_change) : null;
+
+        if (lastChange) {
+            const daysSinceChange = differenceInDays(new Date(), lastChange);
+            const LIMIT_DAYS = 365; // 1 year limit
+
+            if (daysSinceChange < LIMIT_DAYS) {
+                const nextChangeDate = addDays(lastChange, LIMIT_DAYS);
+                return {
+                    success: false,
+                    error: `Solo puedes cambiar el nombre una vez al año. Podrás cambiarlo nuevamente el ${format(nextChangeDate, "d 'de' MMMM 'de' yyyy", { locale: es })}.`
+                };
+            }
+        }
+
+        // Allow change and update timestamp
+        updates.last_name_change = new Date().toISOString();
+
+        // IMPORTANT: We DO regenerate the slug because the user explicitly wants this behavior.
+        // This will break existing QR codes.
+        const newSlug = formData.business_name
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/(^-|-$)+/g, '');
+
+        updates.slug = newSlug;
+    }
+
     const { error } = await supabase
         .from("businessmans")
-        .update({
-            ...formData,
-            updated_at: new Date().toISOString(),
-        })
+        .update(updates)
         .eq("id", businessmanId);
 
     if (error) {

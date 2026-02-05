@@ -7,14 +7,20 @@
   --foreground: #171717;
 
   /* Brand Colors */
-  --brand-primary: #ea580c; /* orange-600 */
-  --brand-primary-hover: #c2410c; /* orange-700 */
-  --brand-accent: #dc2626; /* red-600 */
-  --brand-light: #fb923c; /* orange-400 */
-  
+  --brand-primary: #ea580c;
+  /* orange-600 */
+  --brand-primary-hover: #c2410c;
+  /* orange-700 */
+  --brand-accent: #dc2626;
+  /* red-600 */
+  --brand-light: #fb923c;
+  /* orange-400 */
+
   /* Semantic Colors */
-  --brand-success: #22c55e; /* green-500 */
-  --brand-success-bg: #dcfce7; /* green-100 */
+  --brand-success: #22c55e;
+  /* green-500 */
+  --brand-success-bg: #dcfce7;
+  /* green-100 */
 }
 
 @theme inline {
@@ -30,7 +36,7 @@
   --color-brand-light: var(--brand-light);
   --color-brand-success: var(--brand-success);
   --color-brand-success-bg: var(--brand-success-bg);
-  
+
   /* Aliases for ease of use if needed */
   --color-primary: var(--brand-primary);
   --color-primary-foreground: #ffffff;
@@ -50,7 +56,7 @@ body {
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: 'Inter Variable', sans-serif;
+  font-family: 'Plus Jakarta Sans Variable', 'Inter Variable', sans-serif;
 }
 
 

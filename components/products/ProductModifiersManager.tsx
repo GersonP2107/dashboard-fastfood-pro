@@ -168,26 +168,26 @@ export default function ProductModifiersManager({
                 )}
 
                 {productModifiers.map((pm) => (
-                    <div key={pm.id} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-zinc-800 rounded-lg border border-gray-200 dark:border-gray-700">
+                    <div key={pm.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-3 bg-gray-50 dark:bg-zinc-800 rounded-lg border border-gray-200 dark:border-gray-700 gap-3 sm:gap-0">
                         <div className="flex items-center gap-3">
-                            <div className="bg-indigo-100 dark:bg-indigo-900/30 p-2 rounded-md">
-                                <span className="font-bold text-indigo-700 dark:text-indigo-300 text-xs uppercase">{pm.modifier.type}</span>
+                            <div className="bg-orange-50 dark:bg-orange-900/30 p-2 rounded-md shrink-0">
+                                <span className="font-bold text-brand-primary dark:text-orange-300 text-xs uppercase">{pm.modifier.type}</span>
                             </div>
                             <div>
-                                <p className="font-medium text-gray-900 dark:text-white">{pm.modifier.name}</p>
+                                <p className="font-medium text-gray-900 dark:text-white mb-0.5">{pm.modifier.name}</p>
                                 <p className="text-xs text-gray-500">+ ${pm.modifier.additional_price}</p>
                             </div>
                         </div>
 
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center justify-end gap-3 w-full sm:w-auto pt-2 sm:pt-0 border-t sm:border-t-0 border-gray-100 dark:border-gray-700">
                             <label className="flex items-center space-x-2 text-sm cursor-pointer select-none">
                                 <input
                                     type="checkbox"
                                     checked={pm.is_required}
                                     onChange={() => handleToggleRequired(pm.id, pm.is_required)}
-                                    className="rounded text-indigo-600 focus:ring-indigo-500"
+                                    className="rounded text-brand-primary focus:ring-brand-primary border-gray-300"
                                 />
-                                <span className={pm.is_required ? "font-bold text-orange-600" : "text-gray-500"}>
+                                <span className={pm.is_required ? "font-bold text-brand-primary" : "text-gray-500"}>
                                     {pm.is_required ? "Obligatorio" : "Opcional"}
                                 </span>
                             </label>
@@ -207,9 +207,9 @@ export default function ProductModifiersManager({
             {/* Add Section */}
             <div className="bg-gray-50 dark:bg-zinc-800/50 p-4 rounded-lg border border-dashed border-gray-300 dark:border-gray-700">
                 {!isCreating ? (
-                    <div className="flex gap-2">
+                    <div className="flex flex-col sm:flex-row gap-3">
                         <select
-                            className="flex-1 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-zinc-900 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            className="flex-1 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-zinc-900 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary"
                             value={selectedModifierId}
                             onChange={(e) => setSelectedModifierId(e.target.value)}
                             disabled={processing || loadingModifiers}
@@ -221,61 +221,72 @@ export default function ProductModifiersManager({
                                 </option>
                             ))}
                         </select>
-                        <button
-                            onClick={handleAddExisting}
-                            disabled={!selectedModifierId || processing}
-                            className="px-4 py-2 bg-indigo-600 text-white rounded-md text-sm font-medium hover:bg-indigo-700 disabled:opacity-50"
-                        >
-                            Agregar
-                        </button>
-                        <div className="w-px bg-gray-300 dark:bg-gray-600 mx-2"></div>
-                        <button
-                            onClick={() => setIsCreating(true)}
-                            className="px-4 py-2 bg-white dark:bg-zinc-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-md text-sm font-medium hover:bg-gray-50 dark:hover:bg-zinc-700"
-                        >
-                            Crear Nuevo
-                        </button>
+                        <div className="flex gap-2">
+                            <button
+                                onClick={handleAddExisting}
+                                disabled={!selectedModifierId || processing}
+                                className="flex-1 sm:flex-none px-4 py-2 bg-brand-primary text-white rounded-md text-sm font-medium hover:bg-brand-primary/90 disabled:opacity-50 transition-colors shadow-sm"
+                            >
+                                Agregar
+                            </button>
+                            <div className="hidden sm:block w-px bg-gray-300 dark:bg-gray-600 mx-1"></div>
+                            <button
+                                onClick={() => setIsCreating(true)}
+                                className="flex-1 sm:flex-none px-4 py-2 bg-white dark:bg-zinc-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-md text-sm font-medium hover:bg-gray-50 dark:hover:bg-zinc-700 transition-colors"
+                            >
+                                Crear Nuevo
+                            </button>
+                        </div>
                     </div>
                 ) : (
-                    <div className="space-y-3 animate-in fade-in slide-in-from-top-2">
-                        <div className="flex justify-between items-center mb-2">
+                    <div className="space-y-4 animate-in fade-in slide-in-from-top-2">
+                        <div className="flex justify-between items-center pb-2 border-b border-gray-200 dark:border-gray-700">
                             <span className="text-sm font-bold text-gray-700 dark:text-gray-300">Nuevo Modificador</span>
-                            <button onClick={() => setIsCreating(false)} className="text-gray-400 hover:text-gray-500">
+                            <button onClick={() => setIsCreating(false)} className="text-gray-400 hover:text-gray-500 p-1">
                                 <X size={16} />
                             </button>
                         </div>
-                        <div className="grid grid-cols-2 gap-3">
-                            <input
-                                type="text"
-                                placeholder="Nombre (e.j. Queso Extra)"
-                                className="rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-zinc-900 px-3 py-2 text-sm"
-                                value={newModifierData.name}
-                                onChange={e => setNewModifierData({ ...newModifierData, name: e.target.value })}
-                            />
-                            <div className="relative">
-                                <span className="absolute left-3 top-2 text-gray-500 text-sm">$</span>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div>
+                                <label className="block text-xs font-medium text-gray-500 mb-1">Nombre</label>
                                 <input
-                                    type="number"
-                                    placeholder="Precio"
-                                    className="w-full rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-zinc-900 pl-6 pr-3 py-2 text-sm"
-                                    value={newModifierData.additional_price}
-                                    onChange={e => setNewModifierData({ ...newModifierData, additional_price: parseFloat(e.target.value) || 0 })}
+                                    type="text"
+                                    placeholder="Ej. Queso Extra"
+                                    className="w-full rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-zinc-900 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary"
+                                    value={newModifierData.name}
+                                    onChange={e => setNewModifierData({ ...newModifierData, name: e.target.value })}
                                 />
                             </div>
+                            <div>
+                                <label className="block text-xs font-medium text-gray-500 mb-1">Precio Adicional</label>
+                                <div className="relative">
+                                    <span className="absolute left-3 top-2 text-gray-500 text-sm">$</span>
+                                    <input
+                                        type="number"
+                                        placeholder="0"
+                                        className="w-full rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-zinc-900 pl-6 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary"
+                                        value={newModifierData.additional_price}
+                                        onChange={e => setNewModifierData({ ...newModifierData, additional_price: parseFloat(e.target.value) || 0 })}
+                                    />
+                                </div>
+                            </div>
                         </div>
-                        <select
-                            className="w-full rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-zinc-900 px-3 py-2 text-sm"
-                            value={newModifierData.type}
-                            onChange={(e) => setNewModifierData({ ...newModifierData, type: e.target.value as any })}
-                        >
-                            <option value="extra">Extra (Agregado)</option>
-                            <option value="without">Sin (Remover)</option>
-                            <option value="option">Opción (Selección)</option>
-                        </select>
+                        <div>
+                            <label className="block text-xs font-medium text-gray-500 mb-1">Tipo</label>
+                            <select
+                                className="w-full rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-zinc-900 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary"
+                                value={newModifierData.type}
+                                onChange={(e) => setNewModifierData({ ...newModifierData, type: e.target.value as any })}
+                            >
+                                <option value="extra">Extra (Agregado)</option>
+                                <option value="without">Sin (Remover)</option>
+                                <option value="option">Opción (Selección)</option>
+                            </select>
+                        </div>
                         <button
                             onClick={handleCreateAndAdd}
                             disabled={!newModifierData.name || processing}
-                            className="w-full py-2 bg-green-600 hover:bg-green-700 text-white rounded-md text-sm font-bold flex items-center justify-center gap-2"
+                            className="w-full py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-md text-sm font-bold flex items-center justify-center gap-2 shadow-sm transition-colors"
                         >
                             {processing ? <Loader2 className="animate-spin w-4 h-4" /> : <Plus className="w-4 h-4" />}
                             Crear y Agregar

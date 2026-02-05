@@ -62,9 +62,9 @@ function KanbanColumn({ col, dishCount, children }: { col: any, dishCount: numbe
     });
 
     return (
-        <div ref={setNodeRef} className={`flex-1 min-w-[260px] flex flex-col bg-white dark:bg-zinc-900 rounded-3xl shadow-sm border border-gray-200 dark:border-zinc-800 ${col.borderColor}`}>
+        <div ref={setNodeRef} className={`flex-1 min-w-[85vw] md:min-w-[300px] max-w-[320px] h-full flex flex-col bg-white dark:bg-zinc-900 rounded-3xl shadow-sm border border-gray-200 dark:border-zinc-800 snap-x snap-mandatory ${col.borderColor}`}>
             {/* Column Header */}
-            <div className={`p-3 border-b border-gray-100 dark:border-zinc-800 flex flex-col gap-1 bg-gray-50/50 dark:bg-zinc-800/30`}>
+            <div className={`p-3 border-b border-gray-100 dark:border-zinc-800 flex flex-col gap-1 bg-gray-50/50 dark:bg-zinc-800/30 snap-center snap-always`}>
                 <div className="flex items-center justify-between">
                     <h2 className="font-bold text-gray-800 dark:text-gray-200 text-sm uppercase tracking-wide">{col.title}</h2>
                     <span className={`text-xs px-2 py-0.5 rounded-full font-bold ${col.color} ${col.iconColor}`}>
@@ -434,8 +434,8 @@ export default function OrdersPage() {
                     </div>
                 </div>
 
-                <div className="flex-1 overflow-x-auto overflow-y-hidden pb-2">
-                    <div className="h-full flex gap-3 min-w-[1200px] px-1">
+                <div className="flex-1 overflow-x-auto overflow-y-hidden pb-4 snap-x snap-mandatory scroll-smooth custom-scrollbar">
+                    <div className="h-full flex gap-4 px-2" style={{ minWidth: 'max-content' }}>
                         {columns.map((col) => {
                             const dishCount = getDishCount(col.orders)
 

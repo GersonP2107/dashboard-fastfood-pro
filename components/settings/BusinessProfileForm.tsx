@@ -3,8 +3,10 @@ import { Businessman, OperatingScheduleItem } from "@/lib/types";
 import { createClient } from "@/lib/supabase/client";
 import { updateBusinessProfile } from "@/lib/actions/settings";
 import { colombiaLocations } from "@/lib/data/colombia";
-import { Camera, Loader2, Save, Clock, Check, X, Phone } from "lucide-react";
+import { Camera, Loader2, Save, Clock, Check, X, Phone, AlertTriangle } from "lucide-react";
 import Image from "next/image";
+import { differenceInDays, addDays, format } from "date-fns";
+import { es } from "date-fns/locale";
 
 interface BusinessProfileFormProps {
     businessman: Businessman;
@@ -31,6 +33,12 @@ const COUNTRY_CODES = [
 ];
 
 export default function BusinessProfileForm({ businessman }: BusinessProfileFormProps) {
+    // Name Change Logic
+    const lastChange = businessman.last_name_change ? new Date(businessman.last_name_change) : null;
+    const daysSinceChange = lastChange ? differenceInDays(new Date(), lastChange) : 999;
+    const canChangeName = daysSinceChange >= 365;
+    const nextChangeDate = lastChange ? addDays(lastChange, 365) : new Date();
+
     const [formData, setFormData] = useState<Partial<Businessman>>({
         business_name: businessman.business_name,
         description: businessman.description || "",
@@ -42,6 +50,8 @@ export default function BusinessProfileForm({ businessman }: BusinessProfileForm
         operating_schedule: businessman.operating_schedule?.length ? businessman.operating_schedule : DEFAULT_SCHEDULE,
         delivery_time_estimate: businessman.delivery_time_estimate || "30 - 45 min"
     });
+
+    const isNameChanged = formData.business_name !== businessman.business_name;
 
     // Parse initial phone prefix
     const [phonePrefix, setPhonePrefix] = useState('57');
@@ -138,54 +148,57 @@ export default function BusinessProfileForm({ businessman }: BusinessProfileForm
 
     return (
         <form onSubmit={handleSubmit} className="space-y-8">
-            {/* Header / Logo Section */}
-            <div className="flex flex-col sm:flex-row items-center gap-6 pb-6 border-b border-gray-200 dark:border-gray-700">
-                <div className="relative group">
-                    <div className="w-24 h-24 rounded-full overflow-hidden bg-gray-100 dark:bg-zinc-800 border-2 border-gray-200 dark:border-gray-700 flex items-center justify-center">
-                        {logoUrl ? (
-                            <Image
-                                src={logoUrl}
-                                alt="Logo"
-                                width={96}
-                                height={96}
-                                className="w-full h-full object-cover"
-                            />
-                        ) : (
-                            <span className="text-2xl font-bold text-gray-400">
-                                {formData.business_name?.charAt(0) || "B"}
-                            </span>
-                        )}
-                        {uploading && (
-                            <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-                                <Loader2 className="w-6 h-6 text-white animate-spin" />
-                            </div>
-                        )}
-                    </div>
-                    <label className="absolute bottom-0 right-0 p-1.5 bg-brand-primary rounded-full text-white cursor-pointer hover:bg-brand-primary-hover transition-colors shadow-sm">
-                        <Camera className="w-4 h-4" />
-                        <input type="file" accept="image/*" onChange={handleLogoUpload} className="hidden" />
-                    </label>
-                </div>
-
-                <div className="text-center sm:text-left flex-1">
-                    <h2 className="text-xl font-bold text-gray-900 dark:text-white">Información del Negocio</h2>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">
-                        Actualiza la identidad, datos de contacto y horarios de tu negocio.
-                    </p>
-                </div>
-            </div>
+            {/* ... Header Section */}
 
             {/* Form Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="col-span-2 md:col-span-1">
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nombre del Negocio</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        Nombre del Negocio
+                        {!canChangeName && (
+                            <span className="ml-2 text-xs text-red-500 font-normal">
+                                (Modificable el {format(nextChangeDate, "d/MM/yyyy")})
+                            </span>
+                        )}
+                    </label>
                     <input
                         type="text"
                         value={formData.business_name}
                         onChange={(e) => setFormData({ ...formData, business_name: e.target.value })}
-                        className="block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-brand-primary focus:ring-brand-primary sm:text-sm bg-gray-50 dark:bg-zinc-700 dark:text-white px-4 py-2.5 transition-shadow"
+                        disabled={!canChangeName}
+                        className={`block w-full rounded-md shadow-sm focus:border-brand-primary focus:ring-brand-primary sm:text-sm px-4 py-2.5 transition-shadow ${!canChangeName
+                            ? "bg-gray-100 dark:bg-zinc-800 text-gray-500 border-gray-200 dark:border-gray-700 cursor-not-allowed"
+                            : "bg-gray-50 dark:bg-zinc-700 dark:text-white border-gray-300 dark:border-gray-600"
+                            }`}
                         required
                     />
+
+                    {!canChangeName && (
+                        <div className="mt-2 p-3 bg-red-50 dark:bg-red-900/10 border border-red-100 dark:border-red-900/30 rounded-lg flex gap-3 items-start">
+                            <AlertTriangle className="w-4 h-4 text-red-600 dark:text-red-400 shrink-0 mt-0.5" />
+                            <div className="text-xs">
+                                <h4 className="font-semibold text-red-800 dark:text-red-300 mb-0.5">
+                                    Límite de cambios alcanzado
+                                </h4>
+                                <p className="text-red-600 dark:text-red-400/80">
+                                    Ya has realizado el único cambio de nombre permitido este año.
+                                    Podrás modificarlo nuevamente el <strong>{format(nextChangeDate, "d 'de' MMMM 'de' yyyy", { locale: es })}</strong>.
+                                </p>
+                            </div>
+                        </div>
+                    )}
+
+                    {isNameChanged && canChangeName && (
+                        <div className="mt-2 p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg text-xs">
+                            <h4 className="font-bold text-yellow-800 dark:text-yellow-400 mb-1">⚠️ Atención</h4>
+                            <p className="text-yellow-700 dark:text-yellow-300">
+                                Cambiar el nombre <strong>SI cambiará el enlace de tu menú</strong> (/{businessman.slug}).
+                                Tus códigos QR <strong>NO seguirán funcionando</strong>.
+                                <br />
+                                <span className="opacity-80 mt-1 block">Nota: Solo puedes cambiar el nombre 1 vez al año.</span>
+                            </p>
+                        </div>
+                    )}
                 </div>
 
                 <div className="col-span-2 md:col-span-1">

@@ -92,6 +92,92 @@ export default function NotificationCenter({ businessId }: NotificationCenterPro
         }
     }, [businessId])
 
+    // System Configuration Check
+    useEffect(() => {
+        if (!businessId) return;
+
+        const checkSystemConfig = async () => {
+            // Dynamically import actions to avoid server/client issues if any, duplicate logic but clean
+            // Actually better to import them at top but let's see imports.
+            // We need to import these at the top level of the file.
+
+            const { getPaymentMethods } = await import('@/lib/actions/payment-methods');
+            const { getDeliveryZones } = await import('@/lib/actions/settings');
+            const { getZones } = await import('@/lib/actions/tables');
+
+            try {
+                const [paymentMethods, deliveryZones, tableZones] = await Promise.all([
+                    getPaymentMethods(businessId),
+                    getDeliveryZones(businessId),
+                    getZones(businessId)
+                ]);
+
+                const alerts: AppNotification[] = [];
+
+                if (paymentMethods.length === 0) {
+                    alerts.push({
+                        id: 'sys-missing-payments',
+                        title: 'Faltan Métodos de Pago',
+                        message: 'Tus clientes no podrán pagar. Configura métodos de pago ahora.',
+                        createdAt: Date.now(),
+                        read: false,
+                        link: '/settings',
+                        type: 'system'
+                    });
+                }
+
+                if (deliveryZones.length === 0) {
+                    alerts.push({
+                        id: 'sys-missing-delivery',
+                        title: 'Sin Zonas de Domicilio',
+                        message: 'No has definido a dónde envías pedidos.',
+                        createdAt: Date.now(),
+                        read: false,
+                        link: '/settings',
+                        type: 'system'
+                    });
+                }
+
+                if (tableZones.length === 0) {
+                    alerts.push({
+                        id: 'sys-missing-tables',
+                        title: 'Sin Mesas Configuradas',
+                        message: 'Configura tus mesas para usar el sistema QR.',
+                        createdAt: Date.now(),
+                        read: false,
+                        link: '/settings',
+                        type: 'system'
+                    });
+                }
+
+                setNotifications(prev => {
+                    // Merge alerts with existing notifications, avoiding duplicates by ID
+                    const existingIds = new Set(prev.map(n => n.id));
+                    const newAlerts = alerts.filter(a => !existingIds.has(a.id));
+
+                    if (newAlerts.length === 0) return prev;
+
+                    // If alerts were previously read (checked via ID matching in filtered list? No, local storage stores read state)
+                    // We need to respect if user read them in this session/storage.
+                    // But if they are still missing, maybe we should remind them?
+                    // For now, let's just add them if they aren't in the list at all.
+                    // If the user cleared them, they shouldn't reappear instantly unless we force it.
+                    // But 'clearAll' clears the list. 
+                    // Let's assume if it's missing from the list, we re-add it.
+
+                    return [...newAlerts, ...prev];
+                });
+
+            } catch (error) {
+                console.error("Error checking system config:", error);
+            }
+        };
+
+        // Run check on mount and maybe infrequently? Just mount is fine.
+        checkSystemConfig();
+
+    }, [businessId]);
+
     // Click outside handler
     useEffect(() => {
         function handleClickOutside(event: MouseEvent) {
@@ -215,7 +301,7 @@ export default function NotificationCenter({ businessId }: NotificationCenterPro
                                                 </div>
                                                 <div className="flex flex-col items-end gap-2">
                                                     {!notification.read && (
-                                                        <span className="h-2 w-2 rounded-full bg-indigo-600 flex-shrink-0" />
+                                                        <span className="h-2 w-2 rounded-full bg-indigo-600 shrink-0" />
                                                     )}
                                                 </div>
                                             </div>

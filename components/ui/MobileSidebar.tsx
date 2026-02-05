@@ -46,8 +46,8 @@ export default function MobileSidebar({ isOpen, onClose, business }: MobileSideb
                         initial={{ x: "-100%" }}
                         animate={{ x: 0 }}
                         exit={{ x: "-100%" }}
-                        transition={{ type: "spring", damping: 25, stiffness: 200 }}
-                        className="fixed inset-y-0 left-0 z-50 w-[280px] bg-gray-50/50 dark:bg-zinc-950 shadow-xl lg:hidden flex flex-col"
+                        transition={{ type: "spring", damping: 30, stiffness: 300 }}
+                        className="fixed inset-y-0 left-0 z-50 w-[280px] bg-white dark:bg-zinc-900 shadow-2xl lg:hidden flex flex-col border-r border-gray-100 dark:border-zinc-800"
                     >
                         {/* Reusing existing Sidebar component but ensuring it takes full height */}
                         <div className="h-full overflow-y-auto">

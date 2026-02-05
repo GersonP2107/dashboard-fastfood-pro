@@ -36,8 +36,8 @@ export default function PaymentMethodsManager({ businessmanId, initialMethods }:
 
     // New Method State
     const [newMethod, setNewMethod] = useState<Partial<PaymentMethod>>({
-        type: 'nequi',
-        name: '',
+        type: 'efectivo',
+        name: 'Efectivo',
         account_number: '',
         instructions: '',
         is_active: true
@@ -98,7 +98,7 @@ export default function PaymentMethodsManager({ businessmanId, initialMethods }:
     };
 
     const resetForm = () => {
-        setNewMethod({ type: 'nequi', name: '', account_number: '', instructions: '', is_active: true });
+        setNewMethod({ type: 'efectivo', name: 'Efectivo', account_number: '', instructions: '', is_active: true });
         setEditingId(null);
         setIsAdding(false);
     };

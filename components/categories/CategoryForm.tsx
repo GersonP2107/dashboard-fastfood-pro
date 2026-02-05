@@ -68,7 +68,7 @@ export default function CategoryForm({ category, businessmanId, onSuccess, onCan
                         name="name"
                         required
                         defaultValue={category?.name}
-                        className="w-full rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-zinc-900 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        className="w-full rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-zinc-900 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary"
                         placeholder="Ej. Hamburguesas"
                     />
                 </div>
@@ -81,7 +81,7 @@ export default function CategoryForm({ category, businessmanId, onSuccess, onCan
                         type="number"
                         name="order"
                         defaultValue={category?.order || 0}
-                        className="w-full rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-zinc-900 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        className="w-full rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-zinc-900 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary"
                     />
                 </div>
             </div>
@@ -94,7 +94,7 @@ export default function CategoryForm({ category, businessmanId, onSuccess, onCan
                     name="description"
                     rows={2}
                     defaultValue={category?.description || ""}
-                    className="w-full rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-zinc-900 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    className="w-full rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-zinc-900 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary"
                     placeholder="Descripción opcional..."
                 />
             </div>
@@ -106,7 +106,7 @@ export default function CategoryForm({ category, businessmanId, onSuccess, onCan
                     name="is_active"
                     defaultChecked={category ? category.is_active : true}
                     value="true"
-                    className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                    className="h-4 w-4 rounded border-gray-300 text-brand-primary focus:ring-brand-primary"
                 />
                 <label htmlFor="is_active" className="text-sm font-medium text-gray-700 dark:text-gray-300">
                     Categoría Activa
@@ -124,7 +124,7 @@ export default function CategoryForm({ category, businessmanId, onSuccess, onCan
                 </button>
                 <button
                     type="submit"
-                    className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 disabled:opacity-50 flex items-center gap-2"
+                    className="px-4 py-2 text-sm font-medium text-white bg-brand-primary rounded-md hover:bg-brand-primary/90 disabled:opacity-50 flex items-center gap-2"
                     disabled={loading}
                 >
                     {loading && <Loader2 className="h-4 w-4 animate-spin" />}

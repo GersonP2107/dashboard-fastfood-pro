@@ -88,8 +88,8 @@ export default function QuickActionsPanel({ isOpen, onClose, business }: QuickAc
                                                 key={preset.value}
                                                 onClick={() => handleMultiplierChange(preset.value)}
                                                 className={`w-full flex items-center justify-between p-4 rounded-xl border transition-all ${multiplier === preset.value
-                                                        ? 'border-indigo-600 bg-indigo-50 dark:bg-indigo-900/20 ring-1 ring-indigo-600 dark:border-indigo-500'
-                                                        : 'border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 hover:border-indigo-300 dark:hover:border-indigo-700'
+                                                    ? 'border-brand-primary bg-orange-50 dark:bg-orange-900/20 ring-1 ring-brand-primary dark:border-brand-primary'
+                                                    : 'border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 hover:border-orange-300 dark:hover:border-orange-700'
                                                     }`}
                                             >
                                                 <div className="flex items-center gap-3">
@@ -97,14 +97,14 @@ export default function QuickActionsPanel({ isOpen, onClose, business }: QuickAc
                                                         <preset.icon className="h-5 w-5" />
                                                     </div>
                                                     <span className={`font-medium ${multiplier === preset.value
-                                                            ? 'text-indigo-900 dark:text-indigo-300'
-                                                            : 'text-gray-700 dark:text-gray-300'
+                                                        ? 'text-brand-primary dark:text-orange-300'
+                                                        : 'text-gray-700 dark:text-gray-300'
                                                         }`}>
                                                         {preset.label}
                                                     </span>
                                                 </div>
                                                 {multiplier === preset.value && (
-                                                    <div className="h-2 w-2 rounded-full bg-indigo-600 dark:bg-indigo-400 shadow-[0_0_8px_rgba(79,70,229,0.5)]" />
+                                                    <div className="h-2 w-2 rounded-full bg-brand-primary dark:bg-brand-primary shadow-[0_0_8px_rgba(234,88,12,0.5)]" />
                                                 )}
                                             </button>
                                         ))}
@@ -120,7 +120,7 @@ export default function QuickActionsPanel({ isOpen, onClose, business }: QuickAc
                                                     max="5.0"
                                                     value={multiplier}
                                                     onChange={(e) => handleMultiplierChange(parseFloat(e.target.value))}
-                                                    className="flex-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm dark:bg-zinc-800 dark:text-white px-4 py-2"
+                                                    className="flex-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-brand-primary focus:ring-brand-primary sm:text-sm dark:bg-zinc-800 dark:text-white px-4 py-2"
                                                 />
                                             </div>
                                         </div>
@@ -132,7 +132,7 @@ export default function QuickActionsPanel({ isOpen, onClose, business }: QuickAc
                                         <div className="flex justify-between items-center">
                                             <span>Tarifa Base: $5,000</span>
                                             <span className="text-gray-300">→</span>
-                                            <span className="font-bold text-indigo-600 dark:text-indigo-400">
+                                            <span className="font-bold text-brand-primary dark:text-orange-400">
                                                 Actual: ${(5000 * multiplier).toLocaleString('es-CO')}
                                             </span>
                                         </div>
@@ -142,8 +142,8 @@ export default function QuickActionsPanel({ isOpen, onClose, business }: QuickAc
 
                             <div className="p-6 border-t border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-zinc-800/20">
                                 {isSaving ? (
-                                    <span className="text-xs text-indigo-600 flex items-center gap-2 animate-pulse">
-                                        <div className="h-2 w-2 bg-indigo-600 rounded-full" />
+                                    <span className="text-xs text-brand-primary flex items-center gap-2 animate-pulse">
+                                        <div className="h-2 w-2 bg-brand-primary rounded-full" />
                                         Guardando cambios...
                                     </span>
                                 ) : (

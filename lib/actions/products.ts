@@ -73,6 +73,25 @@ export async function createProduct(formData: FormData) {
         order: 0,
     };
 
+    // Check Plan Limits
+    const { data: businessman } = await supabase
+        .from('businessmans')
+        .select('plan_type')
+        .eq('id', businessman_id)
+        .single();
+
+    if (businessman?.plan_type === 'essential') {
+        const { count, error: countError } = await supabase
+            .from('products')
+            .select('*', { count: 'exact', head: true })
+            .eq('businessman_id', businessman_id)
+            .is('deleted_at', null);
+
+        if (!countError && count !== null && count >= 30) {
+            return { error: 'Has alcanzado el límite de 30 productos de tu Plan Esencial. Actualiza a Profesional para productos ilimitados.' };
+        }
+    }
+
     const { data, error } = await supabase
         .from("products")
         .insert(productData)

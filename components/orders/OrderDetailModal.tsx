@@ -244,10 +244,12 @@ export default function OrderDetailModal({ order, onClose, onUpdate }: OrderDeta
                             <div className="bg-gray-50 dark:bg-zinc-800/50 p-4 rounded-xl border border-gray-100 dark:border-zinc-800 space-y-3 h-full">
                                 <div className="flex items-center gap-3">
                                     <div className="h-8 w-8 rounded-full bg-brand-primary/10 dark:bg-orange-900/30 flex items-center justify-center text-brand-primary font-bold">
-                                        {order.customer_name.charAt(0)}
+                                        {(isDineIn && order.customer_name.toLowerCase().includes('mesa')) ? 'C' : order.customer_name.charAt(0)}
                                     </div>
                                     <div>
-                                        <p className="font-medium text-gray-900 dark:text-white">{order.customer_name}</p>
+                                        <p className="font-medium text-gray-900 dark:text-white">
+                                            {(isDineIn && order.customer_name.toLowerCase().includes('mesa')) ? 'Cliente en Mesa' : order.customer_name}
+                                        </p>
                                         {!isDineIn && (
                                             <div className="flex items-center gap-2 text-sm text-gray-500">
                                                 <Phone className="h-3 w-3" />
@@ -282,8 +284,13 @@ export default function OrderDetailModal({ order, onClose, onUpdate }: OrderDeta
                                                 </p>
                                             </div>
                                         ) : (
-                                            <div className="p-2 bg-yellow-50 text-yellow-800 rounded border border-yellow-200">
-                                                Sin mesa asignada
+                                            <div className="mt-1 p-3 bg-indigo-50 dark:bg-indigo-900/20 rounded-lg border border-indigo-100 dark:border-indigo-900/30 text-center">
+                                                <p className="text-xs text-indigo-600 dark:text-indigo-400 uppercase font-bold tracking-wider mb-1">
+                                                    Ubicación / Mesa
+                                                </p>
+                                                <p className="text-lg font-bold text-indigo-700 dark:text-indigo-300">
+                                                    {order.customer_name || 'Sin información'}
+                                                </p>
                                             </div>
                                         )}
                                     </div>

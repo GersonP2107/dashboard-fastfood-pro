@@ -19,7 +19,7 @@ export default function QrCodesManager({ businessman, zones }: QrCodesManagerPro
         // We use window.location.origin to get the current domain
         if (typeof window === 'undefined') return '';
 
-        const baseUrl = window.location.origin;
+        const baseUrl = "https://foodfastpro.com";
         const slug = businessman.slug;
         const encodedZone = encodeURIComponent(zoneName);
         const encodedTable = encodeURIComponent(tableName);

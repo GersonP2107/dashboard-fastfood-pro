@@ -3,7 +3,7 @@ import { Businessman, OperatingScheduleItem } from "@/lib/types";
 import { createClient } from "@/lib/supabase/client";
 import { updateBusinessProfile } from "@/lib/actions/settings";
 import { colombiaLocations } from "@/lib/data/colombia";
-import { Camera, Loader2, Save, Clock, Check, X, Phone, AlertTriangle } from "lucide-react";
+import { Camera, Loader2, Save, Clock, Check, X, Phone, AlertTriangle, Image as ImageIcon, Store } from "lucide-react";
 import Image from "next/image";
 import { differenceInDays, addDays, format } from "date-fns";
 import { es } from "date-fns/locale";
@@ -90,7 +90,9 @@ export default function BusinessProfileForm({ businessman }: BusinessProfileForm
     };
 
     const [logoUrl, setLogoUrl] = useState<string | null>(businessman.logo_url || null);
+    const [bannerUrl, setBannerUrl] = useState<string | null>(businessman.banner_url || null);
     const [uploading, setUploading] = useState(false);
+    const [uploadingBanner, setUploadingBanner] = useState(false);
     const [saving, setSaving] = useState(false);
     const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
 
@@ -131,6 +133,41 @@ export default function BusinessProfileForm({ businessman }: BusinessProfileForm
         }
     };
 
+    const handleBannerUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        try {
+            setUploadingBanner(true);
+            setMessage(null);
+
+            if (!e.target.files || e.target.files.length === 0) {
+                return;
+            }
+
+            const file = e.target.files[0];
+            const fileExt = file.name.split('.').pop();
+            const fileName = `${businessman.id}/banner-${Date.now()}.${fileExt}`;
+            const filePath = `business-banners/${fileName}`;
+
+            const { error: uploadError } = await supabase.storage
+                .from('products')
+                .upload(filePath, file);
+
+            if (uploadError) throw uploadError;
+
+            const { data: { publicUrl } } = supabase.storage
+                .from('products')
+                .getPublicUrl(filePath);
+
+            setBannerUrl(publicUrl);
+            await updateBusinessProfile(businessman.id, { banner_url: publicUrl });
+
+        } catch (error) {
+            console.error("Error uploading banner:", error);
+            setMessage({ type: 'error', text: "Error al subir el banner" });
+        } finally {
+            setUploadingBanner(false);
+        }
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setSaving(true);
@@ -148,7 +185,45 @@ export default function BusinessProfileForm({ businessman }: BusinessProfileForm
 
     return (
         <form onSubmit={handleSubmit} className="space-y-8">
-            {/* ... Header Section */}
+            {/* Header Section: Banner & Logo */}
+            <div className="relative group mb-16">
+                {/* Banner */}
+                <div className="h-48 w-full bg-gray-100 dark:bg-zinc-800 rounded-xl overflow-hidden relative shadow-sm border border-gray-200 dark:border-zinc-700">
+                    {bannerUrl ? (
+                        <Image src={bannerUrl} alt="Banner" fill className="object-cover" />
+                    ) : (
+                        <div className="flex flex-col items-center justify-center h-full text-gray-400 dark:text-zinc-600 gap-2">
+                            <ImageIcon className="w-8 h-8 opacity-50" />
+                            <span className="text-sm font-medium">Agregar Banner del Menú</span>
+                        </div>
+                    )}
+
+                    <label className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+                        <input type="file" className="hidden" accept="image/*" onChange={handleBannerUpload} disabled={uploadingBanner} />
+                        <div className="bg-white/90 text-gray-900 px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 shadow-lg backdrop-blur-sm transform hover:scale-105 transition-transform dark:bg-zinc-200">
+                            <Camera className="w-4 h-4" />
+                            {uploadingBanner ? 'Subiendo...' : 'Cambiar Banner'}
+                        </div>
+                    </label>
+                </div>
+
+                {/* Logo - Positioned to overlap banner bottom-left */}
+                <div className="absolute -bottom-10 left-6">
+                    <div className="relative group/logo">
+                        <div className="w-24 h-24 rounded-full border-4 border-white dark:border-zinc-900 bg-white dark:bg-zinc-800 shadow-md overflow-hidden relative flex items-center justify-center">
+                            {logoUrl ? (
+                                <Image src={logoUrl} alt="Logo" fill className="object-cover" />
+                            ) : (
+                                <Store className="w-10 h-10 text-gray-300 dark:text-zinc-600" />
+                            )}
+                            <label className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover/logo:opacity-100 transition-opacity cursor-pointer rounded-full">
+                                <input type="file" className="hidden" accept="image/*" onChange={handleLogoUpload} disabled={uploading} />
+                                <Camera className="w-6 h-6 text-white" />
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             {/* Form Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

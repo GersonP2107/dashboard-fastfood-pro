@@ -9,6 +9,7 @@ export interface Businessman {
     slug: string
     description?: string
     logo_url?: string
+    banner_url?: string
     phone?: string
     email?: string
     address?: string
@@ -26,6 +27,9 @@ export interface Businessman {
     delivery_time_estimate?: string;
     min_order_value: number;
     delivery_cost: number;
+    plan_type: 'essential' | 'professional' | 'premium';
+    subscription_status: 'active' | 'past_due' | 'canceled';
+    subscription_end?: string;
     created_at: string
     updated_at: string
 }

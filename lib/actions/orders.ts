@@ -27,41 +27,53 @@ export async function getOrders(businessmanId: string) {
         return [];
     }
 
-    // 2. Extract unique table_ids (manual join workaround due to missing FK)
-    const tableIds = Array.from(new Set(
-        ordersData
-            .map((o: any) => o.table_id)
-            .filter((id: any) => id) // filter nulls
-    )) as string[];
-
+    // 3. Fetch ALL tables for the businessman to handle both linked and unlinked (heuristic) orders
     let tablesMap: Record<string, any> = {};
+    let allTables: any[] = [];
 
-    // 3. Fetch tables if any exist
-    if (tableIds.length > 0) {
-        const { data: tablesData } = await supabase
-            .from('restaurant_tables')
-            .select(`
-                id,
-                label,
-                restaurant_zones (
-                    name
-                )
-            `)
-            .in('id', tableIds);
+    const { data: tablesData } = await supabase
+        .from('restaurant_tables')
+        .select(`
+            id,
+            label,
+            restaurant_zones (
+                name
+            )
+        `)
+        .eq('businessman_id', businessmanId);
 
-        if (tablesData) {
-            tablesMap = tablesData.reduce((acc: any, table: any) => {
-                acc[table.id] = table;
-                return acc;
-            }, {});
-        }
+    if (tablesData) {
+        allTables = tablesData;
+        tablesMap = tablesData.reduce((acc: any, table: any) => {
+            acc[table.id] = table;
+            return acc;
+        }, {});
     }
 
     // 4. Stitch data together
-    const ordersWithTables = ordersData.map((order: any) => ({
-        ...order,
-        restaurant_tables: order.table_id ? tablesMap[order.table_id] : null
-    }));
+    const ordersWithTables = ordersData.map((order: any) => {
+        let table = order.table_id ? tablesMap[order.table_id] : null;
+
+        // Fallback: If no table linked but it's a dine-in/pos order, try to match customer_name to a table label
+        if (!table && !order.table_id && (order.delivery_type === 'dine_in' || order.customer_name?.toLowerCase().includes('mesa'))) {
+            const lowerName = order.customer_name?.toLowerCase() || '';
+            // specific fix for "Mesa Mesa 2" pattern or just "Mesa 2"
+            // Try to find a table where the label is contained in the customer name
+            // Sort tables by label length descending to match "Mesa 10" before "Mesa 1"
+            const matchedTable = allTables
+                .sort((a, b) => b.label.length - a.label.length)
+                .find(t => lowerName.includes(t.label.toLowerCase()));
+
+            if (matchedTable) {
+                table = matchedTable;
+            }
+        }
+
+        return {
+            ...order,
+            restaurant_tables: table
+        };
+    });
 
     return ordersWithTables as DashboardOrder[];
 }

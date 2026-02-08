@@ -27,6 +27,7 @@ interface SidebarProps {
         id: string;
         business_name: string;
         logo_url?: string;
+        plan_type?: 'essential' | 'professional' | 'premium';
     } | null;
     onCloseMobile?: () => void;
 }
@@ -36,6 +37,19 @@ export default function Sidebar({ business, onCloseMobile }: SidebarProps) {
     const router = useRouter()
     const supabase = createClient()
 
+    // Filter navigation based on plan
+    const plan = business?.plan_type || 'essential';
+
+    const filteredNavigation = navigation.filter(item => {
+        if (plan === 'essential') {
+            return !['Ordenes', 'Historial', 'Inventario', 'Finanzas'].includes(item.name);
+        }
+        if (plan === 'professional') {
+            return !['Finanzas'].includes(item.name);
+        }
+        return true; // premium sees all
+    });
+
     const handleSignOut = async () => {
         await supabase.auth.signOut()
         router.refresh()
@@ -43,36 +57,40 @@ export default function Sidebar({ business, onCloseMobile }: SidebarProps) {
 
     return (
         <div className="flex h-full flex-col gap-y-6 overflow-y-auto bg-white dark:bg-zinc-900 border-r border-gray-100 dark:border-zinc-800 px-4 pb-4">
-            <div className="flex h-20 shrink-0 items-center justify-between px-2 mt-2">
-                <div className="flex items-center gap-3 min-w-0">
-                    {business?.logo_url ? (
-                        <div className="h-10 w-10 shrink-0  rounded-xl overflow-hidden bg-gray-50 dark:bg-zinc-800 p-0.5 shadow-sm border border-gray-100 dark:border-zinc-700">
-                            <img src={business.logo_url} alt={business.business_name} className="h-full w-full rounded-lg object-cover" />
-                        </div>
-                    ) : (
-                        <div className="h-10 w-10 shrink-0 rounded-xl bg-linear-to-br from-brand-primary to-brand-accent flex items-center justify-center text-white font-bold text-lg shadow-sm">
-                            {business?.business_name?.charAt(0) || 'D'}
-                        </div>
-                    )}
-                    <span className="text-lg lg:text-xl font-bold text-gray-900 dark:text-white truncate ">
-                        {business?.business_name || 'FoodFast Pro'}
-                    </span>
-                </div>
-
+            <div className="flex flex-col shrink-0 items-center justify-center px-2 py-6 relative">
                 {onCloseMobile && (
                     <button
                         onClick={onCloseMobile}
-                        className="p-1.5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-lg transition-all"
+                        className="absolute right-0 top-2 p-1.5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-lg transition-all"
                     >
                         <X className="w-5 h-5" />
                     </button>
                 )}
+
+                {business?.logo_url ? (
+                    <div className="h-24 w-24 shrink-0 rounded-2xl overflow-hidden bg-gray-50 dark:bg-zinc-800 p-1 shadow-md border border-gray-100 dark:border-zinc-700 mb-4">
+                        <img src={business.logo_url} alt={business.business_name} className="h-full w-full rounded-xl object-cover" />
+                    </div>
+                ) : (
+                    <div className="h-24 w-24 shrink-0 rounded-2xl bg-linear-to-br from-brand-primary to-brand-accent flex items-center justify-center text-white font-bold text-4xl shadow-md mb-4">
+                        {business?.business_name?.charAt(0) || 'D'}
+                    </div>
+                )}
+
+                <div className="flex flex-col items-center text-center w-full">
+                    <span className="text-xl font-bold text-gray-900 dark:text-white truncate w-full px-2">
+                        {business?.business_name || 'FoodFast Pro'}
+                    </span>
+                    <span className="text-xs font-bold text-brand-primary uppercase tracking-wider mt-1 bg-brand-primary/10 px-3 py-1 rounded-full">
+                        {plan === 'professional' ? 'Pro' : plan}
+                    </span>
+                </div>
             </div>
             <nav className="flex flex-1 flex-col px-1">
                 <ul role="list" className="flex flex-1 flex-col gap-y-1">
                     <li>
                         <ul role="list" className="space-y-1.5">
-                            {navigation.map((item) => {
+                            {filteredNavigation.map((item) => {
                                 const isActive = pathname === item.href
                                 return (
                                     <li key={item.name}>

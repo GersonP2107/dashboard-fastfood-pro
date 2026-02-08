@@ -73,7 +73,9 @@ export default function OrderKanbanCard({ order, onStatusUpdate, onClick }: Orde
 
             {/* Customer & Total */}
             <div className="flex justify-between items-center mb-3 text-sm">
-                <span className="truncate font-medium text-gray-700 dark:text-gray-300 max-w-[60%]">{order.customer_name}</span>
+                <span className="truncate font-medium text-gray-700 dark:text-gray-300 max-w-[60%]">
+                    {(isDineIn && order.customer_name.toLowerCase().includes('mesa')) ? 'Cliente en Mesa' : order.customer_name}
+                </span>
                 <span className="font-bold text-gray-900 dark:text-white">${order.total.toLocaleString()}</span>
             </div>
 
@@ -99,7 +101,8 @@ export default function OrderKanbanCard({ order, onStatusUpdate, onClick }: Orde
                         {order.restaurant_tables ? (
                             <span>{order.restaurant_tables.restaurant_zones?.name} - {order.restaurant_tables.label}</span>
                         ) : (
-                            <span>EN MESA</span>
+                            // Fallback: Use customer_name if it looks like table info (common in some POS integrations)
+                            <span>{order.customer_name || 'EN MESA'}</span>
                         )}
                     </div>
                 )}

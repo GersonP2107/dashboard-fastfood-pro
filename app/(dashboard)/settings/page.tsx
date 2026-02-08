@@ -80,29 +80,33 @@ export default function SettingsPage() {
                         <BusinessProfileForm businessman={business} />
                     </div>
 
-                    {/* Table Manager Section */}
-                    <div className="bg-white dark:bg-zinc-900 shadow-sm rounded-3xl border border-gray-100 dark:border-zinc-800 p-6">
-                        <div className="flex items-center gap-2 mb-6 text-brand-primary dark:text-brand-light border-b border-gray-100 dark:border-gray-800 pb-4">
-                            <Layout className="h-5 w-5" />
-                            <h2 className="text-lg font-semibold">Mesas y Zonas</h2>
-                        </div>
-                        <TableManager
-                            businessmanId={business.id}
-                            initialZones={tableZones}
-                        />
-                    </div>
+                    {/* Table Manager Section - Only for Pro/Premium */}
+                    {business.plan_type !== 'essential' && (
+                        <>
+                            <div className="bg-white dark:bg-zinc-900 shadow-sm rounded-3xl border border-gray-100 dark:border-zinc-800 p-6">
+                                <div className="flex items-center gap-2 mb-6 text-brand-primary dark:text-brand-light border-b border-gray-100 dark:border-gray-800 pb-4">
+                                    <Layout className="h-5 w-5" />
+                                    <h2 className="text-lg font-semibold">Mesas y Zonas</h2>
+                                </div>
+                                <TableManager
+                                    businessmanId={business.id}
+                                    initialZones={tableZones}
+                                />
+                            </div>
 
-                    {/* QR Codes Section */}
-                    <div className="bg-white dark:bg-zinc-900 shadow-sm rounded-3xl border border-gray-100 dark:border-zinc-800 p-6">
-                        <div className="flex items-center gap-2 mb-6 text-brand-primary dark:text-brand-light border-b border-gray-100 dark:border-gray-800 pb-4">
-                            <QrCode className="h-5 w-5" />
-                            <h2 className="text-lg font-semibold">Códigos QR para Mesas</h2>
-                        </div>
-                        <QrCodesManager
-                            businessman={business}
-                            zones={tableZones}
-                        />
-                    </div>
+                            {/* QR Codes Section */}
+                            <div className="bg-white dark:bg-zinc-900 shadow-sm rounded-3xl border border-gray-100 dark:border-zinc-800 p-6">
+                                <div className="flex items-center gap-2 mb-6 text-brand-primary dark:text-brand-light border-b border-gray-100 dark:border-gray-800 pb-4">
+                                    <QrCode className="h-5 w-5" />
+                                    <h2 className="text-lg font-semibold">Códigos QR para Mesas</h2>
+                                </div>
+                                <QrCodesManager
+                                    businessman={business}
+                                    zones={tableZones}
+                                />
+                            </div>
+                        </>
+                    )}
                 </div>
 
                 {/* Right Column: Delivery & Payment */}

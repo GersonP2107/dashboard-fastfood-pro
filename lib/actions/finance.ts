@@ -85,7 +85,7 @@ export async function getFinancialStats(businessmanId: string, range: DateRange 
     }, {} as Record<string, { name: string, quantity: number, revenue: number }>)
 
     const topProducts = Object.values(productStats)
-        .sort((a, b) => b.quantity - a.quantity)
+        .sort((a: any, b: any) => b.quantity - a.quantity)
         .slice(0, 5)
 
     // 6. Sales Over Time (Chart Data)

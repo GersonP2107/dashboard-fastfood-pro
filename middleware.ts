@@ -45,6 +45,24 @@ export async function middleware(request: NextRequest) {
         return NextResponse.redirect(url)
     }
 
+    if (user && request.nextUrl.pathname.startsWith('/dashboard')) {
+        // Check subscription status
+        const { data: businessman } = await supabase
+            .from('businessmans')
+            .select('subscription_status')
+            .eq('user_id', user.id)
+            .single()
+
+        if (businessman && (businessman.subscription_status === 'past_due' || businessman.subscription_status === 'canceled')) {
+            // Allow access only to billing page
+            if (!request.nextUrl.pathname.startsWith('/dashboard/billing')) {
+                const url = request.nextUrl.clone()
+                url.pathname = '/dashboard/billing'
+                return NextResponse.redirect(url)
+            }
+        }
+    }
+
     return response
 }
 

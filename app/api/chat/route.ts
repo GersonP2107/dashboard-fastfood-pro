@@ -39,12 +39,16 @@ export async function POST(req: NextRequest) {
 
     const { data: businessman } = await supabase
         .from('businessmans')
-        .select('id')
+        .select('id, plan_type')
         .eq('user_id', user.id)
         .single();
 
     if (!businessman) {
         return new NextResponse("Business profile not found", { status: 404 });
+    }
+
+    if (businessman.plan_type !== 'premium') {
+        return new NextResponse("Plan Upgrade Required: AI access is only available in the Premium plan.", { status: 403 });
     }
 
     const businessmanId = businessman.id;

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { DashboardStats, DashboardOrder, SalesTrendPoint, TopProduct } from '@/lib/types'
+import { DashboardStats, DashboardOrder, SalesTrendPoint, TopProduct, Businessman } from '@/lib/types'
 import { DollarSign, ShoppingCart, TrendingUp, CheckCircle, Clock, Package } from 'lucide-react'
 import { formatDistanceToNow } from 'date-fns'
 import { es } from 'date-fns/locale'
@@ -26,9 +26,11 @@ export default function DashboardHome() {
   })
   const [recentOrders, setRecentOrders] = useState<DashboardOrder[]>([])
   const [salesTrend, setSalesTrend] = useState<SalesTrendPoint[]>([])
+  const [business, setBusiness] = useState<Businessman | null>(null)
   const [topProducts, setTopProducts] = useState<TopProduct[]>([])
   const [loading, setLoading] = useState(true)
   const [businessId, setBusinessId] = useState<string>("")
+  const [planType, setPlanType] = useState<string>("essential")
   const supabase = createClient()
 
   useEffect(() => {
@@ -40,6 +42,8 @@ export default function DashboardHome() {
       const business = await getCurrentBusinessman();
       if (!business) return;
       setBusinessId(business.id);
+      setBusiness(business);
+      setPlanType(business.plan_type || 'essential');
 
       // Parallel data fetching using Server Actions
       const [
@@ -156,7 +160,7 @@ export default function DashboardHome() {
         {/* Chart Section (Spans 3 cols) */}
         <motion.div
           variants={itemVariants}
-          className="md:col-span-2 lg:col-span-3 rounded-3xl bg-white dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800 p-6 shadow-sm"
+          className="md:col-span-2 lg:col-span-3 rounded-3xl bg-white dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800 p-6 shadow-sm overflow-hidden relative"
         >
           <div className="flex items-center justify-between mb-6">
             <div>
@@ -167,7 +171,21 @@ export default function DashboardHome() {
               <TrendingUp className="w-5 h-5" />
             </div>
           </div>
-          <SalesTrendChart data={salesTrend} />
+
+          {planType !== 'essential' ? (
+            <SalesTrendChart data={salesTrend} />
+          ) : (
+            <div className="h-64 flex flex-col items-center justify-center text-center p-4 bg-gray-50 dark:bg-zinc-800/50 rounded-2xl border border-dashed border-gray-200 dark:border-zinc-700">
+              <TrendingUp className="w-12 h-12 text-gray-300 dark:text-gray-600 mb-3" />
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Analíticas Avanzadas</h3>
+              <p className="text-sm text-gray-500 max-w-xs mb-4">
+                Actualiza al Plan Profesional para ver tus tendencias de ventas y tomar mejores decisiones.
+              </p>
+              <Link href="/settings/billing" className="text-sm font-medium text-brand-primary hover:text-brand-secondary">
+                Ver planes disponibles &rarr;
+              </Link>
+            </div>
+          )}
         </motion.div>
 
         {/* Top Products (Vertical Column) */}
@@ -209,12 +227,14 @@ export default function DashboardHome() {
       >
         <div className="px-6 py-4 border-b border-gray-100 dark:border-zinc-800 flex items-center justify-between bg-gray-50/50 dark:bg-zinc-800/20">
           <h2 className="text-lg font-bold text-gray-900 dark:text-white">Pedidos Recientes</h2>
-          <Link
-            href="/orders"
-            className="text-sm font-medium text-brand-primary dark:text-brand-light hover:text-brand-primary-hover"
-          >
-            Ver todos
-          </Link>
+          {planType !== 'essential' && (
+            <Link
+              href="/orders"
+              className="text-sm font-medium text-brand-primary dark:text-brand-light hover:text-brand-primary-hover"
+            >
+              Ver todos
+            </Link>
+          )}
         </div>
         <div className="divide-y divide-gray-100 dark:divide-zinc-800">
           {recentOrders.length === 0 ? (

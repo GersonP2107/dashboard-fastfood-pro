@@ -13,6 +13,7 @@ export interface Businessman {
     phone?: string
     email?: string
     address?: string
+    neighborhood?: string
     city?: string
     department?: string
     whatsapp_number: string
@@ -30,6 +31,8 @@ export interface Businessman {
     plan_type: 'essential' | 'professional' | 'premium';
     subscription_status: 'active' | 'past_due' | 'canceled';
     subscription_end?: string;
+    trial_ends_at?: string;
+    business_categories?: string[];
     created_at: string
     updated_at: string
 }

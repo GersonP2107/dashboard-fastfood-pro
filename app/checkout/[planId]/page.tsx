@@ -40,7 +40,7 @@ export default async function CheckoutPage({ params }: { params: { planId: strin
                                 </span>
                             </div>
                             <p className="mt-4 text-sm text-gray-500 max-w-xs mx-auto">
-                                Acceso inmediato por {plan?.duration_days} días. Sin renovación automática.
+                                Acceso inmediato por {plan?.duration_days === 90 ? '3 meses' : plan?.duration_days === 180 ? '6 meses' : plan?.duration_days === 365 ? '1 año' : `${plan?.duration_days} días`}. Sin renovación automática.
                             </p>
                         </div>
                     </div>

@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/client";
 import { updateBusinessProfile } from "@/lib/actions/settings";
 import { colombiaLocations } from "@/lib/data/colombia";
 import { Camera, Loader2, Save, Clock, Check, X, Phone, AlertTriangle, Image as ImageIcon, Store } from "lucide-react";
+import BusinessCategorySelector from "./BusinessCategorySelector";
 import Image from "next/image";
 import { differenceInDays, addDays, format } from "date-fns";
 import { es } from "date-fns/locale";
@@ -45,10 +46,12 @@ export default function BusinessProfileForm({ businessman }: BusinessProfileForm
         phone: businessman.phone || "",
         whatsapp_number: businessman.whatsapp_number,
         address: businessman.address || "",
+        neighborhood: businessman.neighborhood || "",
         department: businessman.department || "",
         city: businessman.city || "",
         operating_schedule: businessman.operating_schedule?.length ? businessman.operating_schedule : DEFAULT_SCHEDULE,
-        delivery_time_estimate: businessman.delivery_time_estimate || "30 - 45 min"
+        delivery_time_estimate: businessman.delivery_time_estimate || "30 - 45 min",
+        business_categories: businessman.business_categories || [],
     });
 
     const isNameChanged = formData.business_name !== businessman.business_name;
@@ -371,6 +374,17 @@ export default function BusinessProfileForm({ businessman }: BusinessProfileForm
                     />
                 </div>
 
+                <div className="col-span-2 md:col-span-1">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Barrio</label>
+                    <input
+                        type="text"
+                        value={formData.neighborhood || ""}
+                        onChange={(e) => setFormData({ ...formData, neighborhood: e.target.value })}
+                        className="block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-brand-primary focus:ring-brand-primary sm:text-sm bg-gray-50 dark:bg-zinc-700 dark:text-white px-4 py-2.5 transition-shadow"
+                        placeholder="Ej: El Poblado"
+                    />
+                </div>
+
                 <div className="col-span-2">
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Descripción</label>
                     <textarea
@@ -379,6 +393,15 @@ export default function BusinessProfileForm({ businessman }: BusinessProfileForm
                         onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                         className="block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-brand-primary focus:ring-brand-primary sm:text-sm bg-gray-50 dark:bg-zinc-700 dark:text-white px-4 py-2.5 transition-shadow"
                         placeholder="Breve descripción de tu negocio..."
+                    />
+                </div>
+
+                {/* Business Categories Section */}
+                <div className="col-span-2 border-t border-gray-200 dark:border-gray-700 pt-6 mt-2">
+                    <BusinessCategorySelector
+                        selected={formData.business_categories || []}
+                        onChange={(categories) => setFormData({ ...formData, business_categories: categories })}
+                        maxCategories={5}
                     />
                 </div>
 

@@ -14,6 +14,7 @@ import SalesTrendChart from '@/components/dashboard/SalesTrendChart'
 import TopProductsList from '@/components/dashboard/TopProductsList'
 import StatCard from '@/components/dashboard/StatCard'
 import SetupGuide from '@/components/dashboard/SetupGuide'
+import TrialBanner from '@/components/dashboard/TrialBanner'
 
 export default function DashboardHome() {
   const [stats, setStats] = useState<DashboardStats>({
@@ -125,6 +126,14 @@ export default function DashboardHome() {
         </div>
       </motion.div>
 
+      {/* Trial Banner */}
+      {business?.trial_ends_at && (
+        <TrialBanner
+          trialEndsAt={business.trial_ends_at}
+          subscriptionStatus={business.subscription_status}
+        />
+      )}
+
       {/* Setup Guide Alert */}
       {businessId && <SetupGuide businessmanId={businessId} />}
 
@@ -181,7 +190,7 @@ export default function DashboardHome() {
               <p className="text-sm text-gray-500 max-w-xs mb-4">
                 Actualiza al Plan Profesional para ver tus tendencias de ventas y tomar mejores decisiones.
               </p>
-              <Link href="/settings/billing" className="text-sm font-medium text-brand-primary hover:text-brand-secondary">
+              <Link href="/billing" className="text-sm font-medium text-brand-primary hover:text-brand-secondary">
                 Ver planes disponibles &rarr;
               </Link>
             </div>

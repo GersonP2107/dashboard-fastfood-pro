@@ -4,6 +4,7 @@ import { createClient, createAdminClient } from "@/lib/supabase/server";
 import { Businessman } from "@/lib/types";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { getTrialEndDate } from "@/lib/utils/trial";
 
 export type RegistrationState = {
     success?: boolean;
@@ -25,6 +26,7 @@ export async function registerUser(prevState: RegistrationState, formData: FormD
     const phone = formData.get("phone") as string;
     const whatsapp = formData.get("whatsapp") as string;
     const address = formData.get("address") as string;
+    const neighborhood = formData.get("neighborhood") as string;
     const city = formData.get("city") as string;
     const department = formData.get("department") as string;
     const description = formData.get("description") as string;
@@ -42,6 +44,16 @@ export async function registerUser(prevState: RegistrationState, formData: FormD
         }
     } catch (e) {
         console.error("Error parsing operating schedule", e);
+    }
+
+    let businessCategories: string[] = [];
+    try {
+        const categoriesJson = formData.get("businessCategories") as string;
+        if (categoriesJson) {
+            businessCategories = JSON.parse(categoriesJson);
+        }
+    } catch (e) {
+        console.error("Error parsing business categories", e);
     }
 
     // 1. Sign Up User
@@ -79,6 +91,7 @@ export async function registerUser(prevState: RegistrationState, formData: FormD
         phone: phone,
         email: email, // Use auth email as contact email
         address: address,
+        neighborhood: neighborhood || undefined,
         city: city,
         department: department,
         whatsapp_number: whatsapp, // Required
@@ -88,6 +101,11 @@ export async function registerUser(prevState: RegistrationState, formData: FormD
         delivery_cost: deliveryCost,
         is_active: true,
         accept_orders: true,
+        business_categories: businessCategories,
+        // 7-day free trial: start with professional plan
+        plan_type: 'professional',
+        subscription_status: 'active',
+        trial_ends_at: getTrialEndDate(),
     };
 
     const adminSupabase = await createAdminClient();

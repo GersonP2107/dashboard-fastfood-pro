@@ -2,10 +2,12 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { LayoutDashboard, ShoppingBag, ListOrdered, Settings, LogOut, Package, DollarSign, Layers, X, History } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
+import { isTrialActive, getTrialDaysRemaining } from '@/lib/utils/trial'
 
 const navigation = [
     { name: 'Panel', href: '/', icon: LayoutDashboard },
@@ -28,6 +30,7 @@ interface SidebarProps {
         business_name: string;
         logo_url?: string;
         plan_type?: 'essential' | 'professional' | 'premium';
+        trial_ends_at?: string | null;
     } | null;
     onCloseMobile?: () => void;
 }
@@ -69,7 +72,13 @@ export default function Sidebar({ business, onCloseMobile }: SidebarProps) {
 
                 {business?.logo_url ? (
                     <div className="h-24 w-24 shrink-0 rounded-2xl overflow-hidden bg-gray-50 dark:bg-zinc-800 p-1 shadow-md border border-gray-100 dark:border-zinc-700 mb-4">
-                        <img src={business.logo_url} alt={business.business_name} className="h-full w-full rounded-xl object-cover" />
+                        <Image
+                            src={business.logo_url}
+                            alt={business.business_name}
+                            width={96}
+                            height={96}
+                            className="h-full w-full rounded-xl object-cover"
+                        />
                     </div>
                 ) : (
                     <div className="h-24 w-24 shrink-0 rounded-2xl bg-linear-to-br from-brand-primary to-brand-accent flex items-center justify-center text-white font-bold text-4xl shadow-md mb-4">
@@ -81,9 +90,22 @@ export default function Sidebar({ business, onCloseMobile }: SidebarProps) {
                     <span className="text-xl font-bold text-gray-900 dark:text-white truncate w-full px-2">
                         {business?.business_name || 'FoodFast Pro'}
                     </span>
-                    <span className="text-xs font-bold text-brand-primary uppercase tracking-wider mt-1 bg-brand-primary/10 px-3 py-1 rounded-full">
-                        {plan === 'professional' ? 'Pro' : plan}
-                    </span>
+                    {(() => {
+                        const onTrial = isTrialActive(business?.trial_ends_at);
+                        const trialDays = getTrialDaysRemaining(business?.trial_ends_at);
+                        if (onTrial) {
+                            return (
+                                <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider mt-1 bg-emerald-50 dark:bg-emerald-900/30 px-3 py-1 rounded-full border border-emerald-200 dark:border-emerald-800">
+                                    🎁 Trial · {trialDays}d
+                                </span>
+                            );
+                        }
+                        return (
+                            <span className="text-xs font-bold text-brand-primary uppercase tracking-wider mt-1 bg-brand-primary/10 px-3 py-1 rounded-full">
+                                {plan === 'professional' ? 'Pro' : plan}
+                            </span>
+                        );
+                    })()}
                 </div>
             </div>
             <nav className="flex flex-1 flex-col px-1">

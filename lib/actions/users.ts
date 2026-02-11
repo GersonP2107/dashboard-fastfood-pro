@@ -2,8 +2,9 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { Businessman } from "@/lib/types";
+import { cache } from "react";
 
-export async function getCurrentBusinessman(): Promise<Businessman | null> {
+export const getCurrentBusinessman = cache(async (): Promise<Businessman | null> => {
     const supabase = await createClient();
     const {
         data: { user },
@@ -26,4 +27,4 @@ export async function getCurrentBusinessman(): Promise<Businessman | null> {
     }
 
     return data as Businessman;
-}
+});

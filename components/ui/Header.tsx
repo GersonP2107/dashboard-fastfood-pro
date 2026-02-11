@@ -57,7 +57,7 @@ export default function Header({ business }: HeaderProps) {
 
                     <div className="h-6 w-px bg-gray-200 dark:bg-zinc-800" aria-hidden="true" />
 
-                    <NotificationCenter businessId={business?.id} />
+                    <NotificationCenter businessId={business?.id} planType={business?.plan_type} />
 
                     <div className="hidden lg:block lg:h-6 lg:w-px lg:bg-gray-200 dark:lg:bg-zinc-800" aria-hidden="true" />
 

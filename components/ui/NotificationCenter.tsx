@@ -1,13 +1,14 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { Bell, Check, Trash2, X } from 'lucide-react'
+import { Bell, Check, Trash2, X, Crown } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { DashboardOrder } from '@/lib/types'
 import { formatDistanceToNow } from 'date-fns'
 import { es } from 'date-fns/locale'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useRouter } from 'next/navigation'
+import { toast } from 'sonner'
 import useSound from 'use-sound'
 
 export interface AppNotification {
@@ -22,9 +23,17 @@ export interface AppNotification {
 
 interface NotificationCenterProps {
     businessId: string | undefined
+    planType?: 'essential' | 'professional' | 'premium'
 }
 
-export default function NotificationCenter({ businessId }: NotificationCenterProps) {
+// Map of restricted routes per plan
+const PLAN_RESTRICTED_ROUTES: Record<string, string[]> = {
+    essential: ['/orders', '/history', '/inventory', '/finance'],
+    professional: ['/finance'],
+    premium: [],
+};
+
+export default function NotificationCenter({ businessId, planType = 'essential' }: NotificationCenterProps) {
     const [notifications, setNotifications] = useState<AppNotification[]>([])
     const [isOpen, setIsOpen] = useState(false)
     const [audio] = useState<HTMLAudioElement | null>(typeof window !== 'undefined' ? new Audio('/notification.mp3') : null)
@@ -71,13 +80,16 @@ export default function NotificationCenter({ businessId }: NotificationCenterPro
                 (payload) => {
                     const newOrder = payload.new as DashboardOrder
 
+                    const restrictedRoutes = PLAN_RESTRICTED_ROUTES[planType] || [];
+                    const isOrdersRestricted = restrictedRoutes.includes('/orders');
+
                     const newNotification: AppNotification = {
                         id: crypto.randomUUID(),
                         title: '¡Nuevo Pedido!',
                         message: `${newOrder.customer_name} - $${newOrder.total.toLocaleString()}`,
                         createdAt: Date.now(),
                         read: false,
-                        link: '/orders', // Could link to specific order modal if architected
+                        link: isOrdersRestricted ? undefined : '/orders',
                         type: 'order'
                     }
 
@@ -217,6 +229,36 @@ export default function NotificationCenter({ businessId }: NotificationCenterPro
             markAsRead(n.id, { stopPropagation: () => { } } as any)
         }
         setIsOpen(false)
+
+        // If it's an order notification and user is on essential plan, show upgrade prompt
+        const restrictedRoutes = PLAN_RESTRICTED_ROUTES[planType] || [];
+        if (n.type === 'order' && restrictedRoutes.includes('/orders')) {
+            toast(
+                <div className="flex items-start gap-3">
+                    <div className="p-2 rounded-full bg-linear-to-br from-amber-400 to-orange-500 shrink-0">
+                        <Crown className="h-4 w-4 text-white" />
+                    </div>
+                    <div>
+                        <p className="font-semibold text-gray-900 dark:text-white text-sm">Gestión de Pedidos</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                            Mejora tu plan para gestionar pedidos desde el tablero de control.
+                        </p>
+                        <button
+                            onClick={() => {
+                                router.push('/billing')
+                                toast.dismiss()
+                            }}
+                            className="mt-2 text-xs font-semibold text-brand-primary hover:text-brand-primary-hover transition-colors"
+                        >
+                            Ver planes →
+                        </button>
+                    </div>
+                </div>,
+                { duration: 6000, position: 'top-center' }
+            );
+            return;
+        }
+
         if (n.link) {
             router.push(n.link)
         }
@@ -298,6 +340,13 @@ export default function NotificationCenter({ businessId }: NotificationCenterPro
                                                     <p className="text-[10px] text-gray-400 mt-1">
                                                         {formatDistanceToNow(notification.createdAt, { addSuffix: true, locale: es })}
                                                     </p>
+                                                    {/* Show upgrade hint for restricted order notifications */}
+                                                    {notification.type === 'order' && !notification.link && (
+                                                        <span className="inline-flex items-center gap-1 mt-1.5 text-[10px] font-medium text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 px-1.5 py-0.5 rounded-full">
+                                                            <Crown className="w-2.5 h-2.5" />
+                                                            Plan Pro requerido
+                                                        </span>
+                                                    )}
                                                 </div>
                                                 <div className="flex flex-col items-end gap-2">
                                                     {!notification.read && (

@@ -46,19 +46,24 @@ export async function middleware(request: NextRequest) {
     }
 
     if (user && request.nextUrl.pathname.startsWith('/dashboard')) {
-        // Check subscription status
+        // Check subscription status and trial
         const { data: businessman } = await supabase
             .from('businessmans')
-            .select('subscription_status')
+            .select('subscription_status, trial_ends_at')
             .eq('user_id', user.id)
             .single()
 
         if (businessman && (businessman.subscription_status === 'past_due' || businessman.subscription_status === 'canceled')) {
-            // Allow access only to billing page
-            if (!request.nextUrl.pathname.startsWith('/dashboard/billing')) {
-                const url = request.nextUrl.clone()
-                url.pathname = '/dashboard/billing'
-                return NextResponse.redirect(url)
+            // Check if trial is still active
+            const trialActive = businessman.trial_ends_at && new Date(businessman.trial_ends_at) > new Date();
+
+            if (!trialActive) {
+                // No active trial and no active subscription — redirect to billing
+                if (!request.nextUrl.pathname.startsWith('/dashboard/billing')) {
+                    const url = request.nextUrl.clone()
+                    url.pathname = '/dashboard/billing'
+                    return NextResponse.redirect(url)
+                }
             }
         }
     }

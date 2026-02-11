@@ -131,7 +131,16 @@ export default function OrdersPage() {
                 console.error('No business found for current user.')
                 return
             }
-            // console.log('Business found:', business.id)
+
+            // Guard: Essential plan cannot access orders page
+            if (business.plan_type === 'essential') {
+                toast.error('Tu plan actual no incluye gestión de pedidos. Mejora tu plan para acceder.', {
+                    duration: 5000,
+                    position: 'top-center',
+                });
+                router.replace('/billing');
+                return;
+            }
 
             setBusinessId(business.id)
 

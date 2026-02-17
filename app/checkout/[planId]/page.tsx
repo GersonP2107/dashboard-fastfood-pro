@@ -1,9 +1,10 @@
 import { initiatePayment } from '@/lib/actions/payments';
 import BoldPaymentWidget from '@/components/checkout/BoldPaymentWidget';
 import { notFound } from 'next/navigation';
-import { ShieldCheck, ArrowLeft } from 'lucide-react';
+import { ShieldCheck, ArrowLeft, Clock, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/server';
+import { isTrialActive, getTrialDaysRemaining } from '@/lib/utils/trial';
 
 export default async function CheckoutPage({ params }: { params: { planId: string } }) {
     try {
@@ -12,9 +13,25 @@ export default async function CheckoutPage({ params }: { params: { planId: strin
         const supabase = await createClient();
         const { data: plan } = await supabase.from('plans').select('*').eq('id', params.planId).single();
 
+        const trialActive = isTrialActive(paymentConfig.trialEndsAt);
+        const trialDays = getTrialDaysRemaining(paymentConfig.trialEndsAt);
+
         return (
             <div className="min-h-screen bg-gray-50 dark:bg-zinc-900 py-12 px-4 sm:px-6 lg:px-8 flex items-center justify-center">
                 <div className="max-w-md w-full bg-white dark:bg-zinc-800 rounded-2xl shadow-xl overflow-hidden border border-gray-100 dark:border-zinc-700">
+                    {/* Trial urgency banner */}
+                    {trialActive && (
+                        <div className="bg-amber-50 dark:bg-amber-900/20 border-b border-amber-200 dark:border-amber-800 px-6 py-3 flex items-center gap-2">
+                            <Clock className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" />
+                            <p className="text-xs text-amber-800 dark:text-amber-300 font-medium">
+                                {trialDays <= 1
+                                    ? '¡Tu prueba gratis termina hoy! Asegura tu plan ahora.'
+                                    : `Tu prueba gratis termina en ${trialDays} días. Asegura tu acceso.`
+                                }
+                            </p>
+                        </div>
+                    )}
+
                     <div className="px-6 py-8 border-b border-gray-100 dark:border-zinc-700">
                         <div className="flex items-center justify-between mb-6">
                             <Link href="/billing" className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors">
@@ -40,12 +57,13 @@ export default async function CheckoutPage({ params }: { params: { planId: strin
                                 </span>
                             </div>
                             <p className="mt-4 text-sm text-gray-500 max-w-xs mx-auto">
-                                Acceso inmediato por {plan?.duration_days === 90 ? '3 meses' : plan?.duration_days === 180 ? '6 meses' : plan?.duration_days === 365 ? '1 año' : `${plan?.duration_days} días`}. Sin renovación automática.
+                                Acceso inmediato por {plan?.duration_days === 30 ? '1 mes' : plan?.duration_days === 365 ? '1 año' : `${plan?.duration_days} días`}. Sin renovación automática.
                             </p>
                         </div>
                     </div>
 
                     <div className="px-6 py-8 bg-gray-50 dark:bg-zinc-900/50 space-y-8">
+                        {/* Security notice */}
                         <div className="flex gap-4 p-4 bg-blue-50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-900/20 rounded-xl">
                             <ShieldCheck className="w-6 h-6 text-blue-600 dark:text-blue-400 shrink-0" />
                             <p className="text-xs text-blue-800 dark:text-blue-300 leading-relaxed">
@@ -53,6 +71,7 @@ export default async function CheckoutPage({ params }: { params: { planId: strin
                             </p>
                         </div>
 
+                        {/* Bold Payment Button */}
                         <div className="min-h-[60px] flex items-center justify-center">
                             <BoldPaymentWidget config={paymentConfig} />
                         </div>

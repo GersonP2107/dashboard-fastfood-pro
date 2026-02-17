@@ -264,6 +264,8 @@ export default function OrdersPage() {
         }
     }
 
+
+
     // --- DnD Handlers ---
     const handleDragStart = (event: DragStartEvent) => {
         const { active } = event;
@@ -483,6 +485,7 @@ export default function OrdersPage() {
                         onUpdate={() => businessId && refreshOrders(businessId)}
                     />
                 )}
+
             </div>
         </DndContext>
     )

@@ -22,7 +22,7 @@ export async function initiatePayment(planId: string) {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error('Unauthorized');
 
-    const { data: businessman } = await supabase.from('businessmans').select('id, email').eq('user_id', user.id).single();
+    const { data: businessman } = await supabase.from('businessmans').select('id, email, business_name, trial_ends_at').eq('user_id', user.id).single();
     if (!businessman) throw new Error('Businessman not found');
 
     const { data: plan } = await supabase.from('plans').select('*').eq('id', planId).single();
@@ -63,18 +63,63 @@ export async function initiatePayment(planId: string) {
         integritySignature,
         description: `Pago de plan ${plan.name}`,
         tax: 0,
-        redirectionUrl: `${APP_URL}/checkout/result`
+        redirectionUrl: `${APP_URL}/checkout/result`,
+        originUrl: `${APP_URL}/billing`,
+        customerData: {
+            email: businessman.email || user.email || '',
+            fullName: businessman.business_name || '',
+        },
+        trialEndsAt: businessman.trial_ends_at,
     };
+}
+
+/**
+ * Verify transaction status against Bold's API.
+ * This provides a more reliable status than the redirect query params.
+ */
+async function verifyWithBoldAPI(orderId: string): Promise<{ status: string; txId?: string } | null> {
+    try {
+        const response = await fetch(
+            `https://payments.api.bold.co/v2/payment-voucher/${orderId}`,
+            {
+                headers: { 'x-api-key': BOLD_API_KEY },
+            }
+        );
+
+        if (!response.ok) return null;
+
+        const data = await response.json();
+        const paymentStatus = data.payment_status as string;
+
+        // Map Bold API statuses to our internal statuses
+        const apiStatusMap: Record<string, string> = {
+            'APPROVED': 'approved',
+            'REJECTED': 'rejected',
+            'FAILED': 'rejected',
+            'VOIDED': 'voided',
+            'PROCESSING': 'pending',
+            'PENDING': 'pending',
+            'NO_TRANSACTION_FOUND': 'pending',
+        };
+
+        return {
+            status: apiStatusMap[paymentStatus] || 'pending',
+            txId: data.transaction_id,
+        };
+    } catch (error) {
+        console.error('Bold API verification failed:', error);
+        return null;
+    }
 }
 
 export async function verifyPaymentOutcome(orderId: string, txStatus: string) {
     const supabase = await createClient();
 
-    // Valid statuses from Bold logic (simplified for MVP)
-    // approved, rejected, failed, pending
+    // Try to verify with Bold API first (more reliable than redirect params)
+    const boldVerification = await verifyWithBoldAPI(orderId);
 
-    // Update local payment record
-    const statusMap: Record<string, string> = {
+    // Use Bold API status if available, fall back to redirect param
+    const redirectStatusMap: Record<string, string> = {
         'approved': 'approved',
         'rejected': 'rejected',
         'failed': 'rejected',
@@ -82,11 +127,16 @@ export async function verifyPaymentOutcome(orderId: string, txStatus: string) {
         'pending': 'pending'
     };
 
-    const dbStatus = statusMap[txStatus] || 'pending';
+    const dbStatus = boldVerification?.status || redirectStatusMap[txStatus] || 'pending';
+    const boldTxId = boldVerification?.txId || null;
 
     const { data: payment, error: fetchError } = await supabase
         .from('payments')
-        .update({ status: dbStatus, updated_at: new Date().toISOString() })
+        .update({
+            status: dbStatus,
+            bold_tx_id: boldTxId,
+            updated_at: new Date().toISOString()
+        })
         .eq('bold_order_id', orderId)
         .select('*, plans(*)')
         .single();
@@ -108,9 +158,6 @@ export async function verifyPaymentOutcome(orderId: string, txStatus: string) {
             .single();
 
         let newEndDate = new Date();
-        // If query returns string, parse it. If null, use now.
-        // If current subscription is active and in future, add time to it.
-        // If past due or canceled, start from now.
         if (businessman?.subscription_end && new Date(businessman.subscription_end) > new Date()) {
             newEndDate = new Date(businessman.subscription_end);
         }
@@ -123,7 +170,8 @@ export async function verifyPaymentOutcome(orderId: string, txStatus: string) {
             .update({
                 plan_type: plan.plan_type,
                 subscription_status: 'active',
-                subscription_end: newEndDate.toISOString()
+                subscription_end: newEndDate.toISOString(),
+                trial_ends_at: null // Clear trial on successful payment
             })
             .eq('id', payment.businessman_id);
 

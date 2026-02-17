@@ -74,7 +74,7 @@ export default function ConfirmDialog({
                             {/* Header with Icon */}
                             <div className="p-6 pb-4">
                                 <div className="flex items-start gap-4">
-                                    <div className={`p-3 rounded-2xl ${styles.icon} flex-shrink-0`}>
+                                    <div className={`p-3 rounded-2xl ${styles.icon} shrink-0`}>
                                         <AlertTriangle className="w-6 h-6" />
                                     </div>
                                     <div className="flex-1">

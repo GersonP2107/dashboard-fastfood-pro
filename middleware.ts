@@ -38,30 +38,47 @@ export async function middleware(request: NextRequest) {
         data: { user },
     } = await supabase.auth.getUser()
 
-    if (!user && !request.nextUrl.pathname.startsWith('/login') && !request.nextUrl.pathname.startsWith('/auth') && !request.nextUrl.pathname.startsWith('/register')) {
-        // no user, potentially respond by redirecting the user to the login page
+    const pathname = request.nextUrl.pathname;
+
+    // ── Define public routes that DON'T require authentication ──
+    const publicRoutes = ['/login', '/register', '/auth', '/api', '/checkout', '/driver'];
+    const isPublicRoute = publicRoutes.some(route => pathname.startsWith(route));
+
+    // ── 1. No user on a protected route → redirect to login ──
+    if (!user && !isPublicRoute) {
         const url = request.nextUrl.clone()
         url.pathname = '/login'
         return NextResponse.redirect(url)
     }
 
-    if (user && request.nextUrl.pathname.startsWith('/dashboard')) {
-        // Check subscription status and trial
+    // ── 2. Authenticated user on a protected (dashboard) route ──
+    if (user && !isPublicRoute) {
+        // Check if the user has a business profile + subscription status
         const { data: businessman } = await supabase
             .from('businessmans')
             .select('subscription_status, trial_ends_at')
             .eq('user_id', user.id)
             .single()
 
-        if (businessman && (businessman.subscription_status === 'past_due' || businessman.subscription_status === 'canceled')) {
-            // Check if trial is still active
+        // 2a. No business profile at all → must complete registration
+        if (!businessman) {
+            if (!pathname.startsWith('/register')) {
+                const url = request.nextUrl.clone()
+                url.pathname = '/register'
+                return NextResponse.redirect(url)
+            }
+            return response
+        }
+
+        // 2b. Subscription expired or canceled → check trial
+        if (businessman.subscription_status === 'past_due' || businessman.subscription_status === 'canceled') {
             const trialActive = businessman.trial_ends_at && new Date(businessman.trial_ends_at) > new Date();
 
             if (!trialActive) {
-                // No active trial and no active subscription — redirect to billing
-                if (!request.nextUrl.pathname.startsWith('/dashboard/billing')) {
+                // No active trial and no active subscription → only allow billing
+                if (pathname !== '/billing') {
                     const url = request.nextUrl.clone()
-                    url.pathname = '/dashboard/billing'
+                    url.pathname = '/billing'
                     return NextResponse.redirect(url)
                 }
             }

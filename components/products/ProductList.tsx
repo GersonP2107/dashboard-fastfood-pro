@@ -7,6 +7,7 @@ import { Edit2, Plus, Trash2, Search, Power, PowerOff, ImageOff } from "lucide-r
 import Image from "next/image";
 import ProductModal from "./ProductModal";
 import ProductForm from "./ProductForm";
+import ConfirmDialog from "@/components/ui/ConfirmDialog";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
@@ -36,6 +37,9 @@ export default function ProductList({ initialProducts, categories, businessmanId
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [editingProduct, setEditingProduct] = useState<Product | undefined>(undefined);
 
+
+    const [productToDelete, setProductToDelete] = useState<string | null>(null);
+
     // Sync initialProducts with local state
     useEffect(() => {
         setProducts(initialProducts);
@@ -47,18 +51,22 @@ export default function ProductList({ initialProducts, categories, businessmanId
         return matchesSearch && matchesCategory;
     });
 
-    const handleDelete = async (id: string) => {
-        if (!window.confirm("¿Estás seguro de que quieres eliminar este producto? Esta acción no se puede deshacer.")) {
-            return;
-        }
+    const handleDelete = (id: string) => {
+        setProductToDelete(id);
+    };
+
+    const confirmDelete = async () => {
+        if (!productToDelete) return;
 
         startTransition(async () => {
-            const result = await deleteProduct(id);
+            const result = await deleteProduct(productToDelete);
             if (result.success) {
                 router.refresh();
+                toast.success("Producto eliminado correctamente");
             } else {
-                alert("Error al eliminar el producto");
+                toast.error("Error al eliminar el producto");
             }
+            setProductToDelete(null);
         });
     };
 
@@ -76,7 +84,7 @@ export default function ProductList({ initialProducts, categories, businessmanId
             } else {
                 // If it fails, the optimistic update will be reverted automatically 
                 // when the router refreshes (or we could revert manually but refresh is safer)
-                alert("Error al actualizar el estado");
+                toast.error("Error al actualizar el estado");
                 router.refresh();
             }
         });
@@ -406,6 +414,17 @@ export default function ProductList({ initialProducts, categories, businessmanId
                     />
                 )}
             </ProductModal>
+
+            {/* Delete Confirmation Dialog */}
+            <ConfirmDialog
+                isOpen={!!productToDelete}
+                onClose={() => setProductToDelete(null)}
+                onConfirm={confirmDelete}
+                title="Eliminar Producto"
+                message="¿Estás seguro de que quieres eliminar este producto? Esta acción no se puede deshacer."
+                confirmText="Eliminar"
+                type="danger"
+            />
         </div>
     );
 }

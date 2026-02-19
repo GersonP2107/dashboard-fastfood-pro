@@ -6,7 +6,8 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { deleteCategory, toggleCategoryStatus } from '@/lib/actions/categories'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
-import { useTransition } from 'react'
+import { useTransition, useState } from 'react'
+import ConfirmDialog from '@/components/ui/ConfirmDialog'
 
 interface CategoryListProps {
     categories: Category[]
@@ -16,19 +17,23 @@ interface CategoryListProps {
 export default function CategoryList({ categories, onEdit }: CategoryListProps) {
     const router = useRouter()
     const [isPending, startTransition] = useTransition()
+    const [categoryToDelete, setCategoryToDelete] = useState<string | null>(null)
 
-    const handleDelete = async (id: string) => {
-        if (!window.confirm("¿Estás seguro de eliminar esta categoría? Si tiene productos, no se podrá eliminar.")) {
-            return
-        }
+    const handleDelete = (id: string) => {
+        setCategoryToDelete(id)
+    }
+
+    const confirmDelete = async () => {
+        if (!categoryToDelete) return
 
         startTransition(async () => {
-            const result = await deleteCategory(id)
+            const result = await deleteCategory(categoryToDelete)
             if (result.success) {
                 toast.success("Categoría eliminada")
             } else {
                 toast.error(result.error || "Error al eliminar")
             }
+            setCategoryToDelete(null)
         })
     }
 
@@ -215,6 +220,16 @@ export default function CategoryList({ categories, onEdit }: CategoryListProps) 
                     ))}
                 </AnimatePresence>
             </div>
+
+            <ConfirmDialog
+                isOpen={!!categoryToDelete}
+                onClose={() => setCategoryToDelete(null)}
+                onConfirm={confirmDelete}
+                title="Eliminar Categoría"
+                message="¿Estás seguro de eliminar esta categoría? Si tiene productos, no se podrá eliminar."
+                confirmText="Eliminar"
+                type="danger"
+            />
         </div>
     )
 }

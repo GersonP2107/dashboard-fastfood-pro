@@ -3,8 +3,6 @@
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { DashboardOrder, OrderStatus } from '@/lib/types'
-import { formatDistanceToNow } from 'date-fns'
-import { es } from 'date-fns/locale'
 import { Bell, Clock, Package, Wifi, WifiOff, RefreshCw, Volume2, Eraser, Filter } from 'lucide-react'
 import OrderDetailModal from '@/components/orders/OrderDetailModal'
 import OrderKanbanCard from '@/components/orders/OrderKanbanCard'

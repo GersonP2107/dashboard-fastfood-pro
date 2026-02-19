@@ -291,9 +291,9 @@ export default function PaymentMethodsManager({ businessmanId, initialMethods }:
                             <div className="flex items-center gap-2 self-end sm:self-center">
                                 <button
                                     onClick={() => handleToggleActive(method.id, method.is_active)}
-                                    className={`px-3 py-1.5 text-xs rounded-lg font-medium transition-colors border ${method.is_active
-                                        ? "bg-green-50 text-green-700 border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800"
-                                        : "bg-gray-50 text-gray-600 border-gray-200 dark:bg-zinc-800 dark:text-gray-400 dark:border-zinc-700"
+                                    className={`px-2 py-1 text-xs rounded-full font-medium transition-colors ${method.is_active
+                                        ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
+                                        : "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300"
                                         }`}
                                 >
                                     {method.is_active ? "Activo" : "Activar"}

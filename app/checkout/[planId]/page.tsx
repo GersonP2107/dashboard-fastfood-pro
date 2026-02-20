@@ -6,12 +6,14 @@ import Link from 'next/link';
 import { createClient } from '@/lib/supabase/server';
 import { isTrialActive, getTrialDaysRemaining } from '@/lib/utils/trial';
 
-export default async function CheckoutPage({ params }: { params: { planId: string } }) {
+export default async function CheckoutPage({ params }: { params: Promise<{ planId: string }> }) {
+    const { planId } = await params;
+
     try {
-        const paymentConfig = await initiatePayment(params.planId);
+        const paymentConfig = await initiatePayment(planId);
 
         const supabase = await createClient();
-        const { data: plan } = await supabase.from('plans').select('*').eq('id', params.planId).single();
+        const { data: plan } = await supabase.from('plans').select('*').eq('id', planId).single();
 
         const trialActive = isTrialActive(paymentConfig.trialEndsAt);
         const trialDays = getTrialDaysRemaining(paymentConfig.trialEndsAt);
@@ -83,8 +85,31 @@ export default async function CheckoutPage({ params }: { params: { planId: strin
                 </div>
             </div>
         );
-    } catch (e) {
-        console.error(e);
-        return notFound();
+    } catch (e: any) {
+        console.error("Checkout Error:", e);
+        return (
+            <div className="min-h-screen bg-gray-50 dark:bg-zinc-900 flex flex-col items-center justify-center p-4 text-center">
+                <div className="bg-white dark:bg-zinc-800 p-8 rounded-2xl shadow-xl max-w-md w-full border border-gray-100 dark:border-zinc-700">
+                    <div className="w-12 h-12 bg-red-100 dark:bg-red-900/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <ShieldCheck className="w-6 h-6 text-red-600 dark:text-red-400" />
+                    </div>
+                    <h1 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                        No se pudo iniciar el pago
+                    </h1>
+                    <p className="text-sm text-red-500 font-medium mb-4 bg-red-50 dark:bg-red-900/10 p-3 rounded-lg wrap-break-words">
+                        {e.message || "Error interno desconocido"}
+                    </p>
+                    <p className="text-xs text-gray-400 mb-6">
+                        Plan ID: {planId}
+                    </p>
+                    <Link
+                        href="/billing"
+                        className="block w-full py-2.5 px-4 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-xl font-medium hover:opacity-90 transition-opacity"
+                    >
+                        Volver a los planes
+                    </Link>
+                </div>
+            </div>
+        );
     }
 }

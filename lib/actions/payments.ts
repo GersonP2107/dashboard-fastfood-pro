@@ -43,7 +43,7 @@ export async function initiatePayment(planId: string) {
 
     if (error) {
         console.error("Payment insert error:", error);
-        throw new Error('Failed to create payment record');
+        throw new Error(`Failed to create payment record: ${error.message || JSON.stringify(error)}`);
     }
 
     // Generate Integrity Signature

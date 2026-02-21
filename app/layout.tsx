@@ -9,6 +9,7 @@ export const metadata: Metadata = {
 };
 
 import { ThemeProvider } from "@/components/theme-provider";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 export default function RootLayout({
   children,
@@ -27,8 +28,10 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          {children}
-          <Toaster richColors position="top-right" />
+          <TooltipProvider delayDuration={0}>
+            {children}
+            <Toaster richColors position="top-right" />
+          </TooltipProvider>
         </ThemeProvider>
       </body>
     </html>

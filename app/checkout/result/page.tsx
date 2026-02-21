@@ -5,10 +5,9 @@ import { CheckCircle, XCircle } from 'lucide-react';
 export default async function CheckoutResultPage({
     searchParams,
 }: {
-    searchParams: { [key: string]: string | string[] | undefined };
+    searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-    const status = searchParams['bold-tx-status'] as string;
-    const orderId = searchParams['bold-order-id'] as string;
+    const { "bold-tx-status": status, "bold-order-id": orderId } = await searchParams as { "bold-tx-status": string, "bold-order-id": string };
 
     // Verify payment status with database
     const { success, status: finalStatus } = await verifyPaymentOutcome(orderId, status);
@@ -39,8 +38,8 @@ export default async function CheckoutResultPage({
                     <Link
                         href={isApproved ? '/' : '/billing'}
                         className={`block w-full py-4 px-6 rounded-xl font-bold text-lg transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-1 ${isApproved
-                                ? 'bg-brand-primary hover:bg-brand-secondary text-white shadow-brand-primary/30'
-                                : 'bg-gray-200 hover:bg-gray-300 text-gray-800 dark:bg-zinc-700 dark:hover:bg-zinc-600 dark:text-white'
+                            ? 'bg-brand-primary hover:bg-brand-secondary text-white shadow-brand-primary/30'
+                            : 'bg-gray-200 hover:bg-gray-300 text-gray-800 dark:bg-zinc-700 dark:hover:bg-zinc-600 dark:text-white'
                             }`}
                     >
                         {isApproved ? 'Ir al Dashboard' : 'Volver a intentar'}

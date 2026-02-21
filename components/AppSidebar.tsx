@@ -2,16 +2,6 @@
 
 import * as React from "react"
 import {
-    AudioWaveform,
-    BookOpen,
-    Bot,
-    Command,
-    Frame,
-    GalleryVerticalEnd,
-    Map,
-    PieChart,
-    Settings2,
-    SquareTerminal,
     LayoutDashboard,
     ListOrdered,
     History,
@@ -24,15 +14,10 @@ import {
     Store,
     CreditCard,
     User,
-    Sparkles,
     BadgeCheck,
-    Bell,
     ChevronsUpDown,
-    Plus,
-    MoreHorizontal,
-    Folder,
-    Forward,
-    Trash2
+    Users,
+    ShieldCheck,
 } from "lucide-react"
 
 import {
@@ -73,20 +58,36 @@ import {
 } from "@/components/ui/sidebar"
 import { usePathname, useRouter } from "next/navigation"
 import { createClient } from "@/lib/supabase/client"
-import { isTrialActive, getTrialDaysRemaining } from "@/lib/utils/trial"
+import { isTrialActive } from "@/lib/utils/trial"
 import Link from "next/link"
+import { RoleName, ROLE_PERMISSIONS } from "@/lib/types"
 
-// Define navigation items
+// ── Navigation items with required permission ──────────────────────
 const navigation = [
-    { name: 'Panel', href: '/', icon: LayoutDashboard },
-    { name: 'Ordenes', href: '/orders', icon: ListOrdered },
-    { name: 'Historial', href: '/history', icon: History },
-    { name: 'Productos', href: '/products', icon: ShoppingBag },
-    { name: 'Categorías', href: '/categories', icon: Layers },
-    { name: 'Inventario', href: '/inventory', icon: Package },
-    { name: 'Finanzas', href: '/finance', icon: DollarSign },
-    { name: 'Configuración', href: '/settings', icon: Settings },
+    { name: 'Panel', href: '/', icon: LayoutDashboard, permission: 'view_dashboard' },
+    { name: 'Ordenes', href: '/orders', icon: ListOrdered, permission: 'view_orders' },
+    { name: 'Historial', href: '/history', icon: History, permission: 'view_history' },
+    { name: 'Productos', href: '/products', icon: ShoppingBag, permission: 'view_products' },
+    { name: 'Categorías', href: '/categories', icon: Layers, permission: 'view_categories' },
+    { name: 'Inventario', href: '/inventory', icon: Package, permission: 'view_inventory' },
+    { name: 'Finanzas', href: '/finance', icon: DollarSign, permission: 'view_finance' },
+    { name: 'Configuración', href: '/settings', icon: Settings, permission: 'view_settings' },
+    { name: 'Equipo', href: '/team', icon: Users, permission: 'view_team' },
 ]
+
+// ── Role display helpers ──────────────────────────────────────────
+const ROLE_LABELS: Record<RoleName, string> = {
+    admin: 'Admin',
+    gerente: 'Gerente',
+    empleado: 'Empleado',
+    cocinero: 'Cocinero',
+}
+const ROLE_COLORS: Record<RoleName, string> = {
+    admin: 'bg-brand-primary/15 text-brand-primary dark:text-brand-light',
+    gerente: 'bg-violet-100 text-violet-700 dark:bg-violet-900/20 dark:text-violet-400',
+    empleado: 'bg-sky-100 text-sky-700 dark:bg-sky-900/20 dark:text-sky-400',
+    cocinero: 'bg-amber-100 text-amber-700 dark:bg-amber-900/20 dark:text-amber-400',
+}
 
 interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
     business?: {
@@ -95,32 +96,40 @@ interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
         logo_url?: string;
         plan_type?: 'essential' | 'professional' | 'premium';
         trial_ends_at?: string | null;
-        email?: string; // Should be passed if available, otherwise fallback
     } | null;
     user?: {
         email?: string;
-        full_name?: string;
-        avatar_url?: string;
+        full_name?: string | null;
+        avatar_url?: string | null;
     } | null;
+    /** Role of the currently authenticated user in this business */
+    userRole?: RoleName | null;
+    /** True when the user owns the business (not a team member) */
+    isOwner?: boolean;
 }
 
-export function AppSidebar({ business, user, ...props }: AppSidebarProps) {
+export function AppSidebar({ business, user, userRole, isOwner = false, ...props }: AppSidebarProps) {
     const pathname = usePathname()
     const router = useRouter()
     const supabase = createClient()
 
-    // Filter navigation based on plan
-    const plan = business?.plan_type || 'essential';
+    const plan = business?.plan_type || 'essential'
 
     const filteredNavigation = navigation.filter(item => {
-        if (plan === 'essential') {
-            return !['Ordenes', 'Historial', 'Inventario', 'Finanzas'].includes(item.name);
+        if (isOwner) {
+            // ── Owner: restrict by subscription plan ──
+            // essential → no Ordenes, Historial, Inventario, Finanzas, Equipo
+            if (plan === 'essential' && ['Ordenes', 'Historial', 'Inventario', 'Finanzas', 'Equipo'].includes(item.name)) return false
+            // professional → no Finanzas
+            if (plan === 'professional' && ['Finanzas'].includes(item.name)) return false
+            // premium → all items visible
+        } else {
+            // ── Team member: restrict by role permissions ──
+            const rolePerms = userRole ? ROLE_PERMISSIONS[userRole] : []
+            if (!rolePerms.includes(item.permission)) return false
         }
-        if (plan === 'professional') {
-            return !['Finanzas'].includes(item.name);
-        }
-        return true; // premium sees all
-    });
+        return true
+    })
 
     const handleSignOut = async () => {
         await supabase.auth.signOut()
@@ -133,7 +142,7 @@ export function AppSidebar({ business, user, ...props }: AppSidebarProps) {
 
     return (
         <Sidebar collapsible="icon" {...props} className="border-r-0">
-            <SidebarHeader className="pb-4 pt-5">
+            <SidebarHeader className="pb-4 pt-5 group-data-[collapsible=icon]:pb-3 group-data-[collapsible=icon]:pt-4">
                 <SidebarMenu>
                     <SidebarMenuItem>
                         <DropdownMenu>
@@ -188,22 +197,20 @@ export function AppSidebar({ business, user, ...props }: AppSidebarProps) {
                     </SidebarMenuItem>
                 </SidebarMenu>
             </SidebarHeader>
-            <SidebarContent className="px-3">
+            <SidebarContent className="px-3 group-data-[collapsible=icon]:px-2">
                 <SidebarGroup>
-                    <SidebarGroupLabel className="text-xs font-bold text-muted-foreground/70 uppercase tracking-widest px-2 mb-2 mt-2">Plataforma</SidebarGroupLabel>
+                    <SidebarGroupLabel className="text-xs font-bold text-muted-foreground/70 uppercase tracking-widest px-2 mb-2 mt-2 group-data-[collapsible=icon]:hidden">Plataforma</SidebarGroupLabel>
                     <SidebarMenu className="gap-1.5">
                         {filteredNavigation.map((item) => (
                             <SidebarMenuItem key={item.name}>
                                 <SidebarMenuButton
-                                    asChild
                                     isActive={pathname === item.href}
                                     tooltip={item.name}
-                                    className="h-auto py-3 px-3 rounded-xl transition-all duration-200 hover:bg-gray-100 dark:hover:bg-zinc-800 data-[active=true]:bg-brand-primary data-[active=true]:text-white data-[active=true]:shadow-lg data-[active=true]:shadow-brand-primary/25 data-[active=true]:hover:bg-brand-primary/90"
+                                    onClick={() => router.push(item.href)}
+                                    className="h-auto py-3 px-3 rounded-xl transition-all duration-200 hover:bg-gray-100 dark:hover:bg-zinc-800 data-[active=true]:bg-brand-primary data-[active=true]:text-white data-[active=true]:shadow-lg data-[active=true]:shadow-brand-primary/25 data-[active=true]:hover:bg-brand-primary/90 group/nav-item group-data-[collapsible=icon]:px-0 group-data-[collapsible=icon]:justify-center"
                                 >
-                                    <Link href={item.href} className="flex items-center gap-3">
-                                        <item.icon className="size-5 shrink-0" />
-                                        <span className="font-medium text-[15px]">{item.name}</span>
-                                    </Link>
+                                    <item.icon className="size-5 shrink-0" />
+                                    <span className="font-medium text-[15px]">{item.name}</span>
                                 </SidebarMenuButton>
                             </SidebarMenuItem>
                         ))}
@@ -220,14 +227,21 @@ export function AppSidebar({ business, user, ...props }: AppSidebarProps) {
                                     className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-xl transition-colors h-14"
                                 >
                                     <Avatar className="h-9 w-9 rounded-lg border border-border/50">
-                                        <AvatarImage src={user?.avatar_url} alt={user?.full_name || ''} />
+                                        <AvatarImage src={user?.avatar_url ?? undefined} alt={user?.full_name || ''} />
                                         <AvatarFallback className="rounded-lg bg-gray-100 dark:bg-zinc-800 font-medium">
                                             <User className="size-4 text-muted-foreground" />
                                         </AvatarFallback>
                                     </Avatar>
                                     <div className="grid flex-1 text-left leading-tight ml-1">
                                         <span className="truncate font-semibold text-sm text-foreground">{user?.full_name || 'Usuario'}</span>
-                                        <span className="truncate text-xs text-muted-foreground">{user?.email || ''}</span>
+                                        <div className="flex items-center gap-1.5 mt-0.5">
+                                            <span className="truncate text-xs text-muted-foreground">{user?.email || ''}</span>
+                                            {userRole && (
+                                                <span className={`shrink-0 text-[10px] font-bold px-1.5 py-px rounded-full ${ROLE_COLORS[userRole]}`}>
+                                                    {ROLE_LABELS[userRole]}
+                                                </span>
+                                            )}
+                                        </div>
                                     </div>
                                     <ChevronsUpDown className="ml-auto size-4 text-muted-foreground" />
                                 </SidebarMenuButton>
@@ -241,7 +255,7 @@ export function AppSidebar({ business, user, ...props }: AppSidebarProps) {
                                 <DropdownMenuLabel className="p-0 font-normal">
                                     <div className="flex items-center gap-3 px-3 py-3 text-left text-sm border-b border-border/50 bg-muted/20">
                                         <Avatar className="h-9 w-9 rounded-lg">
-                                            <AvatarImage src={user?.avatar_url} alt={user?.full_name || ''} />
+                                            <AvatarImage src={user?.avatar_url ?? undefined} alt={user?.full_name || ''} />
                                             <AvatarFallback className="rounded-lg">
                                                 <User className="size-4" />
                                             </AvatarFallback>

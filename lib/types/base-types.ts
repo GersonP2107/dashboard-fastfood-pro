@@ -171,3 +171,62 @@ export interface UserProfile {
     phone: string | null
     updated_at: string
 }
+
+// ─── Roles ────────────────────────────────────────────────────────
+
+export type RoleName = 'admin' | 'gerente' | 'empleado' | 'cocinero'
+
+export interface Role {
+    id: string
+    name: RoleName
+    description: string | null
+    created_at: string
+}
+
+export interface UserRole {
+    id: string
+    user_id: string | null
+    businessman_id: string | null
+    role_id: string
+    invited_email: string | null
+    status: 'pending' | 'active' | 'revoked'
+    invited_by: string | null
+    created_at: string
+    // Joined fields
+    role?: Role
+    profile?: Pick<UserProfile, 'id' | 'full_name' | 'avatar_url'>
+    auth_email?: string
+}
+
+/**
+ * Permissions map per role.
+ * Each key is a dashboard section / action.
+ */
+export const ROLE_PERMISSIONS: Record<RoleName, string[]> = {
+    admin: [
+        'view_dashboard', 'view_orders', 'view_history', 'view_products',
+        'view_categories', 'view_inventory', 'view_finance', 'view_settings',
+        'view_team', 'view_billing',
+        'manage_orders', 'manage_products', 'manage_categories',
+        'manage_settings', 'manage_team', 'manage_finance',
+    ],
+    gerente: [
+        'view_dashboard', 'view_orders', 'view_history', 'view_products',
+        'view_categories', 'view_inventory', 'view_finance', 'view_settings',
+        'manage_orders', 'manage_products', 'manage_categories',
+    ],
+    empleado: [
+        'view_dashboard', 'view_orders', 'view_history',
+        'manage_orders',
+    ],
+    cocinero: [
+        'view_orders',
+        'manage_orders',
+    ],
+}
+
+export function hasPermission(role: RoleName | null | undefined, permission: string): boolean {
+    if (!role) return false
+    return ROLE_PERMISSIONS[role]?.includes(permission) ?? false
+}
+

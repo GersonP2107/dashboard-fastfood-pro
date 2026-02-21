@@ -231,7 +231,7 @@ function MemberCard({
                 <div className="flex items-center gap-2">
                     <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">{displayName}</p>
                     {isOwner(member) && (
-                        <Crown className="size-3.5 text-amber-500 shrink-0" title="Propietario" />
+                        <Crown className="size-3.5 text-amber-500 shrink-0" aria-label="Propietario" />
                     )}
                 </div>
                 <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{displayEmail}</p>

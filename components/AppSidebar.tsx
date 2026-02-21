@@ -254,7 +254,7 @@ export function AppSidebar({ business, user, ...props }: AppSidebarProps) {
                                 </DropdownMenuLabel>
                                 <DropdownMenuGroup className="p-1">
                                     <DropdownMenuItem className="gap-2 px-3 py-2.5 rounded-lg focus:bg-accent cursor-pointer" asChild>
-                                        <Link href="/settings">
+                                        <Link href="/account">
                                             <BadgeCheck className="size-4 text-muted-foreground" />
                                             <span>Cuenta</span>
                                         </Link>

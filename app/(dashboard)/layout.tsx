@@ -1,7 +1,6 @@
 import { AppSidebar } from '@/components/AppSidebar'
 import Header from '@/components/ui/Header'
 import { getCurrentBusinessman } from '@/lib/actions/users'
-import { BusinessChatHelper } from '@/components/ai/BusinessChatHelper'
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
 import { createClient } from '@/lib/supabase/server'
 
@@ -16,11 +15,29 @@ export default async function DashboardLayout({
         supabase.auth.getUser()
     ]);
 
-    // Construct user object safely
+    // Read profile from the profiles table (source of truth for avatar/name)
+    let profileData: { full_name: string | null; avatar_url: string | null } | null = null
+    if (user) {
+        const { data } = await supabase
+            .from('profiles')
+            .select('full_name, avatar_url')
+            .eq('id', user.id)
+            .single()
+        profileData = data
+    }
+
+    // Construct user object — profiles table takes priority over user_metadata fallback
     const userData = user ? {
         email: user.email,
-        full_name: user.user_metadata?.full_name || business?.business_name, // Fallback to business name if no full_name
-        avatar_url: user.user_metadata?.avatar_url
+        full_name:
+            profileData?.full_name ||
+            user.user_metadata?.full_name ||
+            business?.business_name ||
+            null,
+        avatar_url:
+            profileData?.avatar_url ||
+            user.user_metadata?.avatar_url ||
+            null,
     } : null;
 
     return (
@@ -34,7 +51,6 @@ export default async function DashboardLayout({
                     </div>
                 </main>
             </SidebarInset>
-            {/* <BusinessChatHelper /> */}
         </SidebarProvider>
     )
 }

@@ -163,3 +163,11 @@ export interface PaymentMethod {
     created_at: string
     updated_at: string
 }
+
+export interface UserProfile {
+    id: string
+    full_name: string | null
+    avatar_url: string | null
+    phone: string | null
+    updated_at: string
+}

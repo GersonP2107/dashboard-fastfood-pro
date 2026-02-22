@@ -151,9 +151,9 @@ export function AppSidebar({ business, user, userRole, isOwner = false, ...props
                                     size="lg"
                                     className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors"
                                 >
-                                    <div className="flex aspect-square size-10 items-center justify-center rounded-xl bg-linear-to-br from-brand-primary to-brand-accent text-white shadow-lg shadow-brand-primary/20">
+                                    <div className="flex aspect-square size-10 items-center justify-center rounded-xl bg-linear-to-br from-brand-primary to-brand-accent text-white shadow-lg shadow-brand-primary/20 ring-2 ring-brand-primary ring-offset-1 ring-offset-background">
                                         {business?.logo_url ? (
-                                            <Avatar className="size-10 rounded-xl border-2 border-white/20">
+                                            <Avatar className="size-10 rounded-xl">
                                                 <AvatarImage src={business.logo_url} alt={business.business_name} className="object-cover" />
                                                 <AvatarFallback className="rounded-xl bg-transparent text-white font-bold">{businessInitials}</AvatarFallback>
                                             </Avatar>
@@ -197,7 +197,7 @@ export function AppSidebar({ business, user, userRole, isOwner = false, ...props
                     </SidebarMenuItem>
                 </SidebarMenu>
             </SidebarHeader>
-            <SidebarContent className="px-3 group-data-[collapsible=icon]:px-2">
+            <SidebarContent className="px-3 group-data-[collapsible=icon]:px-0">
                 <SidebarGroup>
                     <SidebarGroupLabel className="text-xs font-bold text-muted-foreground/70 uppercase tracking-widest px-2 mb-2 mt-2 group-data-[collapsible=icon]:hidden">Plataforma</SidebarGroupLabel>
                     <SidebarMenu className="gap-1.5">
@@ -207,9 +207,9 @@ export function AppSidebar({ business, user, userRole, isOwner = false, ...props
                                     isActive={pathname === item.href}
                                     tooltip={item.name}
                                     onClick={() => router.push(item.href)}
-                                    className="h-auto py-3 px-3 rounded-xl transition-all duration-200 hover:bg-gray-100 dark:hover:bg-zinc-800 data-[active=true]:bg-brand-primary data-[active=true]:text-white data-[active=true]:shadow-lg data-[active=true]:shadow-brand-primary/25 data-[active=true]:hover:bg-brand-primary/90 group/nav-item group-data-[collapsible=icon]:px-0 group-data-[collapsible=icon]:justify-center"
+                                    className="rounded-xl transition-all duration-200 hover:bg-gray-100 dark:hover:bg-zinc-800 data-[active=true]:bg-brand-primary data-[active=true]:text-white data-[active=true]:shadow-lg data-[active=true]:shadow-brand-primary/25 data-[active=true]:hover:bg-brand-primary/90 group/nav-item [&>svg]:size-[18px]!"
                                 >
-                                    <item.icon className="size-5 shrink-0" />
+                                    <item.icon className="shrink-0" />
                                     <span className="font-medium text-[15px]">{item.name}</span>
                                 </SidebarMenuButton>
                             </SidebarMenuItem>

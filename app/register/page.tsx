@@ -113,7 +113,13 @@ export default function RegisterPage() {
         fullFormData.append('businessCategories', JSON.stringify(formValues.businessCategories));
 
         const result = await registerUser(prevState, fullFormData);
-        if (result.success) {
+        if (result.success && result.requiresEmailConfirmation) {
+            if (result.email) {
+                localStorage.setItem('pending_verification_email', result.email)
+            }
+            toast.success("¡Registro exitoso! Revisa tu correo para confirmar tu cuenta.");
+            router.push("/verify-email");
+        } else if (result.success) {
             toast.success("¡Registro exitoso!");
             router.push("/");
         } else if (result.error) {
@@ -125,6 +131,8 @@ export default function RegisterPage() {
     const [state, formAction, isPending] = useFormState(handleRegister, {
         success: false,
         error: null,
+        requiresEmailConfirmation: false,
+        email: '',
     });
 
     const nextStep = () => {

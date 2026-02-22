@@ -63,7 +63,7 @@ export async function middleware(request: NextRequest) {
     const pathname = request.nextUrl.pathname
 
     // ── Define public routes that DON'T require authentication ──
-    const publicRoutes = ['/login', '/register', '/auth', '/api', '/checkout', '/driver']
+    const publicRoutes = ['/login', '/register', '/auth', '/verify-email', '/forgot-password', '/reset-password', '/api', '/checkout', '/driver']
     const isPublicRoute = publicRoutes.some(route => pathname.startsWith(route))
 
     // ── 1. No user on a protected route → redirect to login ──
@@ -75,6 +75,13 @@ export async function middleware(request: NextRequest) {
 
     // ── 2. Authenticated user on a protected (dashboard) route ──
     if (user && !isPublicRoute) {
+        // ── 2.0 Email not confirmed → redirect to verify-email ──
+        if (!user.email_confirmed_at) {
+            const url = request.nextUrl.clone()
+            url.pathname = '/verify-email'
+            return NextResponse.redirect(url)
+        }
+
         // Check if the user has an owned business profile
         const { data: ownedBusiness } = await supabase
             .from('businessmans')

@@ -10,6 +10,8 @@ export type RegistrationState = {
     success?: boolean;
     error?: string | null;
     step?: number;
+    requiresEmailConfirmation?: boolean;
+    email?: string;
 };
 
 export async function registerUser(prevState: RegistrationState, formData: FormData) {
@@ -57,6 +59,7 @@ export async function registerUser(prevState: RegistrationState, formData: FormD
     }
 
     // 1. Sign Up User
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3001'
     const { data: authData, error: authError } = await supabase.auth.signUp({
         email,
         password,
@@ -64,6 +67,7 @@ export async function registerUser(prevState: RegistrationState, formData: FormD
             data: {
                 full_name: fullName,
             },
+            emailRedirectTo: `${appUrl}/auth/confirm`,
         },
     });
 
@@ -138,5 +142,5 @@ export async function registerUser(prevState: RegistrationState, formData: FormD
 
     // If successful
     revalidatePath("/");
-    return { success: true, error: null };
+    return { success: true, error: null, requiresEmailConfirmation: true, email };
 }

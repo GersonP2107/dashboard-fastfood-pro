@@ -69,7 +69,7 @@ export default async function DashboardLayout({
             <AppSidebar business={business} user={userData} userRole={userRole} isOwner={!!business} />
             <SidebarInset>
                 <Header business={business} />
-                <main className="flex-1 py-8 px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-zinc-950 overflow-y-auto w-full">
+                <main className="flex-1 overflow-y-auto py-8 px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-zinc-950 w-full">
                     <div className="max-w-[1600px] mx-auto">{children}</div>
                 </main>
             </SidebarInset>

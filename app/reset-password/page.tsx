@@ -42,7 +42,7 @@ function PasswordStrength({ password }: { password: string }) {
             <ul className="space-y-1">
                 {checks.map(({ label, ok }) => (
                     <li key={label} className={`flex items-center gap-1.5 text-xs transition-colors ${ok ? 'text-green-600 dark:text-green-400' : 'text-gray-400'}`}>
-                        <CheckCircle2 className={`size-3.5 flex-shrink-0 ${ok ? 'opacity-100' : 'opacity-30'}`} />
+                        <CheckCircle2 className={`size-3.5 shrink-0 ${ok ? 'opacity-100' : 'opacity-30'}`} />
                         {label}
                     </li>
                 ))}
@@ -201,10 +201,10 @@ export default function ResetPasswordPage() {
                                                 onChange={(e) => setConfirm(e.target.value)}
                                                 placeholder="••••••••"
                                                 className={`block w-full rounded-lg border-0 py-3 pl-4 pr-11 text-gray-900 shadow-sm ring-1 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset dark:bg-zinc-800 dark:text-white sm:text-sm sm:leading-6 transition-all ${confirm && password !== confirm
-                                                        ? 'ring-red-400 focus:ring-red-500 dark:ring-red-600'
-                                                        : confirm && password === confirm
-                                                            ? 'ring-green-400 focus:ring-green-500 dark:ring-green-600'
-                                                            : 'ring-gray-300 focus:ring-orange-600 dark:ring-gray-700'
+                                                    ? 'ring-red-400 focus:ring-red-500 dark:ring-red-600'
+                                                    : confirm && password === confirm
+                                                        ? 'ring-green-400 focus:ring-green-500 dark:ring-green-600'
+                                                        : 'ring-gray-300 focus:ring-orange-600 dark:ring-gray-700'
                                                     }`}
                                             />
                                             <button

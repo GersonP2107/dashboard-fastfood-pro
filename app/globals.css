@@ -142,15 +142,16 @@
   --sidebar-ring: oklch(0.556 0 0);
 }
 
-html,
-body {
+html {
+  height: 100dvh;
   overflow: hidden;
-  height: 100%;
 }
 
 body {
+  height: 100%;
   font-family: 'Plus Jakarta Sans Variable', 'Inter Variable', sans-serif;
 }
+
 
 /* Custom Scrollbar */
 .custom-scrollbar {

@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect } from 'react'
 import { DashboardOrder } from '@/lib/types'
@@ -108,12 +108,12 @@ export default function HistoryPage() {
             'cancelled': 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400',
             'pendiente': 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400',
             'pending': 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400',
-            'confirmado': 'bg-orange-50 text-brand-primary dark:bg-orange-900/30 dark:text-orange-400',
-            'confirmed': 'bg-orange-50 text-brand-primary dark:bg-orange-900/30 dark:text-orange-400',
+            'confirmado': 'bg-brand-primary/8 text-brand-primary dark:bg-brand-primary/25 dark:text-brand-light',
+            'confirmed': 'bg-brand-primary/8 text-brand-primary dark:bg-brand-primary/25 dark:text-brand-light',
             'preparando': 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400',
             'preparing': 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400',
-            'listo': 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400',
-            'ready': 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400',
+            'listo': 'bg-brand-primary/12 text-brand-accent dark:bg-brand-primary/25 dark:text-brand-light',
+            'ready': 'bg-brand-primary/12 text-brand-accent dark:bg-brand-primary/25 dark:text-brand-light',
             'en_camino': 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400',
             'en_route': 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400',
             'on_way': 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400',
@@ -178,7 +178,7 @@ export default function HistoryPage() {
                         </div>
                     </div>
                     <div className="bg-white dark:bg-zinc-900 p-3 sm:p-4 rounded-xl border border-gray-200 dark:border-zinc-800 shadow-sm flex items-center gap-2 sm:gap-3 min-w-0">
-                        <div className="p-1.5 sm:p-2 bg-orange-50 dark:bg-orange-900/20 rounded-lg text-orange-600 shrink-0">
+                        <div className="p-1.5 sm:p-2 bg-brand-primary/8 dark:bg-brand-primary/15 rounded-lg text-brand-primary shrink-0">
                             <ShoppingCart className="w-4 h-4 sm:w-5 sm:h-5" />
                         </div>
                         <div className="min-w-0">
@@ -208,7 +208,7 @@ export default function HistoryPage() {
                                 key={filter.id}
                                 onClick={() => handleQuickFilter(filter.id)}
                                 className={`px-2.5 py-1.5 text-[11px] font-medium rounded-lg transition-colors border shrink-0 ${rangeType === filter.id
-                                    ? 'bg-orange-50 border-orange-200 text-orange-600 dark:bg-orange-900/30'
+                                    ? 'bg-brand-primary/8 border-brand-primary/20 text-brand-primary dark:bg-brand-primary/25'
                                     : 'bg-white border-gray-200 text-gray-600 dark:bg-zinc-900 dark:border-zinc-700'
                                     }`}
                             >
@@ -306,7 +306,7 @@ export default function HistoryPage() {
 
                             <button
                                 onClick={() => setSelectedOrder(order)}
-                                className="w-full py-2 bg-gray-50 dark:bg-zinc-800 text-orange-600 font-bold rounded-lg text-[11px] flex items-center justify-center gap-2 transition-colors active:bg-gray-100"
+                                className="w-full py-2 bg-gray-50 dark:bg-zinc-800 text-brand-primary font-bold rounded-lg text-[11px] flex items-center justify-center gap-2 transition-colors active:bg-gray-100"
                             >
                                 <Eye className="w-3.5 h-3.5" />
                                 Ver Detalles
@@ -344,7 +344,7 @@ export default function HistoryPage() {
                                     <td className="px-6 py-4">{getStatusBadge(order.status)}</td>
                                     <td className="px-6 py-4 text-right font-bold">${order.total.toLocaleString()}</td>
                                     <td className="px-6 py-4 text-center">
-                                        <button onClick={() => setSelectedOrder(order)} className="p-2 text-orange-600 hover:bg-orange-50 rounded-lg transition-colors">
+                                        <button onClick={() => setSelectedOrder(order)} className="p-2 text-brand-primary hover:bg-brand-primary/8 rounded-lg transition-colors">
                                             <Eye className="w-4 h-4" />
                                         </button>
                                     </td>

@@ -1,4 +1,4 @@
-import { DashboardOrder, OrderStatus } from '@/lib/types'
+﻿import { DashboardOrder, OrderStatus } from '@/lib/types'
 import { formatDistanceToNow } from 'date-fns'
 import { es } from 'date-fns/locale'
 import { Clock, DollarSign, Package, Phone, AlertTriangle, CreditCard, ChevronRight, X, Bike, Store, MapPin, Send } from 'lucide-react'
@@ -89,7 +89,7 @@ export default function OrderKanbanCard({ order, onStatusUpdate, onClick }: Orde
                 )}
 
                 {order.delivery_type === 'pickup' && (
-                    <div className="flex items-center gap-1 text-xs font-bold text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/20 px-2 py-1 rounded border border-orange-100 dark:border-orange-900/30">
+                    <div className="flex items-center gap-1 text-xs font-bold text-brand-primary dark:text-brand-light bg-brand-primary/8 dark:bg-brand-primary/15 px-2 py-1 rounded border border-brand-primary/15 dark:border-brand-primary/25">
                         <Store className="w-3 h-3" /> RECOGER
                     </div>
                 )}
@@ -164,7 +164,7 @@ export default function OrderKanbanCard({ order, onStatusUpdate, onClick }: Orde
                 {['preparando', 'preparing'].includes(order.status) && (
                     <button
                         onClick={(e) => handleAction(e, 'listo')}
-                        className="w-full bg-orange-600 hover:bg-orange-700 text-white text-xs font-bold py-2 rounded shadow-sm transition-colors"
+                        className="w-full bg-brand-primary hover:bg-brand-accent text-white text-xs font-bold py-2 rounded shadow-sm transition-colors"
                     >
                         LISTO / PACKING
                     </button>

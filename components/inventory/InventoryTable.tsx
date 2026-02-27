@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useMemo } from 'react'
 import { Product, Category } from '@/lib/types/base-types'
@@ -83,7 +83,7 @@ export default function InventoryTable({ initialProducts, categories }: Inventor
                     <button
                         onClick={() => setFilterLowStock(!filterLowStock)}
                         className={`flex items-center gap-2 px-3 py-2.5 text-sm font-medium rounded-xl transition-all border ${filterLowStock
-                            ? 'bg-orange-50 text-orange-700 border-orange-200 dark:bg-orange-900/20 dark:text-orange-400'
+                            ? 'bg-brand-primary/8 text-brand-primary border-brand-primary/20 dark:bg-brand-primary/15 dark:text-brand-light'
                             : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50 dark:bg-zinc-800 dark:text-gray-300 dark:border-zinc-800'
                             }`}
                     >

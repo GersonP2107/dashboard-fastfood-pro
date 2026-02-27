@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState } from 'react';
 import { BUSINESS_CATEGORIES, BusinessCategory } from '@/lib/data/business-categories';
@@ -89,7 +89,7 @@ export default function BusinessCategorySelector({
                                     inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium
                                     border transition-all duration-200 cursor-pointer select-none
                                     ${active
-                                        ? 'bg-brand-primary/10 text-brand-primary border-brand-primary/30 dark:bg-brand-primary/20 dark:text-orange-300 dark:border-orange-500/40 shadow-sm shadow-brand-primary/10'
+                                        ? 'bg-brand-primary/10 text-brand-primary border-brand-primary/30 dark:bg-brand-primary/20 dark:text-brand-light dark:border-orange-500/40 shadow-sm shadow-brand-primary/10'
                                         : disabled
                                             ? 'bg-gray-50 text-gray-300 border-gray-100 dark:bg-zinc-900 dark:text-zinc-600 dark:border-zinc-800 cursor-not-allowed'
                                             : 'bg-white text-gray-600 border-gray-200 hover:border-brand-primary/50 hover:bg-brand-primary/5 dark:bg-zinc-800 dark:text-gray-300 dark:border-zinc-700 dark:hover:border-orange-500/40 dark:hover:bg-brand-primary/10'
@@ -129,7 +129,7 @@ export default function BusinessCategorySelector({
                             return (
                                 <span
                                     key={id}
-                                    className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-brand-primary/10 text-brand-primary text-xs font-medium dark:bg-brand-primary/20 dark:text-orange-300"
+                                    className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-brand-primary/10 text-brand-primary text-xs font-medium dark:bg-brand-primary/20 dark:text-brand-light"
                                 >
                                     {cat.emoji} {cat.label}
                                 </span>

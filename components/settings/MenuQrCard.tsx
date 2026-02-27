@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useRef } from "react";
 import QRCode from "react-qr-code";
@@ -228,7 +228,7 @@ export default function MenuQrCard({ businessman }: MenuQrCardProps) {
                     {/* Imprimir */}
                     <button
                         onClick={printQr}
-                        className="flex items-center gap-2 px-4 py-2 rounded-lg bg-brand-primary text-white hover:bg-brand-primary-hover text-sm font-medium transition-all shadow-sm shadow-orange-600/20"
+                        className="flex items-center gap-2 px-4 py-2 rounded-lg bg-brand-primary text-white hover:bg-brand-primary-hover text-sm font-medium transition-all shadow-sm shadow-brand-primary/20"
                     >
                         <Printer className="h-4 w-4" /> Imprimir
                     </button>

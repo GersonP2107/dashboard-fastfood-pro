@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState, useEffect } from 'react';
 import { getTrialDaysRemaining, isTrialActive } from '@/lib/utils/trial';
@@ -46,24 +46,24 @@ export default function TrialBanner({ trialEndsAt, subscriptionStatus }: TrialBa
                 exit={{ opacity: 0, y: -10 }}
                 className={`relative overflow-hidden rounded-2xl border p-4 sm:p-5 ${isUrgent
                     ? 'bg-linear-to-r from-red-50 to-orange-50 dark:from-red-950/40 dark:to-orange-950/40 border-red-200 dark:border-red-800/50'
-                    : 'bg-linear-to-r from-orange-50 to-amber-50 dark:from-orange-950/30 dark:to-amber-950/30 border-orange-200 dark:border-orange-800/50'
+                    : 'bg-linear-to-r from-orange-50 to-amber-50 dark:from-orange-950/30 dark:to-amber-950/30 border-brand-primary/20 dark:border-brand-primary/40/50'
                     }`}
             >
                 {/* Background decoration */}
-                <div className="absolute top-0 right-0 w-32 h-32 bg-linear-to-bl from-orange-200/30 to-transparent dark:from-orange-600/10 rounded-bl-full" />
+                <div className="absolute top-0 right-0 w-32 h-32 bg-linear-to-bl from-orange-200/30 to-transparent dark:from-brand-primary/10 rounded-bl-full" />
 
                 <div className="relative flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                     <div className="flex items-start gap-3">
                         <div className={`shrink-0 p-2 rounded-xl ${isUrgent
                             ? 'bg-red-100 dark:bg-red-900/40 text-red-600 dark:text-red-400'
-                            : 'bg-orange-100 dark:bg-orange-900/40 text-orange-600 dark:text-orange-400'
+                            : 'bg-brand-primary/12 dark:bg-brand-primary/30 text-brand-primary dark:text-brand-light'
                             }`}>
                             {isUrgent ? <Clock className="w-5 h-5" /> : <Sparkles className="w-5 h-5" />}
                         </div>
                         <div>
                             <h3 className={`text-sm font-bold ${isUrgent
                                 ? 'text-red-800 dark:text-red-300'
-                                : 'text-orange-800 dark:text-orange-300'
+                                : 'text-brand-accent dark:text-brand-light'
                                 }`}>
                                 {isUrgent
                                     ? `¡Tu prueba gratis termina ${daysLeft === 0 ? 'hoy' : daysLeft === 1 ? 'mañana' : `en ${daysLeft} días`}!`
@@ -84,7 +84,7 @@ export default function TrialBanner({ trialEndsAt, subscriptionStatus }: TrialBa
                             href="/billing"
                             className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold transition-all shadow-sm hover:shadow-md ${isUrgent
                                 ? 'bg-red-600 hover:bg-red-700 text-white'
-                                : 'bg-orange-600 hover:bg-orange-700 text-white'
+                                : 'bg-brand-primary hover:bg-brand-accent text-white'
                                 }`}
                         >
                             Elegir Plan <ArrowRight className="w-3.5 h-3.5" />
@@ -106,8 +106,8 @@ export default function TrialBanner({ trialEndsAt, subscriptionStatus }: TrialBa
                         animate={{ width: `${Math.max(0, ((7 - daysLeft) / 7) * 100)}%` }}
                         transition={{ duration: 1, ease: "easeOut" }}
                         className={`h-full rounded-full ${isUrgent
-                            ? 'bg-linear-to-r from-red-400 to-red-600'
-                            : 'bg-linear-to-r from-orange-400 to-orange-600'
+                            ? 'bg-linear-to-r from-red-400 to-brand-accent'
+                            : 'bg-linear-to-r from-brand-light to-brand-primary'
                             }`}
                     />
                 </div>

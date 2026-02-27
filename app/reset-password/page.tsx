@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
@@ -34,7 +34,7 @@ function PasswordStrength({ password }: { password: string }) {
                 ))}
             </div>
             <p className="text-xs text-gray-500 dark:text-gray-400">
-                Fortaleza: <span className={`font-semibold ${score >= 3 ? 'text-green-600' : 'text-orange-500'}`}>
+                Fortaleza: <span className={`font-semibold ${score >= 3 ? 'text-green-600' : 'text-brand-primary'}`}>
                     {labels[score] || 'Muy débil'}
                 </span>
             </p>
@@ -105,7 +105,7 @@ export default function ResetPasswordPage() {
 
             {/* Panel izquierdo */}
             <div className="hidden lg:flex w-1/2 relative overflow-hidden bg-zinc-900 border-r border-zinc-800">
-                <div className="absolute inset-0 bg-linear-to-br from-emerald-600/20 via-orange-600/10 to-red-600/20 z-0" />
+                <div className="absolute inset-0 bg-linear-to-br from-emerald-600/20 via-brand-primary/10 to-brand-accent/20 z-0" />
                 <div
                     className="absolute inset-0 opacity-5"
                     style={{
@@ -114,16 +114,20 @@ export default function ResetPasswordPage() {
                     }}
                 />
                 <div className="relative z-10 flex flex-col justify-between p-12 w-full h-full text-white">
-                    <h1 className="text-3xl font-bold bg-linear-to-br from-orange-500 to-red-600 bg-clip-text text-transparent">
-                        FoodFast Pro
-                    </h1>
+                    <div className="shrink-0">
+                        <img
+                            src="/logo-horizontal-white.svg"
+                            alt="FoodFast Pro"
+                            className="h-14 w-auto"
+                        />
+                    </div>
                     <div className="space-y-6 max-w-lg">
-                        <div className="flex size-16 items-center justify-center rounded-2xl bg-orange-600/20 border border-orange-500/30">
-                            <KeyRound className="size-8 text-orange-400" />
+                        <div className="flex size-16 items-center justify-center rounded-2xl bg-brand-primary/20 border border-brand-primary/30">
+                            <KeyRound className="size-8 text-brand-light" />
                         </div>
                         <h2 className="text-5xl font-bold leading-tight">
                             Crea una{' '}
-                            <span className="text-transparent bg-clip-text bg-linear-to-r from-orange-400 to-red-500">
+                            <span className="text-transparent bg-clip-text bg-linear-to-r from-brand-light to-brand-accent">
                                 nueva contraseña
                             </span>{' '}
                             segura
@@ -174,7 +178,7 @@ export default function ResetPasswordPage() {
                                                 value={password}
                                                 onChange={(e) => setPassword(e.target.value)}
                                                 placeholder="••••••••"
-                                                className="block w-full rounded-lg border-0 py-3 pl-4 pr-11 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-orange-600 dark:bg-zinc-800 dark:text-white dark:ring-gray-700 sm:text-sm sm:leading-6 transition-all"
+                                                className="block w-full rounded-lg border-0 py-3 pl-4 pr-11 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-brand-primary dark:bg-zinc-800 dark:text-white dark:ring-gray-700 sm:text-sm sm:leading-6 transition-all"
                                             />
                                             <button
                                                 type="button"
@@ -204,7 +208,7 @@ export default function ResetPasswordPage() {
                                                     ? 'ring-red-400 focus:ring-red-500 dark:ring-red-600'
                                                     : confirm && password === confirm
                                                         ? 'ring-green-400 focus:ring-green-500 dark:ring-green-600'
-                                                        : 'ring-gray-300 focus:ring-orange-600 dark:ring-gray-700'
+                                                        : 'ring-gray-300 focus:ring-brand-primary dark:ring-gray-700'
                                                     }`}
                                             />
                                             <button
@@ -228,7 +232,7 @@ export default function ResetPasswordPage() {
                                     <button
                                         type="submit"
                                         disabled={loading || !password || !confirm || password !== confirm}
-                                        className="flex w-full items-center justify-center gap-2 rounded-lg bg-orange-600 px-3 py-3 text-sm font-semibold text-white hover:bg-orange-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-orange-600/20"
+                                        className="flex w-full items-center justify-center gap-2 rounded-lg bg-brand-primary px-3 py-3 text-sm font-semibold text-white hover:bg-brand-primary/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-brand-primary/20"
                                     >
                                         {loading ? (
                                             <Loader2 className="size-4 animate-spin" />
@@ -265,7 +269,7 @@ export default function ResetPasswordPage() {
 
                                 <Link
                                     href="/"
-                                    className="inline-flex items-center justify-center rounded-lg bg-orange-600 px-6 py-3 text-sm font-semibold text-white hover:bg-orange-500 transition-colors"
+                                    className="inline-flex items-center justify-center rounded-lg bg-brand-primary px-6 py-3 text-sm font-semibold text-white hover:bg-brand-primary/90 transition-colors"
                                 >
                                     Ir al dashboard ahora
                                 </Link>

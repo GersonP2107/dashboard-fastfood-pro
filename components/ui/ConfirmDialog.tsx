@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { motion, AnimatePresence } from 'framer-motion'
 import { AlertTriangle, X } from 'lucide-react'
@@ -36,9 +36,9 @@ export default function ConfirmDialog({
             border: 'border-red-200 dark:border-red-900/50'
         },
         warning: {
-            icon: 'text-orange-600 dark:text-orange-400 bg-orange-100 dark:bg-orange-900/20',
-            button: 'bg-orange-600 hover:bg-orange-700 text-white',
-            border: 'border-orange-200 dark:border-orange-900/50'
+            icon: 'text-brand-primary dark:text-brand-light bg-brand-primary/12 dark:bg-brand-primary/15',
+            button: 'bg-brand-primary hover:bg-brand-accent text-white',
+            border: 'border-brand-primary/20 dark:border-brand-primary/35'
         },
         info: {
             icon: 'text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/20',

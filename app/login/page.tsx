@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
@@ -41,16 +41,18 @@ export default function LoginPage() {
                 <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=2670&auto=format&fit=crop')] bg-cover bg-center opacity-20 mix-blend-overlay" />
 
                 <div className="relative z-10 flex flex-col justify-between p-12 w-full h-full text-white">
-                    <div className="space-y-2 shrink-0">
-                        <h1 className="text-3xl font-bold bg-linear-to-br from-orange-500 to-red-600 bg-clip-text text-transparent">
-                            FoodFast Pro
-                        </h1>
+                    <div className="shrink-0">
+                        <img
+                            src="/logo-horizontal-white.svg"
+                            alt="FoodFast Pro"
+                            className="h-14 w-auto"
+                        />
                     </div>
 
                     <div className="space-y-6 max-w-lg">
                         <h2 className="text-6xl font-bold leading-tight">
                             Tu cocina,<br />
-                            <span className="text-transparent bg-clip-text bg-linear-to-r from-orange-400 to-red-600">digitalizada</span>.
+                            <span className="text-transparent bg-clip-text bg-linear-to-r from-brand-light to-brand-accent">digitalizada</span>.
                         </h2>
                         <p className="text-lg text-zinc-400">
                             Inicia sesión para gestionar pedidos, actualizar menús y monitorear entregas en tiempo real.
@@ -72,7 +74,7 @@ export default function LoginPage() {
                         </h2>
                         <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
                             ¿No tienes una cuenta?{' '}
-                            <Link href="/register" className="font-semibold text-orange-600 hover:text-orange-500 transition-colors">
+                            <Link href="/register" className="font-semibold text-brand-primary hover:text-brand-primary transition-colors">
                                 Regístrate gratis
                             </Link>
                         </p>
@@ -89,7 +91,7 @@ export default function LoginPage() {
                                     name="email"
                                     type="email"
                                     required
-                                    className="block w-full rounded-lg border-0 py-3 pl-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-orange-600 dark:bg-zinc-800 dark:text-white dark:ring-gray-700 sm:text-sm sm:leading-6 transition-all"
+                                    className="block w-full rounded-lg border-0 py-3 pl-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-brand-primary dark:bg-zinc-800 dark:text-white dark:ring-gray-700 sm:text-sm sm:leading-6 transition-all"
                                     placeholder="juan@ejemplo.com"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
@@ -101,7 +103,7 @@ export default function LoginPage() {
                                     <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                         Contraseña
                                     </label>
-                                    <Link href="/forgot-password" className="text-sm font-semibold text-orange-600 hover:text-orange-500">
+                                    <Link href="/forgot-password" className="text-sm font-semibold text-brand-primary hover:text-brand-primary">
                                         ¿Olvidaste tu contraseña?
                                     </Link>
                                 </div>
@@ -110,7 +112,7 @@ export default function LoginPage() {
                                     name="password"
                                     type="password"
                                     required
-                                    className="block w-full rounded-lg border-0 py-3 pl-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-orange-600 dark:bg-zinc-800 dark:text-white dark:ring-gray-700 sm:text-sm sm:leading-6 transition-all"
+                                    className="block w-full rounded-lg border-0 py-3 pl-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-brand-primary dark:bg-zinc-800 dark:text-white dark:ring-gray-700 sm:text-sm sm:leading-6 transition-all"
                                     placeholder="••••••••"
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
@@ -122,7 +124,7 @@ export default function LoginPage() {
                             <button
                                 type="submit"
                                 disabled={loading}
-                                className="group relative flex w-full justify-center rounded-lg bg-orange-600 px-3 py-3 text-sm font-semibold text-white hover:bg-orange-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-orange-600/20"
+                                className="group relative flex w-full justify-center rounded-lg bg-brand-primary px-3 py-3 text-sm font-semibold text-white hover:bg-brand-primary/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-brand-primary/20"
                             >
                                 {loading ? (
                                     <Loader2 className="h-5 w-5 animate-spin" />

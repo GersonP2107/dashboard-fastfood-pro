@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { useFormState } from "react-dom";
@@ -31,7 +31,7 @@ const InputGroup = ({ label, name, type = "text", placeholder, required = true, 
             placeholder={placeholder}
             value={value}
             onChange={onChange}
-            className="block w-full rounded-lg border-0 py-3 pl-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-orange-600 dark:bg-zinc-800 dark:text-white dark:ring-gray-700 sm:text-sm sm:leading-6 transition-all duration-200"
+            className="block w-full rounded-lg border-0 py-3 pl-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-brand-primary dark:bg-zinc-800 dark:text-white dark:ring-gray-700 sm:text-sm sm:leading-6 transition-all duration-200"
         />
     </div>
 );
@@ -170,19 +170,21 @@ export default function RegisterPage() {
         <div className="flex h-screen overflow-hidden bg-white dark:bg-black">
             {/* Lado Izquierdo: Visuales */}
             <div className="hidden lg:flex w-1/2 relative overflow-hidden bg-zinc-900 border-r border-zinc-800">
-                <div className="absolute inset-0 bg-linear-to-br from-orange-600/20 via-purple-600/20 to-blue-600/20 z-0" />
+                <div className="absolute inset-0 bg-linear-to-br from-brand-primary/20 via-purple-600/20 to-blue-600/20 z-0" />
                 <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1556761175-5973dc0f32e7?q=80&w=2664&auto=format&fit=crop')] bg-cover bg-center opacity-10 mix-blend-overlay" />
 
                 <div className="relative z-10 flex flex-col justify-between p-12 w-full h-full text-white">
-                    <div className="space-y-2 shrink-0">
-                        <h1 className="text-3xl font-bold bg-linear-to-br from-orange-500 to-red-600 bg-clip-text text-transparent">
-                            FoodFast Pro
-                        </h1>
+                    <div className="shrink-0">
+                        <img
+                            src="/logo-horizontal-white.svg"
+                            alt="FoodFast Pro"
+                            className="h-14 w-auto"
+                        />
                     </div>
 
                     <div className="space-y-6 max-w-lg">
                         <h2 className="text-6xl font-bold leading-tight">
-                            Gestiona tu <span className="text-transparent bg-clip-text bg-linear-to-r from-orange-400 to-red-600">restaurante</span> con facilidad.
+                            Gestiona tu <span className="text-transparent bg-clip-text bg-linear-to-r from-brand-light to-brand-accent">restaurante</span> con facilidad.
                         </h2>
                         <p className="text-lg text-zinc-400">
                             Únete a miles de negocios gastronómicos que optimizan sus entregas, organizan pedidos y mejoran su servicio en un solo lugar.
@@ -206,7 +208,7 @@ export default function RegisterPage() {
                         </h2>
                         <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
                             ¿Ya tienes una cuenta?{' '}
-                            <Link href="/login" className="font-semibold text-orange-600 hover:text-orange-500 transition-colors">
+                            <Link href="/login" className="font-semibold text-brand-primary hover:text-brand-primary transition-colors">
                                 Inicia sesión
                             </Link>
                         </p>
@@ -217,7 +219,7 @@ export default function RegisterPage() {
                         {/* 1. Líneas de Conexión (Capa Inferior) */}
                         <div className="absolute left-0 top-5 w-full h-0.5 bg-gray-200 dark:bg-zinc-800 -translate-y-1/2" />
                         <div
-                            className="absolute left-0 top-5 h-0.5 bg-orange-600 transition-all duration-500 -translate-y-1/2"
+                            className="absolute left-0 top-5 h-0.5 bg-brand-primary transition-all duration-500 -translate-y-1/2"
                             style={{ width: `${((currentStep - 1) / (steps.length - 1)) * 100}%` }}
                         />
 
@@ -235,16 +237,16 @@ export default function RegisterPage() {
                                             className={`
                                                     w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all duration-300
                                                     ${isActive
-                                                    ? 'bg-orange-600 border-orange-600 text-white'
+                                                    ? 'bg-brand-primary border-brand-primary text-white'
                                                     : 'bg-white dark:bg-zinc-900 border-gray-300 dark:border-zinc-700 text-gray-400'}
-                                                    ${isCurrent ? 'ring-4 ring-orange-100 dark:ring-orange-900/30' : ''}
+                                                    ${isCurrent ? 'ring-4 ring-brand-primary/15 dark:ring-brand-primary/30' : ''}
                                                 `}
                                         >
                                             <Icon size={18} />
                                         </div>
 
                                         {/* Texto descriptivo */}
-                                        <span className={`absolute -bottom-6 text-xs font-medium whitespace-nowrap transition-colors ${isCurrent ? 'text-orange-600' : 'text-gray-500'
+                                        <span className={`absolute -bottom-6 text-xs font-medium whitespace-nowrap transition-colors ${isCurrent ? 'text-brand-primary' : 'text-gray-500'
                                             }`}>
                                             {step.title}
                                         </span>
@@ -271,7 +273,7 @@ export default function RegisterPage() {
                                         <button
                                             type="button"
                                             onClick={nextStep}
-                                            className="w-full flex items-center justify-center rounded-lg bg-orange-600 px-3 py-3 text-sm font-semibold text-white shadow-sm hover:bg-orange-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600 transition-all"
+                                            className="w-full flex items-center justify-center rounded-lg bg-brand-primary px-3 py-3 text-sm font-semibold text-white shadow-sm hover:bg-brand-primary/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary transition-all"
                                         >
                                             Continuar <ArrowRight size={16} className="ml-2" />
                                         </button>
@@ -302,7 +304,7 @@ export default function RegisterPage() {
                                                 name="department"
                                                 required
                                                 value={formValues.department}
-                                                className="block w-full rounded-lg border-0 py-3 pl-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-orange-600 dark:bg-zinc-800 dark:text-white dark:ring-gray-700 sm:text-sm sm:leading-6 transition-all duration-200"
+                                                className="block w-full rounded-lg border-0 py-3 pl-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-brand-primary dark:bg-zinc-800 dark:text-white dark:ring-gray-700 sm:text-sm sm:leading-6 transition-all duration-200"
                                                 onChange={(e) => {
                                                     const dep = e.target.value;
                                                     setFormValues(prev => ({ ...prev, department: dep, city: "" }));
@@ -327,7 +329,7 @@ export default function RegisterPage() {
                                                 required
                                                 value={formValues.city}
                                                 disabled={!formValues.department}
-                                                className="block w-full rounded-lg border-0 py-3 pl-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-orange-600 dark:bg-zinc-800 dark:text-white dark:ring-gray-700 sm:text-sm sm:leading-6 transition-all duration-200 disabled:opacity-50 disabled:bg-gray-100 dark:disabled:bg-zinc-900"
+                                                className="block w-full rounded-lg border-0 py-3 pl-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-brand-primary dark:bg-zinc-800 dark:text-white dark:ring-gray-700 sm:text-sm sm:leading-6 transition-all duration-200 disabled:opacity-50 disabled:bg-gray-100 dark:disabled:bg-zinc-900"
                                                 onChange={handleInputChange}
                                             >
                                                 <option value="">Selecciona...</option>
@@ -352,7 +354,7 @@ export default function RegisterPage() {
                                             rows={3}
                                             value={formValues.description}
                                             onChange={handleInputChange}
-                                            className="block w-full rounded-lg border-0 py-3 pl-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-orange-600 dark:bg-zinc-800 dark:text-white dark:ring-gray-700 sm:text-sm sm:leading-6 transition-all"
+                                            className="block w-full rounded-lg border-0 py-3 pl-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-brand-primary dark:bg-zinc-800 dark:text-white dark:ring-gray-700 sm:text-sm sm:leading-6 transition-all"
                                             placeholder="Las mejores hamburguesas de la ciudad..."
                                         />
                                     </div>
@@ -361,7 +363,7 @@ export default function RegisterPage() {
                                     <div className="space-y-3">
                                         <div className="flex items-center justify-between">
                                             <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
-                                                <Tag className="w-4 h-4 text-orange-500" />
+                                                <Tag className="w-4 h-4 text-brand-primary" />
                                                 ¿Qué tipo de comida ofreces?
                                             </label>
                                             <span className={`text-xs font-semibold px-2 py-0.5 rounded-full transition-colors ${formValues.businessCategories.length >= MAX_CATEGORIES
@@ -388,17 +390,17 @@ export default function RegisterPage() {
                                                             inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium
                                                             border transition-all duration-200 select-none
                                                             ${isSelected
-                                                                ? 'bg-orange-50 text-orange-700 border-orange-300 dark:bg-orange-900/30 dark:text-orange-300 dark:border-orange-600/50 ring-1 ring-orange-200 dark:ring-orange-800'
+                                                                ? 'bg-brand-primary/8 text-brand-primary border-brand-primary/40 dark:bg-brand-primary/25 dark:text-brand-light dark:border-brand-primary/50 ring-1 ring-brand-primary/20 dark:ring-brand-primary/40'
                                                                 : isDisabled
                                                                     ? 'bg-gray-50 text-gray-300 border-gray-100 dark:bg-zinc-900 dark:text-zinc-600 dark:border-zinc-800 cursor-not-allowed opacity-50'
-                                                                    : 'bg-white text-gray-600 border-gray-200 hover:border-orange-300 hover:bg-orange-50/50 dark:bg-zinc-800 dark:text-gray-300 dark:border-zinc-700 dark:hover:border-orange-600/40 dark:hover:bg-orange-900/10 cursor-pointer'
+                                                                    : 'bg-white text-gray-600 border-gray-200 hover:border-brand-primary/40 hover:bg-brand-primary/8/50 dark:bg-zinc-800 dark:text-gray-300 dark:border-zinc-700 dark:hover:border-brand-primary/40 dark:hover:bg-brand-primary/10 cursor-pointer'
                                                             }
                                                         `}
                                                     >
                                                         <span className="text-base leading-none">{cat.emoji}</span>
                                                         <span>{cat.label}</span>
                                                         {isSelected && (
-                                                            <Check className="w-3.5 h-3.5 text-orange-600 dark:text-orange-400" />
+                                                            <Check className="w-3.5 h-3.5 text-brand-primary dark:text-brand-light" />
                                                         )}
                                                     </button>
                                                 );
@@ -417,7 +419,7 @@ export default function RegisterPage() {
                                         <button
                                             type="button"
                                             onClick={nextStep}
-                                            className="flex-1 flex items-center justify-center rounded-lg bg-orange-600 px-3 py-3 text-sm font-semibold text-white shadow-sm hover:bg-orange-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600 transition-all"
+                                            className="flex-1 flex items-center justify-center rounded-lg bg-brand-primary px-3 py-3 text-sm font-semibold text-white shadow-sm hover:bg-brand-primary/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary transition-all"
                                         >
                                             Continuar <ArrowRight size={16} className="ml-2" />
                                         </button>
@@ -445,7 +447,7 @@ export default function RegisterPage() {
                                                             type="checkbox"
                                                             checked={item.isActive}
                                                             onChange={(e) => handleScheduleChange(index, 'isActive', e.target.checked)}
-                                                            className="h-4 w-4 rounded border-gray-300 text-orange-600 focus:ring-orange-600"
+                                                            className="h-4 w-4 rounded border-gray-300 text-brand-primary focus:ring-brand-primary"
                                                         />
                                                         <span className={`text-sm font-medium ${!item.isActive && 'text-gray-400 line-through'}`}>
                                                             {item.label}
@@ -457,14 +459,14 @@ export default function RegisterPage() {
                                                             type="time"
                                                             value={item.open}
                                                             onChange={(e) => handleScheduleChange(index, 'open', e.target.value)}
-                                                            className="block w-full rounded border-0 py-1.5 text-gray-900 dark:text-white dark:bg-zinc-800 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-zinc-700 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-orange-600 sm:text-xs sm:leading-6"
+                                                            className="block w-full rounded border-0 py-1.5 text-gray-900 dark:text-white dark:bg-zinc-800 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-zinc-700 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-brand-primary sm:text-xs sm:leading-6"
                                                         />
                                                         <span className="text-gray-400">-</span>
                                                         <input
                                                             type="time"
                                                             value={item.close}
                                                             onChange={(e) => handleScheduleChange(index, 'close', e.target.value)}
-                                                            className="block w-full rounded border-0 py-1.5 text-gray-900 dark:text-white dark:bg-zinc-800 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-zinc-700 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-orange-600 sm:text-xs sm:leading-6"
+                                                            className="block w-full rounded border-0 py-1.5 text-gray-900 dark:text-white dark:bg-zinc-800 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-zinc-700 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-brand-primary sm:text-xs sm:leading-6"
                                                         />
                                                     </div>
                                                 </div>
@@ -483,7 +485,7 @@ export default function RegisterPage() {
                                                 required
                                                 value={formValues.deliveryTime}
                                                 onChange={handleInputChange}
-                                                className="block w-full appearance-none rounded-lg border-0 py-3 pl-4 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-orange-600 dark:bg-zinc-800 dark:text-white dark:ring-gray-700 sm:text-sm sm:leading-6 transition-all duration-200"
+                                                className="block w-full appearance-none rounded-lg border-0 py-3 pl-4 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-brand-primary dark:bg-zinc-800 dark:text-white dark:ring-gray-700 sm:text-sm sm:leading-6 transition-all duration-200"
                                             >
                                                 <option value="15-30">15 - 30 min</option>
                                                 <option value="30-45">30 - 45 min</option>
@@ -512,7 +514,7 @@ export default function RegisterPage() {
                                         <button
                                             type="submit"
                                             disabled={isPending}
-                                            className="flex-1 flex items-center justify-center rounded-lg bg-orange-600 px-3 py-3 text-sm font-semibold text-white shadow-sm hover:bg-orange-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600 transition-all disabled:opacity-70 disabled:cursor-not-allowed"
+                                            className="flex-1 flex items-center justify-center rounded-lg bg-brand-primary px-3 py-3 text-sm font-semibold text-white shadow-sm hover:bg-brand-primary/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary transition-all disabled:opacity-70 disabled:cursor-not-allowed"
                                         >
                                             {isPending ? (
                                                 <Loader2 className="h-5 w-5 animate-spin" />

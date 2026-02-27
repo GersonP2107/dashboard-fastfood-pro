@@ -6,6 +6,10 @@ import { Toaster } from "sonner";
 export const metadata: Metadata = {
   title: "Dashboard | FoodFast Pro",
   description: "Sistema de gestión para restaurantes y menús digitales",
+  icons: {
+    icon: "/favicon.svg",
+    shortcut: "/favicon.svg",
+  },
 };
 
 import { ThemeProvider } from "@/components/theme-provider";

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { Category, Product, ProductModifier, Modifier } from "@/lib/types/base-types";
@@ -161,8 +161,8 @@ export default function ProductForm({ categories, product, onSuccess, onCancel, 
                 file:mr-4 file:py-2 file:px-4
                 file:rounded-full file:border-0
                 file:text-sm file:font-semibold
-                file:bg-orange-50 file:text-orange-700
-                hover:file:bg-orange-100 dark:file:bg-orange-900/20 dark:file:text-orange-400"
+                file:bg-brand-primary/8 file:text-brand-primary
+                hover:file:bg-brand-primary/12 dark:file:bg-brand-primary/15 dark:file:text-brand-light"
                         />
                         <p className="mt-1 text-xs text-gray-500">PNG, JPG hasta 10MB</p>
                     </div>
@@ -245,7 +245,7 @@ export default function ProductForm({ categories, product, onSuccess, onCancel, 
                     id="is_available"
                     name="is_available"
                     defaultChecked={product ? product.is_available : true}
-                    className="h-4 w-4 rounded border-gray-300 text-orange-600 focus:ring-brand-primary"
+                    className="h-4 w-4 rounded border-gray-300 text-brand-primary focus:ring-brand-primary"
                 />
                 <label htmlFor="is_available" className="text-sm font-medium text-gray-700 dark:text-gray-300">
                     Disponible para ordenar

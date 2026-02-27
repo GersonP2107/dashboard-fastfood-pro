@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useTransition, useOptimistic, useEffect } from "react";
 import { Category, Product } from "@/lib/types/base-types";
@@ -248,7 +248,7 @@ export default function ProductList({ initialProducts, categories, businessmanId
                                                     <button
                                                         onClick={() => handleToggleStatus(product)}
                                                         className={`p-2 rounded-lg transition-colors ${product.is_available
-                                                            ? "text-orange-500 hover:bg-orange-50 dark:hover:bg-orange-900/20"
+                                                            ? "text-brand-primary hover:bg-brand-primary/8 dark:hover:bg-brand-primary/15"
                                                             : "text-green-500 hover:bg-green-50 dark:hover:bg-green-900/20"
                                                             }`}
                                                         title={product.is_available ? "Desactivar" : "Activar"}
@@ -257,7 +257,7 @@ export default function ProductList({ initialProducts, categories, businessmanId
                                                     </button>
                                                     <button
                                                         onClick={() => openEditModal(product)}
-                                                        className="p-2 text-brand-primary hover:bg-orange-50 dark:hover:bg-orange-900/20 rounded-lg transition-colors"
+                                                        className="p-2 text-brand-primary hover:bg-brand-primary/8 dark:hover:bg-brand-primary/15 rounded-lg transition-colors"
                                                         title="Editar"
                                                     >
                                                         <Edit2 size={18} />
@@ -344,7 +344,7 @@ export default function ProductList({ initialProducts, categories, businessmanId
                                     <button
                                         onClick={() => handleToggleStatus(product)}
                                         className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-sm font-medium transition-colors ${product.is_available
-                                            ? "bg-orange-50 text-orange-600 dark:bg-orange-900/20 dark:text-orange-400"
+                                            ? "bg-brand-primary/8 text-brand-primary dark:bg-brand-primary/15 dark:text-brand-light"
                                             : "bg-green-50 text-green-600 dark:bg-green-900/20 dark:text-green-400"
                                             }`}
                                     >

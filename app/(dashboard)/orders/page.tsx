@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
@@ -228,7 +228,7 @@ export default function OrdersPage() {
                             ${order.total.toLocaleString()}
                         </p>
                     </div>
-                    <div className="bg-orange-100 dark:bg-orange-900 p-2 rounded-full">
+                    <div className="bg-brand-primary/12 dark:bg-orange-900 p-2 rounded-full">
                         <Bell className="h-5 w-5 text-brand-primary dark:text-brand-light" />
                     </div>
                 </div>
@@ -362,8 +362,8 @@ export default function OrdersPage() {
             id: 'listo',
             title: 'Listo',
             orders: filteredOrders.filter(o => ['listo', 'ready'].includes(o.status)),
-            color: 'bg-orange-50 dark:bg-orange-900/10 border-orange-200 dark:border-orange-900/50',
-            iconColor: 'text-orange-600 dark:text-orange-400',
+            color: 'bg-brand-primary/8 dark:bg-brand-primary/10 border-brand-primary/20 dark:border-brand-primary/35',
+            iconColor: 'text-brand-primary dark:text-brand-light',
             borderColor: 'border-t-4 border-t-orange-500'
         },
         {

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect } from "react";
 import { PaymentMethod } from "@/lib/types";
@@ -301,7 +301,7 @@ export default function PaymentMethodsManager({ businessmanId, initialMethods }:
 
                                 <button
                                     onClick={() => handleEdit(method)}
-                                    className="p-1.5 text-gray-400 hover:text-brand-primary hover:bg-orange-50 dark:hover:bg-orange-900/20 rounded-lg transition-colors"
+                                    className="p-1.5 text-gray-400 hover:text-brand-primary hover:bg-brand-primary/8 dark:hover:bg-brand-primary/15 rounded-lg transition-colors"
                                     title="Editar"
                                 >
                                     <Pencil className="h-4 w-4" />

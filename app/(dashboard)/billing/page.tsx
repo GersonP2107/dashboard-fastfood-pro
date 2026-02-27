@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Check, ShieldCheck, Crown, Zap, Star, Sparkles, LayoutDashboard } from 'lucide-react';
 import { getPlans } from '@/lib/actions/payments';
 import { Plan } from '@/lib/types/payments';
+import SubscriptionStatusBanner from '@/components/billing/SubscriptionStatusBanner';
 import Link from 'next/link';
 
 type BillingPeriod = 'monthly' | 'annual';
@@ -102,7 +103,9 @@ export default function BillingPage() {
     return (
         <div className="min-h-[80vh] py-12 px-4 sm:px-6 lg:px-8">
             <div className="max-w-7xl mx-auto space-y-12">
-                {/* Header Section */}
+
+                {/* Subscription Status Alert Banner */}
+                <SubscriptionStatusBanner />
                 <div className="text-center space-y-4 max-w-3xl mx-auto">
                     <motion.div
                         initial={{ opacity: 0, y: 10 }}

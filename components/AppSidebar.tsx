@@ -7,7 +7,6 @@ import {
     History,
     ShoppingBag,
     Layers,
-    Package,
     DollarSign,
     Settings,
     LogOut,
@@ -17,7 +16,6 @@ import {
     BadgeCheck,
     ChevronsUpDown,
     Users,
-    ShieldCheck,
 } from "lucide-react"
 
 import {
@@ -26,18 +24,12 @@ import {
     AvatarImage,
 } from "@/components/ui/avatar"
 import {
-    Collapsible,
-    CollapsibleContent,
-    CollapsibleTrigger,
-} from "@/components/ui/collapsible"
-import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuGroup,
     DropdownMenuItem,
     DropdownMenuLabel,
     DropdownMenuSeparator,
-    DropdownMenuShortcut,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import {
@@ -48,12 +40,8 @@ import {
     SidebarGroupLabel,
     SidebarHeader,
     SidebarMenu,
-    SidebarMenuAction,
     SidebarMenuButton,
     SidebarMenuItem,
-    SidebarMenuSub,
-    SidebarMenuSubButton,
-    SidebarMenuSubItem,
     SidebarRail,
 } from "@/components/ui/sidebar"
 import { usePathname, useRouter } from "next/navigation"
@@ -69,7 +57,7 @@ const navigation = [
     { name: 'Historial', href: '/history', icon: History, permission: 'view_history' },
     { name: 'Productos', href: '/products', icon: ShoppingBag, permission: 'view_products' },
     { name: 'Categorías', href: '/categories', icon: Layers, permission: 'view_categories' },
-    { name: 'Inventario', href: '/inventory', icon: Package, permission: 'view_inventory' },
+    // { name: 'Inventario', href: '/inventory', icon: Package, permission: 'view_inventory' },
     { name: 'Finanzas', href: '/finance', icon: DollarSign, permission: 'view_finance' },
     { name: 'Configuración', href: '/settings', icon: Settings, permission: 'view_settings' },
     { name: 'Equipo', href: '/team', icon: Users, permission: 'view_team' },
@@ -207,7 +195,7 @@ export function AppSidebar({ business, user, userRole, isOwner = false, ...props
                                     isActive={pathname === item.href}
                                     tooltip={item.name}
                                     onClick={() => router.push(item.href)}
-                                    className="rounded-xl transition-all duration-200 hover:bg-gray-100 dark:hover:bg-zinc-800 data-[active=true]:bg-brand-primary data-[active=true]:text-white data-[active=true]:shadow-lg data-[active=true]:shadow-brand-primary/25 data-[active=true]:hover:bg-brand-primary/90 group/nav-item [&>svg]:size-[18px]!"
+                                    className="rounded-2xl transition-all duration-200 p-5 hover:bg-gray-100 dark:hover:bg-zinc-800 data-[active=true]:bg-brand-primary data-[active=true]:text-white data-[active=true]:shadow-lg data-[active=true]:shadow-brand-primary/25 data-[active=true]:hover:bg-brand-primary/90 group/nav-item [&>svg]:size-[18px]!"
                                 >
                                     <item.icon className="shrink-0" />
                                     <span className="font-medium text-[15px]">{item.name}</span>

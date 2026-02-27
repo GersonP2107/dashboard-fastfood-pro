@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect } from "react";
 import { Modifier, ProductModifier } from "@/lib/types/base-types";
@@ -170,8 +170,8 @@ export default function ProductModifiersManager({
                 {productModifiers.map((pm) => (
                     <div key={pm.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-3 bg-gray-50 dark:bg-zinc-800 rounded-lg border border-gray-200 dark:border-gray-700 gap-3 sm:gap-0">
                         <div className="flex items-center gap-3">
-                            <div className="bg-orange-50 dark:bg-orange-900/30 p-2 rounded-md shrink-0">
-                                <span className="font-bold text-brand-primary dark:text-orange-300 text-xs uppercase">{pm.modifier.type}</span>
+                            <div className="bg-brand-primary/8 dark:bg-brand-primary/25 p-2 rounded-md shrink-0">
+                                <span className="font-bold text-brand-primary dark:text-brand-light text-xs uppercase">{pm.modifier.type}</span>
                             </div>
                             <div>
                                 <p className="font-medium text-gray-900 dark:text-white mb-0.5">{pm.modifier.name}</p>

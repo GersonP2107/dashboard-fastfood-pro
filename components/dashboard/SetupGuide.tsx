@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -86,13 +86,13 @@ export default function SetupGuide({ businessmanId }: SetupGuideProps) {
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, height: 0 }}
-                className="mb-8 rounded-3xl bg-orange-50 dark:bg-orange-900/10 border border-orange-100 dark:border-orange-900/20 p-6 relative overflow-hidden"
+                className="mb-8 rounded-3xl bg-brand-primary/8 dark:bg-brand-primary/10 border border-brand-primary/15 dark:border-orange-900/20 p-6 relative overflow-hidden"
             >
                 {/* Background Pattern */}
-                <div className="absolute top-0 right-0 -mr-10 -mt-10 w-40 h-40 bg-orange-100 dark:bg-orange-800/20 rounded-full blur-3xl opacity-50 pointer-events-none" />
+                <div className="absolute top-0 right-0 -mr-10 -mt-10 w-40 h-40 bg-brand-primary/12 dark:bg-orange-800/20 rounded-full blur-3xl opacity-50 pointer-events-none" />
 
                 <div className="relative z-10 flex flex-col md:flex-row md:items-start gap-6">
-                    <div className="bg-orange-100 dark:bg-orange-900/30 p-3 rounded-2xl shrink-0">
+                    <div className="bg-brand-primary/12 dark:bg-brand-primary/25 p-3 rounded-2xl shrink-0">
                         <AlertCircle className="w-8 h-8 text-brand-primary" />
                     </div>
 
@@ -119,7 +119,7 @@ export default function SetupGuide({ businessmanId }: SetupGuideProps) {
                                 <Link
                                     key={item.id}
                                     href={item.href}
-                                    className="flex items-center gap-3 p-3 bg-white dark:bg-zinc-900 border border-orange-100 dark:border-orange-900/20 rounded-xl hover:shadow-md hover:border-brand-primary/30 transition-all group"
+                                    className="flex items-center gap-3 p-3 bg-white dark:bg-zinc-900 border border-brand-primary/15 dark:border-orange-900/20 rounded-xl hover:shadow-md hover:border-brand-primary/30 transition-all group"
                                 >
                                     <div className="p-2 bg-gray-50 dark:bg-zinc-800 rounded-lg group-hover:bg-brand-primary/10 transition-colors">
                                         <item.icon className="w-4 h-4 text-gray-500 dark:text-gray-400 group-hover:text-brand-primary transition-colors" />

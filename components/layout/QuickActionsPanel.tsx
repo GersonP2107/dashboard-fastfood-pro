@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -15,7 +15,7 @@ interface QuickActionsPanelProps {
 const MULTIPLIER_PRESETS = [
     { value: 1.0, label: 'Normal', icon: Check, color: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' },
     { value: 1.2, label: 'Lluvia (+20%)', icon: CloudRain, color: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' },
-    { value: 1.3, label: 'Alta Demanda (+30%)', icon: Flame, color: 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400' },
+    { value: 1.3, label: 'Alta Demanda (+30%)', icon: Flame, color: 'bg-brand-primary/12 text-brand-primary dark:bg-brand-primary/25 dark:text-brand-light' },
 ]
 
 export default function QuickActionsPanel({ isOpen, onClose, business }: QuickActionsPanelProps) {
@@ -88,8 +88,8 @@ export default function QuickActionsPanel({ isOpen, onClose, business }: QuickAc
                                                 key={preset.value}
                                                 onClick={() => handleMultiplierChange(preset.value)}
                                                 className={`w-full flex items-center justify-between p-4 rounded-xl border transition-all ${multiplier === preset.value
-                                                    ? 'border-brand-primary bg-orange-50 dark:bg-orange-900/20 ring-1 ring-brand-primary dark:border-brand-primary'
-                                                    : 'border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 hover:border-orange-300 dark:hover:border-orange-700'
+                                                    ? 'border-brand-primary bg-brand-primary/8 dark:bg-brand-primary/15 ring-1 ring-brand-primary dark:border-brand-primary'
+                                                    : 'border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 hover:border-brand-primary/40 dark:hover:border-orange-700'
                                                     }`}
                                             >
                                                 <div className="flex items-center gap-3">
@@ -97,7 +97,7 @@ export default function QuickActionsPanel({ isOpen, onClose, business }: QuickAc
                                                         <preset.icon className="h-5 w-5" />
                                                     </div>
                                                     <span className={`font-medium ${multiplier === preset.value
-                                                        ? 'text-brand-primary dark:text-orange-300'
+                                                        ? 'text-brand-primary dark:text-brand-light'
                                                         : 'text-gray-700 dark:text-gray-300'
                                                         }`}>
                                                         {preset.label}
@@ -132,7 +132,7 @@ export default function QuickActionsPanel({ isOpen, onClose, business }: QuickAc
                                         <div className="flex justify-between items-center">
                                             <span>Tarifa Base: $5,000</span>
                                             <span className="text-gray-300">→</span>
-                                            <span className="font-bold text-brand-primary dark:text-orange-400">
+                                            <span className="font-bold text-brand-primary dark:text-brand-light">
                                                 Actual: ${(5000 * multiplier).toLocaleString('es-CO')}
                                             </span>
                                         </div>

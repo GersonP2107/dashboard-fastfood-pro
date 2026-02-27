@@ -1,4 +1,4 @@
-import { LucideIcon } from 'lucide-react';
+﻿import { LucideIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface StatCardProps {
@@ -21,7 +21,7 @@ export default function StatCard({
     icon: Icon,
     trend,
     className,
-    iconColor = "text-brand-primary dark:text-brand-light bg-orange-50 dark:bg-orange-900/20",
+    iconColor = "text-brand-primary dark:text-brand-light bg-brand-primary/8 dark:bg-brand-primary/15",
     description
 }: StatCardProps) {
     return (

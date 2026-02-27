@@ -7,14 +7,10 @@
 :root {
 
   /* Brand Colors */
-  --brand-primary: #ea580c;
-  /* orange-600 */
-  --brand-primary-hover: #c2410c;
-  /* orange-700 */
-  --brand-accent: #dc2626;
-  /* red-600 */
-  --brand-light: #fb923c;
-  /* orange-400 */
+  --brand-primary: #fa0050;
+  --brand-primary-hover: #d4003f;
+  --brand-accent: #c4003a;
+  --brand-light: #ff4d80;
 
   /* Semantic Colors */
   --brand-success: #22c55e;
@@ -61,16 +57,16 @@
   --font-sans: 'Inter Variable', sans-serif;
   --font-mono: 'Inter Variable', sans-serif;
 
-  /* Brand Theme Colors */
-  --color-brand-primary: var(--brand-primary);
-  --color-brand-primary-hover: var(--brand-primary-hover);
-  --color-brand-accent: var(--brand-accent);
-  --color-brand-light: var(--brand-light);
-  --color-brand-success: var(--brand-success);
-  --color-brand-success-bg: var(--brand-success-bg);
+  /* Brand Theme Colors — valores estáticos para que Tailwind v4 genere opacidades correctamente */
+  --color-brand-primary: #fa0050;
+  --color-brand-primary-hover: #d4003f;
+  --color-brand-accent: #c4003a;
+  --color-brand-light: #ff4d80;
+  --color-brand-success: #22c55e;
+  --color-brand-success-bg: #dcfce7;
 
   /* Aliases for ease of use if needed */
-  --color-primary: var(--brand-primary);
+  --color-primary: #fa0050;
   --color-primary-foreground: #ffffff;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
@@ -193,6 +189,7 @@ body {
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }

@@ -29,7 +29,7 @@ export interface Businessman {
     min_order_value: number;
     delivery_cost: number;
     plan_type: 'essential' | 'professional' | 'premium';
-    subscription_status: 'active' | 'past_due' | 'canceled';
+    subscription_status: 'active' | 'trial' | 'expired' | 'past_due' | 'canceled';
     subscription_end?: string;
     trial_ends_at?: string;
     business_categories?: string[];

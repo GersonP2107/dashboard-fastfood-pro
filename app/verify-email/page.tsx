@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import { MailCheck, RefreshCw, ArrowLeft } from 'lucide-react'
@@ -40,7 +40,7 @@ export default function VerifyEmailPage() {
         <div className="flex min-h-screen bg-white dark:bg-zinc-950">
             {/* Panel izquierdo decorativo */}
             <div className="hidden lg:flex w-1/2 relative overflow-hidden bg-zinc-900 border-r border-zinc-800">
-                <div className="absolute inset-0 bg-linear-to-br from-orange-600/20 via-amber-600/10 to-red-600/20 z-0" />
+                <div className="absolute inset-0 bg-linear-to-br from-brand-primary/20 via-amber-600/10 to-brand-accent/20 z-0" />
                 {/* Honeycomb / dots pattern */}
                 <div className="absolute inset-0 opacity-5"
                     style={{
@@ -49,18 +49,20 @@ export default function VerifyEmailPage() {
                     }}
                 />
                 <div className="relative z-10 flex flex-col justify-between p-12 w-full h-full text-white">
-                    <div>
-                        <h1 className="text-3xl font-bold bg-linear-to-br from-orange-500 to-red-600 bg-clip-text text-transparent">
-                            FoodFast Pro
-                        </h1>
+                    <div className="shrink-0">
+                        <img
+                            src="/logo-horizontal-white.svg"
+                            alt="FoodFast Pro"
+                            className="h-14 w-auto"
+                        />
                     </div>
                     <div className="space-y-6 max-w-lg">
-                        <div className="flex size-16 items-center justify-center rounded-2xl bg-orange-600/20 border border-orange-500/30">
-                            <MailCheck className="size-8 text-orange-400" />
+                        <div className="flex size-16 items-center justify-center rounded-2xl bg-brand-primary/20 border border-brand-primary/30">
+                            <MailCheck className="size-8 text-brand-light" />
                         </div>
                         <h2 className="text-5xl font-bold leading-tight">
                             Un paso más para{' '}
-                            <span className="text-transparent bg-clip-text bg-linear-to-r from-orange-400 to-red-500">
+                            <span className="text-transparent bg-clip-text bg-linear-to-r from-brand-light to-brand-accent">
                                 empezar
                             </span>
                         </h2>
@@ -79,9 +81,9 @@ export default function VerifyEmailPage() {
                     {/* Icono animado */}
                     <div className="flex justify-center">
                         <div className="relative">
-                            <div className="absolute inset-0 animate-ping rounded-full bg-orange-500/20" />
-                            <div className="relative flex size-20 items-center justify-center rounded-full bg-orange-100 dark:bg-orange-900/20 border-2 border-orange-200 dark:border-orange-800">
-                                <MailCheck className="size-10 text-orange-600 dark:text-orange-400" />
+                            <div className="absolute inset-0 animate-ping rounded-full bg-brand-primary/90/20" />
+                            <div className="relative flex size-20 items-center justify-center rounded-full bg-brand-primary/12 dark:bg-brand-primary/15 border-2 border-brand-primary/20 dark:border-brand-primary/40">
+                                <MailCheck className="size-10 text-brand-primary dark:text-brand-light" />
                             </div>
                         </div>
                     </div>
@@ -95,7 +97,7 @@ export default function VerifyEmailPage() {
                             Te enviamos un enlace de confirmación a:
                         </p>
                         {email && (
-                            <p className="text-base font-semibold text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/10 rounded-lg px-4 py-2 border border-orange-100 dark:border-orange-800">
+                            <p className="text-base font-semibold text-brand-primary dark:text-brand-light bg-brand-primary/8 dark:bg-brand-primary/10 rounded-lg px-4 py-2 border border-brand-primary/15 dark:border-brand-primary/40">
                                 {email}
                             </p>
                         )}
@@ -113,7 +115,7 @@ export default function VerifyEmailPage() {
                             { step: '3', text: 'Haz clic en "Confirmar correo"' },
                         ].map(({ step, text }) => (
                             <div key={step} className="flex items-center gap-3">
-                                <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-orange-600 text-xs font-bold text-white">
+                                <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-brand-primary text-xs font-bold text-white">
                                     {step}
                                 </span>
                                 <span className="text-sm text-gray-600 dark:text-gray-300">{text}</span>

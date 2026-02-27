@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
@@ -182,7 +182,7 @@ export default function OrderDetailModal({ order, onClose, onUpdate }: OrderDeta
                             <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wide border
                                 ${order.status === 'pendiente' ? 'bg-yellow-50 text-yellow-700 border-yellow-200' :
                                     order.status === 'entregado' ? 'bg-green-50 text-green-700 border-green-200' :
-                                        'bg-orange-50 text-brand-primary border-orange-200'}`}>
+                                        'bg-brand-primary/8 text-brand-primary border-brand-primary/20'}`}>
                                 {STATUS_LABELS[order.status]}
                             </span>
                             {!isDineIn && (
@@ -243,7 +243,7 @@ export default function OrderDetailModal({ order, onClose, onUpdate }: OrderDeta
                             </h3>
                             <div className="bg-gray-50 dark:bg-zinc-800/50 p-4 rounded-xl border border-gray-100 dark:border-zinc-800 space-y-3 h-full">
                                 <div className="flex items-center gap-3">
-                                    <div className="h-8 w-8 rounded-full bg-brand-primary/10 dark:bg-orange-900/30 flex items-center justify-center text-brand-primary font-bold">
+                                    <div className="h-8 w-8 rounded-full bg-brand-primary/10 dark:bg-brand-primary/25 flex items-center justify-center text-brand-primary font-bold">
                                         {(isDineIn && order.customer_name.toLowerCase().includes('mesa')) ? 'C' : order.customer_name.charAt(0)}
                                     </div>
                                     <div>
@@ -275,7 +275,7 @@ export default function OrderDetailModal({ order, onClose, onUpdate }: OrderDeta
                                             <span className="font-bold text-brand-primary dark:text-brand-light">Consumo en Local</span>
                                         </div>
                                         {order.restaurant_tables ? (
-                                            <div className="mt-1 p-3 bg-brand-primary/10 dark:bg-orange-900/20 rounded-lg border border-brand-light/30 dark:border-orange-900/30 text-center">
+                                            <div className="mt-1 p-3 bg-brand-primary/10 dark:bg-brand-primary/15 rounded-lg border border-brand-light/30 dark:border-brand-primary/25 text-center">
                                                 <p className="text-xs text-brand-primary dark:text-brand-light uppercase font-bold tracking-wider mb-1">
                                                     {order.restaurant_tables.restaurant_zones?.name || 'Zona'}
                                                 </p>
@@ -326,7 +326,7 @@ export default function OrderDetailModal({ order, onClose, onUpdate }: OrderDeta
                         <div className="divide-y divide-gray-100 dark:divide-zinc-800 border border-gray-200 dark:border-zinc-800 rounded-xl overflow-hidden">
                             {order.order_items?.map((item) => (
                                 <div key={item.id} className="p-4 flex gap-4 bg-white dark:bg-zinc-900/50 hover:bg-gray-50 dark:hover:bg-zinc-800/50 transition-colors">
-                                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-orange-50 dark:bg-orange-900/20 text-brand-primary font-bold text-sm">
+                                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-brand-primary/8 dark:bg-brand-primary/15 text-brand-primary font-bold text-sm">
                                         {item.quantity}x
                                     </div>
                                     <div className="flex-1">

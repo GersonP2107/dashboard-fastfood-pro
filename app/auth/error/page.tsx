@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import Link from 'next/link'
 import { XCircle } from 'lucide-react'
@@ -23,7 +23,7 @@ export default function AuthErrorPage() {
                 </div>
                 <Link
                     href="/login"
-                    className="inline-flex items-center justify-center rounded-lg bg-orange-600 px-6 py-3 text-sm font-semibold text-white hover:bg-orange-500 transition-colors"
+                    className="inline-flex items-center justify-center rounded-lg bg-brand-primary px-6 py-3 text-sm font-semibold text-white hover:bg-brand-primary/90 transition-colors"
                 >
                     Ir al inicio de sesión
                 </Link>

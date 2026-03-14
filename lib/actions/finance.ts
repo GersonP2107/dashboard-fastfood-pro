@@ -1,7 +1,7 @@
 'use server'
 
 import { createClient } from '@/lib/supabase/server'
-import { startOfDay, endOfDay, startOfWeek, endOfWeek, startOfMonth, endOfMonth, format, subDays, eachDayOfInterval } from 'date-fns'
+import { startOfDay, endOfDay, startOfWeek, startOfMonth, format, subDays, eachDayOfInterval } from 'date-fns'
 import { es } from 'date-fns/locale'
 
 export type DateRange = 'today' | 'week' | 'month' | 'last7days'
@@ -11,7 +11,7 @@ export async function getFinancialStats(businessmanId: string, range: DateRange 
     const now = new Date()
 
     let startDate: Date
-    let endDate: Date = endOfDay(now)
+    const endDate: Date = endOfDay(now)
 
     switch (range) {
         case 'today':
@@ -84,8 +84,9 @@ export async function getFinancialStats(businessmanId: string, range: DateRange 
         return acc
     }, {} as Record<string, { name: string, quantity: number, revenue: number }>)
 
-    const topProducts = Object.values(productStats)
-        .sort((a: any, b: any) => b.quantity - a.quantity)
+    type ProductStat = { name: string; quantity: number; revenue: number };
+    const topProducts = (Object.values(productStats) as ProductStat[])
+        .sort((a, b) => b.quantity - a.quantity)
         .slice(0, 5)
 
     // 6. Sales Over Time (Chart Data)
@@ -111,7 +112,7 @@ export async function getFinancialStats(businessmanId: string, range: DateRange 
             const dayOrders = orders.filter(o => format(new Date(o.created_at), 'yyyy-MM-dd') === dayStr)
             return {
                 date: format(day, 'EEE d', { locale: es }), // Lun 6
-                total: dayOrders.reduce((a: number, b: any) => a + b.total, 0),
+                total: dayOrders.reduce((a: number, b) => a + b.total, 0),
                 count: dayOrders.length
             }
         })

@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { Send, Bot, X, MessageSquare, Minimize, Maximize2, Sparkles, Loader2 } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { Send, Bot, X, Minimize, Maximize2, Sparkles, Loader2 } from 'lucide-react';
+import { m as motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
 type Message = {
@@ -85,9 +85,9 @@ export function BusinessChatHelper() {
             <AnimatePresence>
                 {!isOpen && (
                     <motion.button
-                        initial={{ scale: 0, opacity: 0 }}
+                        initial={{ scale: 0.95, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
-                        exit={{ scale: 0, opacity: 0 }}
+                        exit={{ scale: 0.95, opacity: 0 }}
                         onClick={() => setIsOpen(true)}
                         className="fixed bottom-6 right-6 z-50 p-4 bg-linear-to-r from-blue-600 to-indigo-600 rounded-full shadow-lg hover:shadow-xl transition-all hover:scale-105 group"
                     >
@@ -141,7 +141,7 @@ export function BusinessChatHelper() {
                                 <div className="h-full flex flex-col items-center justify-center text-center p-8 text-zinc-500">
                                     <Bot className="w-12 h-12 mb-4 opacity-20" />
                                     <p className="text-sm">¡Hola! Soy tu analista de negocios inteligente.</p>
-                                    <p className="text-xs mt-2 opacity-70">Prueba preguntando: "¿Cuánto vendimos hoy?" o "¿Cuál es el producto más vendido?"</p>
+                                    <p className="text-xs mt-2 opacity-70">Prueba preguntando: &quot;¿Cuánto vendimos hoy?&quot; o &quot;¿Cuál es el producto más vendido?&quot;</p>
                                 </div>
                             )}
 
@@ -175,9 +175,9 @@ export function BusinessChatHelper() {
                                     className="flex w-full justify-start"
                                 >
                                     <div className="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-2xl rounded-bl-none px-4 py-4 shadow-sm flex items-center gap-1.5">
-                                        <span className="w-1.5 h-1.5 bg-zinc-400 dark:bg-zinc-500 rounded-full animate-bounce [animation-duration:0.6s]"></span>
-                                        <span className="w-1.5 h-1.5 bg-zinc-400 dark:bg-zinc-500 rounded-full animate-bounce [animation-duration:0.6s] [animation-delay:0.2s]"></span>
-                                        <span className="w-1.5 h-1.5 bg-zinc-400 dark:bg-zinc-500 rounded-full animate-bounce [animation-duration:0.6s] [animation-delay:0.4s]"></span>
+                                        <span className="w-1.5 h-1.5 bg-zinc-400 dark:bg-zinc-500 rounded-full animate-bounce animation-duration-[0.6s]"></span>
+                                        <span className="w-1.5 h-1.5 bg-zinc-400 dark:bg-zinc-500 rounded-full animate-bounce animation-duration-[0.6s] [animation-delay:0.2s]"></span>
+                                        <span className="w-1.5 h-1.5 bg-zinc-400 dark:bg-zinc-500 rounded-full animate-bounce animation-duration-[0.6s] [animation-delay:0.4s]"></span>
                                     </div>
                                 </motion.div>
                             )}

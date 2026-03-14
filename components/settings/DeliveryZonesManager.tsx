@@ -1,10 +1,10 @@
-﻿"use client";
+"use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { DeliveryZone } from "@/lib/types";
-import { MoveRight, Plus, Trash2, Save, X, Zap, Pencil } from "lucide-react";
+import { Plus, Trash2, Save, X, Zap, Pencil } from "lucide-react";
 import { createDeliveryZone, updateDeliveryZone, deleteDeliveryZone } from "@/lib/actions/settings";
-import { motion, AnimatePresence } from "framer-motion";
+import { m as motion, AnimatePresence } from "framer-motion";
 import ConfirmDialog from "@/components/ui/ConfirmDialog";
 
 interface DeliveryZonesManagerProps {
@@ -16,10 +16,7 @@ interface DeliveryZonesManagerProps {
 export default function DeliveryZonesManager({ businessmanId, initialZones, surgeMultiplier = 1 }: DeliveryZonesManagerProps) {
     const [zones, setZones] = useState<DeliveryZone[]>(initialZones);
 
-    // Sync state with props when parent fetches data
-    useEffect(() => {
-        setZones(initialZones);
-    }, [initialZones]);
+
     const [isAdding, setIsAdding] = useState(false);
     const [editingId, setEditingId] = useState<string | null>(null);
     const [newZone, setNewZone] = useState({ zone_name: "", delivery_cost: 0 });

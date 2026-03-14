@@ -1,7 +1,8 @@
 'use client'
 
 import { useEffect, useState, useRef } from 'react'
-import { motion } from 'framer-motion'
+import { m as motion } from 'framer-motion'
+import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import {
     getUserProfile,
@@ -183,10 +184,12 @@ function AvatarUpload({
             <div className="relative">
                 <div className="size-20 rounded-2xl overflow-hidden bg-linear-to-br from-brand-primary to-brand-accent flex items-center justify-center shadow-lg shadow-brand-primary/20">
                     {avatarUrl ? (
-                        <img
+                        <Image
                             src={avatarUrl}
                             alt="Avatar"
-                            className="size-full object-cover"
+                            fill
+                            sizes="80px"
+                            className="object-cover"
                         />
                     ) : (
                         <span className="text-2xl font-bold text-white">{initials}</span>
@@ -241,7 +244,7 @@ function AvatarUpload({
 // ═══════════════════════════════════════════════════════════════════
 export default function AccountPage() {
     const router = useRouter()
-    const [profile, setProfile] = useState<UserProfile | null>(null)
+    const [, setProfile] = useState<UserProfile | null>(null)
     const [authEmail, setAuthEmail] = useState('')
     const [loading, setLoading] = useState(true)
 

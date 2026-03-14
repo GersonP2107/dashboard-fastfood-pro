@@ -1,7 +1,6 @@
-﻿'use client'
+'use client'
 
 import { useState } from 'react'
-import { createClient } from '@/lib/supabase/client'
 import { updateOrderStatus } from '@/lib/actions/orders'
 import { DashboardOrder, OrderStatus } from '@/lib/types'
 import { X, MapPin, Phone, CreditCard, Clock, Package, CheckCircle, AlertTriangle, DollarSign } from 'lucide-react'
@@ -71,7 +70,6 @@ const NEXT_STATUS_LABELS: Record<OrderStatus, string> = {
 export default function OrderDetailModal({ order, onClose, onUpdate }: OrderDetailModalProps) {
     const [updating, setUpdating] = useState(false)
     const [paymentConfirmed, setPaymentConfirmed] = useState(false)
-    const supabase = createClient()
 
     const handleStatusUpdate = async (newStatus: OrderStatus) => {
         setUpdating(true)

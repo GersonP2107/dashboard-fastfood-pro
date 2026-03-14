@@ -1,10 +1,10 @@
 ﻿'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { getTrialDaysRemaining, isTrialActive } from '@/lib/utils/trial';
 import { Clock, Sparkles, X, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
-import { motion, AnimatePresence } from 'framer-motion';
+import { m as motion, AnimatePresence } from 'framer-motion';
 
 interface TrialBannerProps {
     trialEndsAt: string | null | undefined;
@@ -13,15 +13,8 @@ interface TrialBannerProps {
 
 export default function TrialBanner({ trialEndsAt, subscriptionStatus }: TrialBannerProps) {
     const [dismissed, setDismissed] = useState(false);
-    const [daysLeft, setDaysLeft] = useState(0);
-    const [isActive, setIsActive] = useState(false);
-
-    useEffect(() => {
-        if (trialEndsAt) {
-            setDaysLeft(getTrialDaysRemaining(trialEndsAt));
-            setIsActive(isTrialActive(trialEndsAt));
-        }
-    }, [trialEndsAt]);
+    const daysLeft = trialEndsAt ? getTrialDaysRemaining(trialEndsAt) : 0;
+    const isActive = trialEndsAt ? isTrialActive(trialEndsAt) : false;
 
     // Don't show if:
     // - No trial set

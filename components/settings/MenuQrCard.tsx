@@ -1,6 +1,6 @@
-﻿"use client";
+"use client";
 
-import { useState, useRef } from "react";
+import { useState } from "react";
 import QRCode from "react-qr-code";
 import { Businessman } from "@/lib/types";
 import {
@@ -12,7 +12,7 @@ import {
     ExternalLink,
     Globe,
 } from "lucide-react";
-import { motion } from "framer-motion";
+import { m as motion } from "framer-motion";
 import { toast } from "sonner";
 
 interface MenuQrCardProps {

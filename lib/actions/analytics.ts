@@ -2,7 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { DashboardStats, SalesTrendPoint, TopProduct } from "@/lib/types/dashboard";
-import { startOfMonth, subDays, format, startOfDay, endOfDay } from "date-fns";
+import { startOfMonth, subDays, format, startOfDay } from "date-fns";
 import { es } from "date-fns/locale";
 
 export async function getDashboardStats(businessmanId: string): Promise<DashboardStats> {
@@ -127,7 +127,7 @@ export async function getTopProducts(businessmanId: string): Promise<TopProduct[
 
     const productMap = new Map<string, TopProduct>();
 
-    data.forEach((item: any) => {
+    data.forEach((item: { product_id: string | null; product_name: string; quantity: number; subtotal: number }) => {
         // Warning: item.product_id might be null if manually added? Assuming mostly standard products
         const id = item.product_id || "unknown";
         const name = item.product_name;

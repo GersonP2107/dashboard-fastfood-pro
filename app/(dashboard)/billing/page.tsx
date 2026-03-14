@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { m as motion } from 'framer-motion';
 import { Check, ShieldCheck, Crown, Zap, Star, Sparkles, LayoutDashboard } from 'lucide-react';
 import { getPlans } from '@/lib/actions/payments';
 import { Plan } from '@/lib/types/payments';
@@ -184,7 +184,7 @@ export default function BillingPage() {
                             const config = PLAN_TIER_CONFIG[plan.plan_type];
                             const features = getFeatures(plan.plan_type);
                             // Calculate monthly equivalent for annual view context
-                            const monthlyPrice = selectedPeriod === 'annual' ? Math.round(plan.price / 12) : plan.price;
+                            // monthlyPrice intentionally removed (not displayed in current UI)
 
                             return (
                                 <motion.div

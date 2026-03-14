@@ -1,7 +1,17 @@
 "use client";
 
 import { SalesTrendPoint } from "@/lib/types/dashboard";
-import { Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis, CartesianGrid } from "recharts";
+import dynamic from "next/dynamic";
+import type { SalesTrendChartInnerProps } from "./SalesTrendChartInnerFile";
+
+const SalesTrendChartInner = dynamic<SalesTrendChartInnerProps>(() => import("./SalesTrendChartInnerFile"), {
+    ssr: false,
+    loading: () => (
+        <div className="h-72 w-full flex items-center justify-center">
+            <div className="animate-pulse bg-gray-200 dark:bg-zinc-800 rounded-xl w-full h-full" />
+        </div>
+    ),
+});
 
 interface SalesTrendChartProps {
     data: SalesTrendPoint[];
@@ -16,45 +26,5 @@ export default function SalesTrendChart({ data }: SalesTrendChartProps) {
         );
     }
 
-    return (
-        <div className="h-72 w-full">
-            <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={data}>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
-                    <XAxis
-                        dataKey="date"
-                        stroke="#9CA3AF"
-                        fontSize={12}
-                        tickLine={false}
-                        axisLine={false}
-                    />
-                    <YAxis
-                        stroke="#9CA3AF"
-                        fontSize={12}
-                        tickLine={false}
-                        axisLine={false}
-                        tickFormatter={(value) => `$${value}`}
-                    />
-                    <Tooltip
-                        cursor={{ fill: 'rgba(234, 88, 12, 0.1)' }}
-                        contentStyle={{
-                            backgroundColor: '#fff',
-                            borderRadius: '8px',
-                            border: '1px solid #E5E7EB',
-                            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
-                        }}
-                        itemStyle={{ color: '#111827', fontWeight: 600 }}
-                        formatter={(value: any) => [`$${Number(value).toLocaleString()}`, 'Ventas']}
-                        labelStyle={{ color: '#6B7280', marginBottom: '4px' }}
-                    />
-                    <Bar
-                        dataKey="sales"
-                        fill="#ea580c"
-                        radius={[4, 4, 0, 0]}
-                        barSize={32}
-                    />
-                </BarChart>
-            </ResponsiveContainer>
-        </div>
-    );
+    return <SalesTrendChartInner data={data} />;
 }

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import { AVAILABLE_TOOLS, runTool, ToolDefinition } from '@/lib/ai/tools-wrapper';
+import { AVAILABLE_TOOLS, runTool } from '@/lib/ai/tools-wrapper';
 
 // --- Configuration ---
 const BUN_AI_URL = process.env.BUN_AI_API_URL || 'https://ai.foodfastpro.com/chat';
@@ -84,7 +84,7 @@ export async function POST(req: NextRequest) {
 
         let accumulatedText = "";
         let isToolCall = false;
-        let toolCallBuffer: Uint8Array[] = [];
+        const toolCallBuffer: Uint8Array[] = [];
         let bufferLength = 0;
 
         // Fast detection loop
@@ -123,7 +123,7 @@ export async function POST(req: NextRequest) {
             let toolCall;
             try {
                 toolCall = JSON.parse(jsonStr);
-            } catch (e) {
+            } catch (_e) {
                 console.error(`[${interactionId}] JSON Parse Error:`, jsonStr);
                 return new NextResponse("Error parsing AI tool request", { status: 500 });
             }

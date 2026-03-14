@@ -2,8 +2,8 @@
 
 import { createClient, createAdminClient } from "@/lib/supabase/server";
 import { Businessman } from "@/lib/types";
+import type { OperatingScheduleItem } from "@/lib/types";
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 import { getTrialEndDate } from "@/lib/utils/trial";
 
 export type RegistrationState = {
@@ -38,7 +38,7 @@ export async function registerUser(prevState: RegistrationState, formData: FormD
     const minOrderValue = parseFloat(formData.get("minOrderValue") as string || "0");
     const deliveryCost = parseFloat(formData.get("deliveryCost") as string || "0");
 
-    let operatingSchedule: any[] = [];
+    let operatingSchedule: OperatingScheduleItem[] = [];
     try {
         const scheduleJson = formData.get("operatingSchedule") as string;
         if (scheduleJson) {

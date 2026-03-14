@@ -10,6 +10,7 @@ export interface Businessman {
     description?: string
     logo_url?: string
     banner_url?: string
+    favicon_url?: string
     phone?: string
     email?: string
     address?: string

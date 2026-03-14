@@ -9,7 +9,7 @@ import { es } from 'date-fns/locale'
 import Link from 'next/link'
 import { getCurrentBusinessman } from '@/lib/actions/users'
 import { getDashboardStats, getSalesTrend, getTopProducts } from '@/lib/actions/analytics'
-import { motion } from 'framer-motion'
+import { m as motion } from 'framer-motion'
 import SalesTrendChart from '@/components/dashboard/SalesTrendChart'
 import TopProductsList from '@/components/dashboard/TopProductsList'
 import StatCard from '@/components/dashboard/StatCard'
@@ -33,10 +33,6 @@ export default function DashboardHome() {
   const [businessId, setBusinessId] = useState<string>("")
   const [planType, setPlanType] = useState<string>("essential")
   const supabase = createClient()
-
-  useEffect(() => {
-    fetchDashboardData()
-  }, [])
 
   const fetchDashboardData = async () => {
     try {
@@ -78,6 +74,11 @@ export default function DashboardHome() {
       setLoading(false)
     }
   }
+
+    useEffect(() => {
+        fetchDashboardData()
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
 
 
 

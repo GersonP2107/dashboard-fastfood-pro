@@ -2,7 +2,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Zap, Menu } from 'lucide-react'
+import { Zap } from 'lucide-react'
 import { Businessman } from '@/lib/types'
 import QuickActionsPanel from '@/components/layout/QuickActionsPanel'
 import NotificationCenter from './NotificationCenter'

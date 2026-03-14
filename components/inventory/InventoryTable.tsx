@@ -1,11 +1,11 @@
-﻿'use client'
+'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { Product, Category } from '@/lib/types/base-types'
 import { updateProductStock } from '@/lib/actions/products'
-import { Search, AlertTriangle, ArrowUpDown, Package } from 'lucide-react'
+import { Search, AlertTriangle, Package } from 'lucide-react'
 import { toast } from 'sonner'
-import { motion, AnimatePresence } from 'framer-motion'
+import { m as motion, AnimatePresence } from 'framer-motion'
 
 interface InventoryTableProps {
     initialProducts: Product[]
@@ -165,11 +165,12 @@ function StockInput({ initialValue, onChange }: { initialValue: number | null, o
     const [isFocused, setIsFocused] = useState(false)
 
     // Sync external changes (if optimistic update is reverted or other updates come in)
-    useMemo(() => {
+    useEffect(() => {
         if (!isFocused) {
             setValue(initialValue?.toString() ?? '')
         }
-    }, [initialValue, isFocused])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [initialValue])
 
     const handleBlur = () => {
         setIsFocused(false)

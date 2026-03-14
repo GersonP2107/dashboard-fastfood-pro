@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { motion } from 'framer-motion'
+import { m as motion } from 'framer-motion'
 import { getCurrentBusinessman } from '@/lib/actions/users'
 import { getZones } from '@/lib/actions/tables'
 import { getDeliveryZones } from '@/lib/actions/settings'

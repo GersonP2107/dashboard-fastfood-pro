@@ -10,7 +10,7 @@ export default async function CheckoutResultPage({
     const { "bold-tx-status": status, "bold-order-id": orderId } = await searchParams as { "bold-tx-status": string, "bold-order-id": string };
 
     // Verify payment status with database
-    const { success, status: finalStatus } = await verifyPaymentOutcome(orderId, status);
+    const { status: finalStatus } = await verifyPaymentOutcome(orderId, status);
 
     // Check if approved
     const isApproved = finalStatus === 'approved';

@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState } from "react";
 import QRCode from "react-qr-code";
 import { Businessman, Zone, RestaurantTable } from "@/lib/types";
 import { QrCode, Download, Printer, X, Eye } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { m as motion, AnimatePresence } from "framer-motion";
 
 interface QrCodesManagerProps {
     businessman: Businessman;

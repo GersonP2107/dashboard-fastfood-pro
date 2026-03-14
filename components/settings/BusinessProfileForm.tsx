@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import { Businessman, OperatingScheduleItem } from "@/lib/types";
 import { createClient } from "@/lib/supabase/client";
-import { updateBusinessProfile } from "@/lib/actions/settings";
+import { updateBusinessProfile, clearFaviconUrl } from "@/lib/actions/settings";
 import { colombiaLocations } from "@/lib/data/colombia";
-import { Camera, Loader2, Save, Clock, Check, X, Phone, AlertTriangle, Image as ImageIcon, Store } from "lucide-react";
+import { Camera, Loader2, Save, Clock, AlertTriangle, Image as ImageIcon, Store, Globe, Trash2 } from "lucide-react";
 import BusinessCategorySelector from "./BusinessCategorySelector";
 import Image from "next/image";
 import { differenceInDays, addDays, format } from "date-fns";
@@ -73,7 +73,6 @@ export default function BusinessProfileForm({ businessman }: BusinessProfileForm
         }
     }, [businessman.whatsapp_number]);
 
-    // Update formData when prefix or number changes
     useEffect(() => {
         setFormData(prev => ({
             ...prev,
@@ -85,7 +84,7 @@ export default function BusinessProfileForm({ businessman }: BusinessProfileForm
         ? colombiaLocations.find(d => d.department === formData.department)?.cities || []
         : [];
 
-    const updateScheduleDay = (index: number, field: keyof OperatingScheduleItem, value: any) => {
+    const updateScheduleDay = (index: number, field: keyof OperatingScheduleItem, value: string | boolean) => {
         const currentSchedule = formData.operating_schedule || DEFAULT_SCHEDULE;
         const newSchedule = [...currentSchedule];
         newSchedule[index] = { ...newSchedule[index], [field]: value };
@@ -94,8 +93,10 @@ export default function BusinessProfileForm({ businessman }: BusinessProfileForm
 
     const [logoUrl, setLogoUrl] = useState<string | null>(businessman.logo_url || null);
     const [bannerUrl, setBannerUrl] = useState<string | null>(businessman.banner_url || null);
+    const [faviconUrl, setFaviconUrl] = useState<string | null>(businessman.favicon_url || null);
     const [uploading, setUploading] = useState(false);
     const [uploadingBanner, setUploadingBanner] = useState(false);
+    const [uploadingFavicon, setUploadingFavicon] = useState(false);
     const [saving, setSaving] = useState(false);
     const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
 
@@ -171,6 +172,68 @@ export default function BusinessProfileForm({ businessman }: BusinessProfileForm
         }
     };
 
+    const handleFaviconUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        try {
+            setUploadingFavicon(true);
+            setMessage(null);
+
+            if (!e.target.files || e.target.files.length === 0) return;
+
+            const file = e.target.files[0];
+
+            // Validate size (max 1MB for a favicon)
+            if (file.size > 1 * 1024 * 1024) {
+                setMessage({ type: 'error', text: 'El favicon no puede superar 1MB.' });
+                return;
+            }
+
+            const fileExt = file.name.split('.').pop()?.toLowerCase();
+            const allowedExts = ['ico', 'png', 'svg', 'jpg', 'jpeg', 'webp'];
+            if (!fileExt || !allowedExts.includes(fileExt)) {
+                setMessage({ type: 'error', text: 'Formato no permitido. Usa ICO, PNG, SVG o WebP.' });
+                return;
+            }
+
+            const fileName = `${businessman.id}/favicon-${Date.now()}.${fileExt}`;
+            const filePath = `business-favicons/${fileName}`;
+
+            const { error: uploadError } = await supabase.storage
+                .from('products')
+                .upload(filePath, file, { upsert: true });
+
+            if (uploadError) throw uploadError;
+
+            const { data: { publicUrl } } = supabase.storage
+                .from('products')
+                .getPublicUrl(filePath);
+
+            setFaviconUrl(publicUrl);
+            await updateBusinessProfile(businessman.id, { favicon_url: publicUrl });
+            setMessage({ type: 'success', text: 'Favicon actualizado correctamente.' });
+
+        } catch (error) {
+            console.error('Error uploading favicon:', error);
+            setMessage({ type: 'error', text: 'Error al subir el favicon.' });
+        } finally {
+            setUploadingFavicon(false);
+            // Reset input so same file can be re-selected
+            e.target.value = '';
+        }
+    };
+
+    const handleRemoveFavicon = async () => {
+        setFaviconUrl(null);
+        await clearFaviconUrl(businessman.id);
+        setMessage({ type: 'success', text: 'Favicon eliminado. Se usará el logo como fallback.' });
+    };
+
+    const handleUseLogoAsFavicon = async () => {
+        if (!logoUrl) return;
+        setFaviconUrl(logoUrl);
+        await updateBusinessProfile(businessman.id, { favicon_url: logoUrl });
+        setMessage({ type: 'success', text: 'Logo establecido como favicon del menú.' });
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setSaving(true);
@@ -193,7 +256,7 @@ export default function BusinessProfileForm({ businessman }: BusinessProfileForm
                 {/* Banner */}
                 <div className="h-48 w-full bg-gray-100 dark:bg-zinc-800 rounded-xl overflow-hidden relative shadow-sm border border-gray-200 dark:border-zinc-700">
                     {bannerUrl ? (
-                        <Image src={bannerUrl} alt="Banner" fill className="object-cover" />
+                        <Image src={bannerUrl} alt="Banner" fill sizes="(max-width: 768px) 100vw, 800px" className="object-cover" />
                     ) : (
                         <div className="flex flex-col items-center justify-center h-full text-gray-400 dark:text-zinc-600 gap-2">
                             <ImageIcon className="w-8 h-8 opacity-50" />
@@ -215,7 +278,7 @@ export default function BusinessProfileForm({ businessman }: BusinessProfileForm
                     <div className="relative group/logo">
                         <div className="w-24 h-24 rounded-full border-4 border-white dark:border-zinc-900 bg-white dark:bg-zinc-800 shadow-md overflow-hidden relative flex items-center justify-center">
                             {logoUrl ? (
-                                <Image src={logoUrl} alt="Logo" fill className="object-cover" />
+                                <Image src={logoUrl} alt="Logo" fill sizes="96px" className="object-cover" />
                             ) : (
                                 <Store className="w-10 h-10 text-gray-300 dark:text-zinc-600" />
                             )}
@@ -225,6 +288,108 @@ export default function BusinessProfileForm({ businessman }: BusinessProfileForm
                             </label>
                         </div>
                     </div>
+                </div>
+            </div>
+
+            {/* Favicon Section */}
+            <div className="border border-gray-200 dark:border-zinc-700 rounded-2xl p-5 bg-gray-50/50 dark:bg-zinc-800/30">
+                <div className="flex items-center gap-2 mb-1">
+                    <Globe className="w-4 h-4 text-brand-primary" />
+                    <h3 className="text-sm font-semibold text-gray-800 dark:text-gray-200">
+                        Favicon del Menú Digital
+                    </h3>
+                </div>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mb-4">
+                    Aparece en la pestaña del navegador cuando tus clientes abren tu menú.
+                    Si no subes uno, se usará tu logo automáticamente.
+                </p>
+
+                <div className="flex items-start gap-5 flex-wrap">
+                    {/* Preview */}
+                    <div className="flex flex-col items-center gap-1.5">
+                        <div className="w-14 h-14 rounded-xl border-2 border-dashed border-gray-300 dark:border-zinc-600 bg-white dark:bg-zinc-800 flex items-center justify-center overflow-hidden shadow-sm">
+                            {faviconUrl ? (
+                                <Image
+                                    src={faviconUrl}
+                                    alt="Favicon preview"
+                                    width={40}
+                                    height={40}
+                                    className="object-contain"
+                                />
+                            ) : logoUrl ? (
+                                <Image
+                                    src={logoUrl}
+                                    alt="Logo como favicon"
+                                    width={40}
+                                    height={40}
+                                    className="object-contain opacity-40"
+                                />
+                            ) : (
+                                <Globe className="w-6 h-6 text-gray-300 dark:text-zinc-600" />
+                            )}
+                        </div>
+                        <span className="text-[10px] text-gray-400">
+                            {faviconUrl ? 'Favicon propio' : 'Usando logo'}
+                        </span>
+                    </div>
+
+                    {/* Actions */}
+                    <div className="flex flex-col gap-2 flex-1 min-w-[180px]">
+                        {/* Primary: upload */}
+                        <label className={`inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium cursor-pointer transition-colors
+                            ${uploadingFavicon
+                                ? 'bg-gray-100 dark:bg-zinc-700 text-gray-400 cursor-not-allowed'
+                                : 'bg-brand-primary text-white hover:bg-brand-primary-hover'
+                            }`}>
+                            <input
+                                type="file"
+                                className="hidden"
+                                accept=".ico,.png,.svg,.jpg,.jpeg,.webp,image/x-icon,image/png,image/svg+xml,image/webp"
+                                onChange={handleFaviconUpload}
+                                disabled={uploadingFavicon}
+                            />
+                            {uploadingFavicon ? (
+                                <><Loader2 className="w-4 h-4 animate-spin" /> Subiendo...</>
+                            ) : (
+                                <><Camera className="w-4 h-4" /> {faviconUrl ? 'Cambiar Favicon' : 'Subir Favicon'}</>
+                            )}
+                        </label>
+
+                        {/* Secondary: use logo — only visible when no custom favicon but logo exists */}
+                        {!faviconUrl && logoUrl && (
+                            <button
+                                type="button"
+                                onClick={handleUseLogoAsFavicon}
+                                className="inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-brand-primary dark:text-brand-light bg-brand-primary/5 dark:bg-brand-primary/10 hover:bg-brand-primary/10 dark:hover:bg-brand-primary/20 transition-colors border border-brand-primary/20"
+                            >
+                                <Store className="w-4 h-4" />
+                                Usar mi logo como favicon
+                            </button>
+                        )}
+
+                        {/* Danger: remove custom favicon */}
+                        {faviconUrl && (
+                            <button
+                                type="button"
+                                onClick={handleRemoveFavicon}
+                                className="inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/10 hover:bg-red-100 dark:hover:bg-red-900/20 transition-colors border border-red-100 dark:border-red-900/30"
+                            >
+                                <Trash2 className="w-4 h-4" />
+                                Eliminar y usar logo
+                            </button>
+                        )}
+                    </div>
+                </div>
+
+                {/* UX Warning */}
+                <div className="mt-4 flex gap-2 p-3 bg-amber-50 dark:bg-amber-900/10 border border-amber-100 dark:border-amber-800/30 rounded-lg">
+                    <AlertTriangle className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
+                    <p className="text-xs text-amber-700 dark:text-amber-400/90">
+                        <strong>Formatos recomendados:</strong> ICO (16×16 o 32×32) o PNG (32×32).
+                        Los navegadores pueden ignorar SVG en algunos casos.
+                        Tamaño máximo: <strong>1 MB</strong>. El caché del navegador puede
+                        tardar unos minutos en reflejar el cambio.
+                    </p>
                 </div>
             </div>
 

@@ -1,9 +1,9 @@
-﻿'use client'
+'use client'
 
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { DashboardOrder, OrderStatus } from '@/lib/types'
-import { Bell, Clock, Package, Wifi, WifiOff, RefreshCw, Volume2, Eraser, Filter } from 'lucide-react'
+import { Bell, Clock, Package, Wifi, WifiOff, RefreshCw } from 'lucide-react'
 import OrderDetailModal from '@/components/orders/OrderDetailModal'
 import OrderKanbanCard from '@/components/orders/OrderKanbanCard'
 import { getCurrentBusinessman } from '@/lib/actions/users'
@@ -54,7 +54,7 @@ function DraggableOrderCard({ order, onStatusUpdate, onClick }: {
 }
 
 // --- Droppable Column Wrapper ---
-function KanbanColumn({ col, dishCount, children }: { col: any, dishCount: number, children: React.ReactNode }) {
+function KanbanColumn({ col, dishCount, children }: { col: { id: string; title: string; color: string; iconColor: string; borderColor: string; orders: DashboardOrder[] }, dishCount: number, children: React.ReactNode }) {
     const { setNodeRef } = useDroppable({
         id: col.id,
     });
@@ -93,7 +93,6 @@ export default function OrdersPage() {
     const router = useRouter()
     const [orders, setOrders] = useState<DashboardOrder[]>([])
     const [selectedOrder, setSelectedOrder] = useState<DashboardOrder | null>(null)
-    const [activeId, setActiveId] = useState<string | null>(null);
     const [activeOrder, setActiveOrder] = useState<DashboardOrder | null>(null);
     const [timeFilter, setTimeFilter] = useState<'24h' | 'all'>('24h');
 
@@ -119,6 +118,7 @@ export default function OrdersPage() {
 
     useEffect(() => {
         initializePage()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     const initializePage = async () => {
@@ -267,7 +267,6 @@ export default function OrdersPage() {
     // --- DnD Handlers ---
     const handleDragStart = (event: DragStartEvent) => {
         const { active } = event;
-        setActiveId(active.id as string);
         setActiveOrder(active.data.current?.order || orders.find(o => o.id === active.id) || null);
     };
 
@@ -305,7 +304,6 @@ export default function OrdersPage() {
             }
         }
 
-        setActiveId(null);
         setActiveOrder(null);
     };
 

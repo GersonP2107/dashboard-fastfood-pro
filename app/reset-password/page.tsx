@@ -1,12 +1,13 @@
-﻿'use client'
+'use client'
 
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import { Loader2, Eye, EyeOff, KeyRound, CheckCircle2 } from 'lucide-react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { toast } from 'sonner'
-import { motion, AnimatePresence } from 'framer-motion'
+import { m as motion, AnimatePresence } from 'framer-motion'
 
 function PasswordStrength({ password }: { password: string }) {
     const checks = [
@@ -71,6 +72,7 @@ export default function ResetPasswordPage() {
             }
         }
         checkSession()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -115,10 +117,13 @@ export default function ResetPasswordPage() {
                 />
                 <div className="relative z-10 flex flex-col justify-between p-12 w-full h-full text-white">
                     <div className="shrink-0">
-                        <img
+                        <Image
                             src="/logo-horizontal-white.svg"
                             alt="FoodFast Pro"
+                            width={200}
+                            height={56}
                             className="h-14 w-auto"
+                            priority
                         />
                     </div>
                     <div className="space-y-6 max-w-lg">

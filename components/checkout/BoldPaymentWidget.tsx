@@ -56,8 +56,9 @@ export default function BoldPaymentWidget({ config }: { config: BoldConfig }) {
 
         containerRef.current.appendChild(script);
 
+        const container = containerRef.current;
         return () => {
-            if (containerRef.current) containerRef.current.innerHTML = '';
+            if (container) container.innerHTML = '';
         }
     }, [config]);
 

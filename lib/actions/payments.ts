@@ -3,11 +3,8 @@
 import { createClient } from '@/lib/supabase/server'
 import { generateBoldSignature } from '@/lib/bold'
 import { Plan } from '@/lib/types/payments'
-import { redirect } from 'next/navigation'
-import crypto from 'crypto'
 
 const BOLD_API_KEY = process.env.BOLD_API_KEY!;
-const BOLD_SECRET_KEY = process.env.BOLD_SECRET_KEY!;
 const BOLD_INTEGRITY_KEY = process.env.BOLD_INTEGRITY_KEY! || process.env.BOLD_SECRET_KEY!;
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
 

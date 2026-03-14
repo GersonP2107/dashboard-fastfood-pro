@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { getDriverOrder, confirmDelivery } from "@/lib/actions/driver";
 import { DashboardOrder } from "@/lib/types";
-import { MapPin, Phone, CheckCircle, Navigation, DollarSign, Package } from "lucide-react";
+import { MapPin, Phone, CheckCircle, Navigation, DollarSign } from "lucide-react";
 import { toast } from "sonner";
 
 export default function DriverPage({ params }: { params: { id: string } }) {
@@ -14,6 +14,7 @@ export default function DriverPage({ params }: { params: { id: string } }) {
 
     useEffect(() => {
         loadOrder();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [params.id]);
 
     const loadOrder = async () => {
@@ -124,7 +125,7 @@ export default function DriverPage({ params }: { params: { id: string } }) {
                             </p>
                             {order.delivery_notes && (
                                 <p className="mt-2 text-sm bg-yellow-50 text-yellow-800 p-2 rounded border border-yellow-100">
-                                    "{order.delivery_notes}"
+                                    &ldquo;{order.delivery_notes}&rdquo;
                                 </p>
                             )}
                         </div>

@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import { Loader2, ArrowRight } from 'lucide-react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { toast } from 'sonner'
 
 export default function LoginPage() {
@@ -42,10 +43,13 @@ export default function LoginPage() {
 
                 <div className="relative z-10 flex flex-col justify-between p-12 w-full h-full text-white">
                     <div className="shrink-0">
-                        <img
+                        <Image
                             src="/logo-horizontal-white.svg"
                             alt="FoodFast Pro"
+                            width={200}
+                            height={56}
                             className="h-14 w-auto"
+                            priority
                         />
                     </div>
 

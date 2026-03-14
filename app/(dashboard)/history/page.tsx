@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { useState, useEffect } from 'react'
 import { DashboardOrder } from '@/lib/types'
@@ -33,10 +33,6 @@ export default function HistoryPage() {
     }
     stats.averageTicket = stats.completedOrders > 0 ? stats.totalRevenue / stats.completedOrders : 0
 
-    useEffect(() => {
-        fetchHistory()
-    }, [dateRange, statusFilter])
-
     const fetchHistory = async () => {
         setLoading(true)
         try {
@@ -55,6 +51,11 @@ export default function HistoryPage() {
             setLoading(false)
         }
     }
+
+    useEffect(() => {
+        fetchHistory()
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [dateRange, statusFilter])
 
     const handleQuickFilter = (type: string) => {
         setRangeType(type)

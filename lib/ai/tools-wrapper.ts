@@ -33,10 +33,10 @@ export const AVAILABLE_TOOLS: ToolDefinition[] = [
 ];
 
 // Dispatcher to run the tools
-export async function runTool(toolName: string, args: any, businessmanId: string) {
+export async function runTool(toolName: string, args: Record<string, string>, businessmanId: string) {
     switch (toolName) {
         case 'get_financial_stats':
-            return await getFinancialStats(businessmanId, args.range || 'today');
+            return await getFinancialStats(businessmanId, (args.range as DateRange) || 'today');
 
         case 'get_recent_orders':
             const orders = await getOrders(businessmanId);

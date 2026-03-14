@@ -3,9 +3,9 @@
 import { useState, useEffect } from 'react'
 import { getCurrentBusinessman } from '@/lib/actions/users'
 import { getFinancialStats, DateRange } from '@/lib/actions/finance'
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar } from 'recharts'
-import { DollarSign, ShoppingBag, CreditCard, TrendingUp, Calendar, Download, Store, Bike, Utensils } from 'lucide-react'
-import { motion } from 'framer-motion'
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts'
+import { DollarSign, ShoppingBag, CreditCard, TrendingUp, Download } from 'lucide-react'
+import { m as motion } from 'framer-motion'
 
 
 // Inline formatter if utility missing
@@ -20,13 +20,15 @@ const formatMoney = (amount: number) => {
 const COLORS = ['#ea580c', '#22c55e', '#f59e0b', '#dc2626']
 
 export default function FinancePage() {
-    const [stats, setStats] = useState<any>(null)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const [stats, setStats] = useState<Record<string, any> | null>(null)
     const [loading, setLoading] = useState(true)
     const [range, setRange] = useState<DateRange>('week')
 
 
     useEffect(() => {
         loadStats()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [range])
 
     const loadStats = async () => {
@@ -51,7 +53,7 @@ export default function FinancePage() {
         const headers = ['Orden #', 'Fecha', 'Cliente', 'Tipo', 'Estado', 'Total', 'Método Pago']
 
         // 2. Mapeamos los datos usando ";" como separador
-        const rows = stats.rawOrders.map((o: any) => [
+        const rows = stats.rawOrders.map((o: { order_number: string, created_at: string, customer_name: string, delivery_type: string, status: string, total: number, payment_method: string }) => [
             o.order_number,
             new Date(o.created_at).toLocaleDateString(),
             `"${o.customer_name.replace(/"/g, '""')}"`, // Escapar comillas dobles si existen
@@ -167,7 +169,7 @@ export default function FinancePage() {
                                 />
                                 <Tooltip
                                     contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
-                                    formatter={(value: any) => [formatMoney(Number(value || 0)), 'Ventas']}
+                                    formatter={(value: number | string | undefined) => [formatMoney(Number(value || 0)), 'Ventas']}
                                 />
                                 <Area
                                     type="monotone"
@@ -197,17 +199,17 @@ export default function FinancePage() {
                                     paddingAngle={5}
                                     dataKey="value"
                                 >
-                                    {stats.paymentMethodData.map((entry: any, index: number) => (
-                                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                    {stats.paymentMethodData.map((entry: { name: string; value: number }, index: number) => (
+                                        <Cell key={`payment-${entry.name}`} fill={COLORS[index % COLORS.length]} />
                                     ))}
                                 </Pie>
-                                <Tooltip formatter={(value: any) => formatMoney(Number(value || 0))} />
+                                <Tooltip formatter={(value: number | string | undefined) => formatMoney(Number(value || 0))} />
                             </PieChart>
                         </ResponsiveContainer>
                         {/* Legend Overlay */}
                         <div className="mt-4 space-y-2">
-                            {stats.paymentMethodData.map((entry: any, index: number) => (
-                                <div key={index} className="flex items-center justify-between text-sm">
+                            {stats.paymentMethodData.map((entry: { name: string; value: number }, index: number) => (
+                                <div key={`legend-payment-${entry.name}`} className="flex items-center justify-between text-sm">
                                     <div className="flex items-center gap-2">
                                         <div className="w-3 h-3 rounded-full" style={{ backgroundColor: COLORS[index % COLORS.length] }} />
                                         <span className="text-gray-600 dark:text-gray-300">{entry.name}</span>
@@ -234,17 +236,17 @@ export default function FinancePage() {
                                     paddingAngle={5}
                                     dataKey="value"
                                 >
-                                    {stats.salesByTypeData?.map((entry: any, index: number) => (
-                                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                    {stats.salesByTypeData?.map((entry: { name: string; value: number }, index: number) => (
+                                        <Cell key={`type-${entry.name}`} fill={COLORS[index % COLORS.length]} />
                                     ))}
                                 </Pie>
-                                <Tooltip formatter={(value: any) => formatMoney(Number(value || 0))} />
+                                <Tooltip formatter={(value: number | string | undefined) => formatMoney(Number(value || 0))} />
                             </PieChart>
                         </ResponsiveContainer>
                         {/* Legend Overlay */}
                         <div className="mt-4 space-y-2">
-                            {stats.salesByTypeData?.map((entry: any, index: number) => (
-                                <div key={index} className="flex items-center justify-between text-sm">
+                            {stats.salesByTypeData?.map((entry: { name: string; value: number }, index: number) => (
+                                <div key={`legend-type-${entry.name}`} className="flex items-center justify-between text-sm">
                                     <div className="flex items-center gap-2">
                                         <div className="w-3 h-3 rounded-full" style={{ backgroundColor: COLORS[index % COLORS.length] }} />
                                         <span className="text-gray-600 dark:text-gray-300">{entry.name}</span>
@@ -260,8 +262,8 @@ export default function FinancePage() {
                 <div className="lg:col-span-2 bg-white dark:bg-zinc-900 p-6 rounded-3xl shadow-sm border border-gray-100 dark:border-zinc-800">
                     <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">Platos Más Vendidos</h3>
                     <div className="space-y-4">
-                        {stats.topProducts?.map((product: any, index: number) => (
-                            <div key={index} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-zinc-800/50 rounded-2xl hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors">
+                        {stats.topProducts?.map((product: { name: string; quantity: number; revenue: number }, index: number) => (
+                            <div key={product.name || index} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-zinc-800/50 rounded-2xl hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors">
                                 <div className="flex items-center gap-4">
                                     <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${index === 0 ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400' :
                                         index === 1 ? 'bg-gray-100 text-gray-700 dark:bg-zinc-700 dark:text-gray-300' :
@@ -298,7 +300,7 @@ export default function FinancePage() {
     )
 }
 
-function KPICard({ title, value, icon: Icon, color, bg }: any) {
+function KPICard({ title, value, icon: Icon, color, bg }: { title: string; value: string; icon: React.ElementType; color: string; bg: string }) {
     return (
         <motion.div
             initial={{ opacity: 0, y: 20 }}

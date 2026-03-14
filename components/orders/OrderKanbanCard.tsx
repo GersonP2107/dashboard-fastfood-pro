@@ -1,8 +1,8 @@
-﻿import { DashboardOrder, OrderStatus } from '@/lib/types'
+import { DashboardOrder, OrderStatus } from '@/lib/types'
 import { formatDistanceToNow } from 'date-fns'
 import { es } from 'date-fns/locale'
-import { Clock, DollarSign, Package, Phone, AlertTriangle, CreditCard, ChevronRight, X, Bike, Store, MapPin, Send } from 'lucide-react'
-import { motion } from 'framer-motion'
+import { Clock, DollarSign, Package, AlertTriangle, X, Bike, Store, Send } from 'lucide-react'
+import { m as motion } from 'framer-motion'
 
 interface OrderKanbanCardProps {
     order: DashboardOrder

@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { MailCheck, RefreshCw, ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
 
@@ -50,10 +51,13 @@ export default function VerifyEmailPage() {
                 />
                 <div className="relative z-10 flex flex-col justify-between p-12 w-full h-full text-white">
                     <div className="shrink-0">
-                        <img
+                        <Image
                             src="/logo-horizontal-white.svg"
                             alt="FoodFast Pro"
+                            width={200}
+                            height={56}
                             className="h-14 w-auto"
+                            priority
                         />
                     </div>
                     <div className="space-y-6 max-w-lg">

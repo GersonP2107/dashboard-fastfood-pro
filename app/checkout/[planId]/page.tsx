@@ -1,7 +1,6 @@
 import { initiatePayment } from '@/lib/actions/payments';
 import BoldPaymentWidget from '@/components/checkout/BoldPaymentWidget';
-import { notFound } from 'next/navigation';
-import { ShieldCheck, ArrowLeft, Clock, Sparkles } from 'lucide-react';
+import { ShieldCheck, ArrowLeft, Clock } from 'lucide-react';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/server';
 import { isTrialActive, getTrialDaysRemaining } from '@/lib/utils/trial';
@@ -85,7 +84,8 @@ export default async function CheckoutPage({ params }: { params: Promise<{ planI
                 </div>
             </div>
         );
-    } catch (e: any) {
+    } catch (err: unknown) {
+        const e = err instanceof Error ? err : new Error(String(err));
         console.error("Checkout Error:", e);
         return (
             <div className="min-h-screen bg-gray-50 dark:bg-zinc-900 flex flex-col items-center justify-center p-4 text-center">

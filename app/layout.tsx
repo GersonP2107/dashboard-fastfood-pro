@@ -9,11 +9,12 @@ export const metadata: Metadata = {
   icons: {
     icon: "/favicon.svg",
     shortcut: "/favicon.svg",
-  },
+  }
 };
 
 import { ThemeProvider } from "@/components/theme-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { MotionProvider } from "@/components/providers/motion-provider";
 
 export default function RootLayout({
   children,
@@ -32,10 +33,12 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <TooltipProvider delayDuration={0}>
-            {children}
-            <Toaster richColors position="top-right" />
-          </TooltipProvider>
+          <MotionProvider>
+            <TooltipProvider delayDuration={0}>
+              {children}
+              <Toaster richColors position="top-right" />
+            </TooltipProvider>
+          </MotionProvider>
         </ThemeProvider>
       </body>
     </html>

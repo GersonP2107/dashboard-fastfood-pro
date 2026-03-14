@@ -1,7 +1,7 @@
-﻿'use client'
+'use client'
 
 import { useState, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { m as motion, AnimatePresence } from 'framer-motion'
 import { X, Zap, CloudRain, Flame, Check } from 'lucide-react'
 import { Businessman } from '@/lib/types'
 import { updateBusinessProfile } from '@/lib/actions/settings'
@@ -24,6 +24,7 @@ export default function QuickActionsPanel({ isOpen, onClose, business }: QuickAc
 
     useEffect(() => {
         if (business?.delivery_surge_multiplier) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setMultiplier(business.delivery_surge_multiplier)
         }
     }, [business])

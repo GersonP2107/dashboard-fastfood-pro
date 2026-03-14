@@ -1,6 +1,6 @@
-﻿"use client";
+"use client";
 
-import { useState, useTransition, useOptimistic, useEffect } from "react";
+import { useState, useTransition, useOptimistic } from "react";
 import { Category, Product } from "@/lib/types/base-types";
 import { deleteProduct, toggleProductStatus } from "@/lib/actions/products";
 import { Edit2, Plus, Trash2, Search, Power, PowerOff, ImageOff } from "lucide-react";
@@ -10,7 +10,7 @@ import ProductForm from "./ProductForm";
 import ConfirmDialog from "@/components/ui/ConfirmDialog";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
+import { m as motion, AnimatePresence } from "framer-motion";
 
 interface ProductListProps {
     initialProducts: Product[];
@@ -21,7 +21,7 @@ interface ProductListProps {
 export default function ProductList({ initialProducts, categories, businessmanId }: ProductListProps) {
     const router = useRouter();
     const [isPending, startTransition] = useTransition();
-    const [products, setProducts] = useState(initialProducts);
+    const [products] = useState(initialProducts);
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedCategory, setSelectedCategory] = useState<string>("all");
 
@@ -40,10 +40,7 @@ export default function ProductList({ initialProducts, categories, businessmanId
 
     const [productToDelete, setProductToDelete] = useState<string | null>(null);
 
-    // Sync initialProducts with local state
-    useEffect(() => {
-        setProducts(initialProducts);
-    }, [initialProducts]);
+
 
     const filteredProducts = optimisticProducts.filter((product) => {
         const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
@@ -210,6 +207,7 @@ export default function ProductList({ initialProducts, categories, businessmanId
                                                                 src={product.image_url}
                                                                 alt={product.name}
                                                                 fill
+                                                                sizes="48px"
                                                                 className="object-cover"
                                                             />
                                                         ) : (
@@ -306,6 +304,7 @@ export default function ProductList({ initialProducts, categories, businessmanId
                                                 src={product.image_url}
                                                 alt={product.name}
                                                 fill
+                                                sizes="80px"
                                                 className="object-cover"
                                             />
                                         ) : (

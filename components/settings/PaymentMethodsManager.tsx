@@ -1,10 +1,10 @@
-﻿"use client";
+"use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { PaymentMethod } from "@/lib/types";
 import { Plus, Trash2, Save, X, CreditCard, Banknote, Smartphone, AlertCircle, Pencil } from "lucide-react";
 import { createPaymentMethod, updatePaymentMethod, deletePaymentMethod } from "@/lib/actions/payment-methods";
-import { motion, AnimatePresence } from "framer-motion";
+import { m as motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 import ConfirmDialog from "@/components/ui/ConfirmDialog";
 
@@ -26,9 +26,7 @@ const METHOD_TYPES = [
 export default function PaymentMethodsManager({ businessmanId, initialMethods }: PaymentMethodsManagerProps) {
     const [methods, setMethods] = useState<PaymentMethod[]>(initialMethods);
 
-    useEffect(() => {
-        setMethods(initialMethods);
-    }, [initialMethods]);
+
 
     const [isAdding, setIsAdding] = useState(false);
     const [editingId, setEditingId] = useState<string | null>(null);
@@ -179,7 +177,7 @@ export default function PaymentMethodsManager({ businessmanId, initialMethods }:
                                         <select
                                             value={newMethod.type}
                                             onChange={(e) => {
-                                                const val = e.target.value as any;
+                                                const val = e.target.value as PaymentMethod['type'];
                                                 setNewMethod({
                                                     ...newMethod,
                                                     type: val,
@@ -282,7 +280,7 @@ export default function PaymentMethodsManager({ businessmanId, initialMethods }:
                                     )}
                                     {method.instructions && (
                                         <p className="text-xs text-gray-400 dark:text-gray-500 mt-1 line-clamp-1 italic">
-                                            "{method.instructions}"
+                                            &ldquo;{method.instructions}&rdquo;
                                         </p>
                                     )}
                                 </div>
@@ -322,7 +320,7 @@ export default function PaymentMethodsManager({ businessmanId, initialMethods }:
                         <div className="text-center py-8 text-gray-500 dark:text-gray-400 text-sm border-2 border-dashed border-gray-200 dark:border-zinc-800 rounded-xl">
                             <Banknote className="h-8 w-8 mx-auto mb-2 opacity-50" />
                             <p>No has configurado métodos de pago.</p>
-                            <p className="text-xs mt-1">Tus clientes solo tendrán la opción "Acordar con vendedor".</p>
+                            <p className="text-xs mt-1">Tus clientes solo tendrán la opción &quot;Acordar con vendedor&quot;.</p>
                         </div>
                     )}
                 </AnimatePresence>

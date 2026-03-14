@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState } from "react";
 import { Category, Product, ProductModifier, Modifier } from "@/lib/types/base-types";
@@ -54,7 +54,9 @@ export default function ProductForm({ categories, product, onSuccess, onCancel, 
                 setError(result.error);
             } else {
                 // If creating, handle pending modifiers
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 if (!product && (result as any).product && pendingModifiers.length > 0) {
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     const newProductId = (result as any).product.id;
 
                     // Process modifiers sequentially (could be parallelized)
@@ -104,9 +106,10 @@ export default function ProductForm({ categories, product, onSuccess, onCancel, 
                 .getPublicUrl(filePath);
 
             setPreviewUrl(data.publicUrl);
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error('Error uploading image:', error);
-            setError(error.message || 'Error al subir la imagen');
+            const errMsg = error instanceof Error ? error.message : 'Error al subir la imagen';
+            setError(errMsg);
         } finally {
             setUploading(false);
         }
@@ -133,6 +136,7 @@ export default function ProductForm({ categories, product, onSuccess, onCancel, 
                                     src={previewUrl}
                                     alt="Vista previa"
                                     fill
+                                    sizes="96px"
                                     className="object-cover"
                                 />
                                 <button

@@ -24,7 +24,8 @@ export async function updateBusinessProfile(businessmanId: string, formData: Par
         return { success: false, error: "No se pudo verificar la información actual." };
     }
 
-    const updates: any = { ...formData, updated_at: new Date().toISOString() };
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const updates: Record<string, any> = { ...formData, updated_at: new Date().toISOString() };
 
     // 2. Check if name is changing
     if (formData.business_name && formData.business_name !== currentData.business_name) {
@@ -145,6 +146,25 @@ export async function deleteDeliveryZone(zoneId: string) {
 
     if (error) {
         console.error("Error deleting delivery zone:", error);
+        return { success: false, error: error.message };
+    }
+
+    revalidatePath("/settings");
+    return { success: true };
+}
+
+// --- Favicon Actions ---
+
+export async function clearFaviconUrl(businessmanId: string) {
+    const supabase = await createClient();
+
+    const { error } = await supabase
+        .from("businessmans")
+        .update({ favicon_url: null, updated_at: new Date().toISOString() })
+        .eq("id", businessmanId);
+
+    if (error) {
+        console.error("Error clearing favicon_url:", error);
         return { success: false, error: error.message };
     }
 

@@ -1,13 +1,15 @@
 "use client";
 
 import { TopProduct } from "@/lib/types/dashboard";
-import { Package, TrendingUp } from "lucide-react";
+
 
 interface TopProductsListProps {
     products: TopProduct[];
 }
 
-export default function TopProductsList({ products = [] }: TopProductsListProps) {
+const EMPTY_PRODUCTS: TopProduct[] = [];
+
+export default function TopProductsList({ products = EMPTY_PRODUCTS }: TopProductsListProps) {
     if (products.length === 0) {
         return (
             <div className="py-8 text-center text-gray-500 text-sm">

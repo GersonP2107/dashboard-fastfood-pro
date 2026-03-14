@@ -1,8 +1,8 @@
-﻿'use client';
+'use client';
 
 import { useState } from 'react';
-import { BUSINESS_CATEGORIES, BusinessCategory } from '@/lib/data/business-categories';
-import { motion, AnimatePresence } from 'framer-motion';
+import { BUSINESS_CATEGORIES } from '@/lib/data/business-categories';
+import { m as motion, AnimatePresence } from 'framer-motion';
 import { Check, Tag } from 'lucide-react';
 
 interface BusinessCategorySelectorProps {
@@ -44,8 +44,8 @@ export default function BusinessCategorySelector({
                     </span>
                 </div>
                 <span className={`text-xs font-medium px-2.5 py-1 rounded-full transition-colors ${isMaxReached
-                        ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'
-                        : 'bg-gray-100 text-gray-500 dark:bg-zinc-800 dark:text-gray-400'
+                    ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'
+                    : 'bg-gray-100 text-gray-500 dark:bg-zinc-800 dark:text-gray-400'
                     }`}>
                     {selected.length}/{maxCategories}
                 </span>
@@ -79,9 +79,9 @@ export default function BusinessCategorySelector({
                                 key={cat.id}
                                 type="button"
                                 layout
-                                initial={{ opacity: 0, scale: 0.8 }}
+                                initial={{ opacity: 0, scale: 0.95 }}
                                 animate={{ opacity: 1, scale: 1 }}
-                                exit={{ opacity: 0, scale: 0.8 }}
+                                exit={{ opacity: 0, scale: 0.95 }}
                                 whileTap={{ scale: 0.95 }}
                                 onClick={() => toggleCategory(cat.id)}
                                 disabled={disabled}
@@ -100,9 +100,9 @@ export default function BusinessCategorySelector({
                                 <span>{cat.label}</span>
                                 {active && (
                                     <motion.span
-                                        initial={{ scale: 0 }}
+                                        initial={{ scale: 0.95 }}
                                         animate={{ scale: 1 }}
-                                        exit={{ scale: 0 }}
+                                        exit={{ scale: 0.95 }}
                                         className="ml-0.5"
                                     >
                                         <Check className="w-3.5 h-3.5" />

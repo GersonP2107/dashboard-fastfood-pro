@@ -1,11 +1,12 @@
-﻿"use client";
+"use client";
 
 import { useState } from "react";
 import { useFormState } from "react-dom";
 import { registerUser, RegistrationState } from "@/lib/actions/auth";
-import { motion, AnimatePresence } from "framer-motion";
+import { m as motion, AnimatePresence } from "framer-motion";
 import { Loader2, ArrowRight, Check, Store, Truck, User, Tag } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { OperatingScheduleItem } from "@/lib/types";
@@ -18,7 +19,15 @@ const steps = [
     { id: 3, title: "Operación", icon: Truck, description: "Envíos y horarios" },
 ];
 
-const InputGroup = ({ label, name, type = "text", placeholder, required = true, value, onChange }: any) => (
+const InputGroup = ({ label, name, type = "text", placeholder, required = true, value, onChange }: {
+    label: string;
+    name: string;
+    type?: string;
+    placeholder?: string;
+    required?: boolean;
+    value: string;
+    onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+}) => (
     <div className="space-y-2">
         <label htmlFor={name} className="block text-sm font-medium text-gray-700 dark:text-gray-300">
             {label}
@@ -87,7 +96,7 @@ export default function RegisterPage() {
         }));
     };
 
-    const handleScheduleChange = (index: number, field: string, value: any) => {
+    const handleScheduleChange = (index: number, field: string, value: string | boolean) => {
         setFormValues((prev) => {
             const newSchedule = [...prev.operatingSchedule];
             newSchedule[index] = { ...newSchedule[index], [field]: value };
@@ -96,7 +105,7 @@ export default function RegisterPage() {
     };
 
     // Custom server action wrapper to handle redirection on client
-    const handleRegister = async (prevState: RegistrationState, formData: FormData) => {
+    const handleRegister = async (prevState: RegistrationState, _formData: FormData) => {
         const fullFormData = new FormData();
 
         // Append all standard fields
@@ -128,7 +137,7 @@ export default function RegisterPage() {
         return result;
     };
 
-    const [state, formAction, isPending] = useFormState(handleRegister, {
+    const [_state, formAction, isPending] = useFormState(handleRegister, {
         success: false,
         error: null,
         requiresEmailConfirmation: false,
@@ -175,10 +184,13 @@ export default function RegisterPage() {
 
                 <div className="relative z-10 flex flex-col justify-between p-12 w-full h-full text-white">
                     <div className="shrink-0">
-                        <img
+                        <Image
                             src="/logo-horizontal-white.svg"
                             alt="FoodFast Pro"
+                            width={200}
+                            height={56}
                             className="h-14 w-auto"
+                            priority
                         />
                     </div>
 

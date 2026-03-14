@@ -2,7 +2,7 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
-import { Zone, RestaurantTable } from '@/lib/types'
+import { Zone } from '@/lib/types'
 
 // --- Zones ---
 

@@ -1,15 +1,14 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { Bell, Check, Trash2, X, Crown } from 'lucide-react'
+import { Bell, Check, Trash2, Crown } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { DashboardOrder } from '@/lib/types'
 import { formatDistanceToNow } from 'date-fns'
 import { es } from 'date-fns/locale'
-import { motion, AnimatePresence } from 'framer-motion'
+import { m as motion, AnimatePresence } from 'framer-motion'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
-import useSound from 'use-sound'
 
 export interface AppNotification {
     id: string
@@ -53,7 +52,8 @@ export default function NotificationCenter({ businessId, planType = 'essential' 
                 console.error("Failed to parse notifications", e)
             }
         }
-    }, [])
+    }, []);
+    // (intentionally runs only on mount — stored notifications)
 
     // Save to LocalStorage on update
     useEffect(() => {
@@ -102,6 +102,7 @@ export default function NotificationCenter({ businessId, planType = 'essential' 
         return () => {
             supabase.removeChannel(channel)
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [businessId])
 
     // System Configuration Check
@@ -226,7 +227,7 @@ export default function NotificationCenter({ businessId, planType = 'essential' 
 
     const handleNotificationClick = (n: AppNotification) => {
         if (!n.read) {
-            markAsRead(n.id, { stopPropagation: () => { } } as any)
+            markAsRead(n.id, { stopPropagation: () => { } } as React.MouseEvent)
         }
         setIsOpen(false)
 

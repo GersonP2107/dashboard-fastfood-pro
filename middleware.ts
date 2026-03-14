@@ -1,5 +1,5 @@
 
-import { createServerClient, type CookieOptions } from '@supabase/ssr'
+import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 import { RoleName, ROLE_PERMISSIONS } from '@/lib/types'
 

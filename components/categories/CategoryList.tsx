@@ -1,10 +1,10 @@
-﻿'use client'
+'use client'
 
 import { Category } from '@/lib/types/base-types'
 import { Edit2, Trash2, Power, PowerOff } from 'lucide-react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { m as motion, AnimatePresence } from 'framer-motion'
 import { deleteCategory, toggleCategoryStatus } from '@/lib/actions/categories'
-import { useRouter } from 'next/navigation'
+
 import { toast } from 'sonner'
 import { useTransition, useState } from 'react'
 import ConfirmDialog from '@/components/ui/ConfirmDialog'
@@ -15,7 +15,7 @@ interface CategoryListProps {
 }
 
 export default function CategoryList({ categories, onEdit }: CategoryListProps) {
-    const router = useRouter()
+
     const [isPending, startTransition] = useTransition()
     const [categoryToDelete, setCategoryToDelete] = useState<string | null>(null)
 

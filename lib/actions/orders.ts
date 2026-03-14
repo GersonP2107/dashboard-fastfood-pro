@@ -28,8 +28,8 @@ export async function getOrders(businessmanId: string) {
     }
 
     // 3. Fetch ALL tables for the businessman to handle both linked and unlinked (heuristic) orders
-    let tablesMap: Record<string, any> = {};
-    let allTables: any[] = [];
+    let tablesMap: Record<string, { id: string; label: string; restaurant_zones?: { name: string }[] }> = {};
+    let allTables: { id: string; label: string; restaurant_zones?: { name: string }[] }[] = [];
 
     const { data: tablesData } = await supabase
         .from('restaurant_tables')
@@ -44,13 +44,14 @@ export async function getOrders(businessmanId: string) {
 
     if (tablesData) {
         allTables = tablesData;
-        tablesMap = tablesData.reduce((acc: any, table: any) => {
+        tablesMap = tablesData.reduce((acc: Record<string, { id: string; label: string; restaurant_zones?: { name: string }[] }>, table) => {
             acc[table.id] = table;
             return acc;
         }, {});
     }
 
     // 4. Stitch data together
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const ordersWithTables = ordersData.map((order: any) => {
         let table = order.table_id ? tablesMap[order.table_id] : null;
 
@@ -135,11 +136,11 @@ export async function getHistoryOrders(
     // Reuse logic to attach tables
     const tableIds = Array.from(new Set(
         ordersData
-            .map((o: any) => o.table_id)
-            .filter((id: any) => id)
+            .map((o: { table_id?: string | null }) => o.table_id)
+            .filter((id): id is string => !!id)
     )) as string[];
 
-    let tablesMap: Record<string, any> = {};
+    let tablesMap: Record<string, { id: string; label: string; restaurant_zones?: { name: string }[] }> = {};
 
     if (tableIds.length > 0) {
         const { data: tablesData } = await supabase
@@ -154,13 +155,14 @@ export async function getHistoryOrders(
             .in('id', tableIds);
 
         if (tablesData) {
-            tablesMap = tablesData.reduce((acc: any, table: any) => {
+            tablesMap = tablesData.reduce((acc: Record<string, { id: string; label: string; restaurant_zones?: { name: string }[] }>, table) => {
                 acc[table.id] = table;
                 return acc;
             }, {});
         }
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const ordersWithTables = ordersData.map((order: any) => ({
         ...order,
         restaurant_tables: order.table_id ? tablesMap[order.table_id] : null
@@ -186,7 +188,7 @@ export async function updateOrderStatus(orderId: string, status: OrderStatus) {
     const englishStatus = statusMap[status] || status;
 
     // Try updating with the English status first
-    let { error } = await supabase
+    const { error } = await supabase
         .from("orders")
         .update({ status: englishStatus, updated_at: new Date().toISOString() })
         .eq("id", orderId);

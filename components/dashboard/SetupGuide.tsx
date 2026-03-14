@@ -1,7 +1,7 @@
 ﻿'use client';
 
 import { useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { m as motion, AnimatePresence } from 'framer-motion';
 import { AlertCircle, CreditCard, MapPin, Layout, ChevronRight, X } from 'lucide-react';
 import Link from 'next/link';
 import { getPaymentMethods } from '@/lib/actions/payment-methods';

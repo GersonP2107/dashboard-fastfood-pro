@@ -1,7 +1,8 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { m as motion, AnimatePresence } from 'framer-motion'
+import Image from 'next/image'
 import { getCurrentBusinessman } from '@/lib/actions/users'
 import { getAllRoles, getTeamMembers, inviteTeamMember, updateMemberRole, revokeMember, reactivateMember } from '@/lib/actions/roles'
 import { Businessman, Role, UserRole, RoleName } from '@/lib/types'
@@ -220,7 +221,7 @@ function MemberCard({
             {/* Avatar */}
             <div className="size-10 rounded-full bg-linear-to-br from-brand-primary to-brand-accent flex items-center justify-center text-white font-bold text-sm shrink-0 overflow-hidden shadow">
                 {member.profile?.avatar_url ? (
-                    <img src={member.profile.avatar_url} alt={displayName} className="size-full object-cover" />
+                    <Image src={member.profile.avatar_url} alt={displayName} fill sizes="40px" className="object-cover" />
                 ) : (
                     <span>{getInitials(member.profile?.full_name, member.invited_email)}</span>
                 )}
@@ -339,7 +340,10 @@ export default function TeamPage() {
         setLoading(false)
     }
 
-    useEffect(() => { loadData() }, [])
+    useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        loadData()
+    }, [])
 
     const handleInviteSuccess = () => {
         setFeedback({ type: 'success', msg: 'Invitación creada. El miembro aparecerá como "Pendiente" hasta que acepte.' })
